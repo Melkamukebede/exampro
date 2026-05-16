@@ -6,10 +6,900 @@
     <title>ExamMaster Pro</title>
     <!-- KaTeX -->
     <link rel="stylesheet" href="lib/katex/katex.min.css">
-    <!-- External Stylesheet -->
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --primary: #10b981; --primary-dark: #059669; --secondary: #3b82f6;
+            --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+            --dark: #0f172a; --darker: #0a0f1f; --light: #e2e8f0;
+            --gray: #94a3b8; --card-bg: #1e293b; --border: #334155;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--light); min-height:100vh; padding:12px;
+            padding-bottom: max(12px, var(--safe-bottom));
+            overflow-x: hidden;
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+        @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.7; } }
+        
+        #loadingOverlay {
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background:linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            display:flex; flex-direction:column; justify-content:center; align-items:center;
+            z-index:99999; transition:opacity 0.5s; color:white;
+        }
+        .loader-spinner {
+            width:60px; height:60px; border:4px solid rgba(16,185,129,0.2);
+            border-top-color:var(--primary); border-radius:50%;
+            animation:spin 1s linear infinite; margin-bottom:24px;
+        }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .loader-text { font-size:1.2rem; font-weight:500; margin-bottom:8px; }
+        .loader-subtext { font-size:0.9rem; opacity:0.7; }
+        .loader-progress { width:200px; height:4px; background:rgba(255,255,255,0.2); border-radius:4px; margin-top:24px; overflow:hidden; }
+        .loader-progress-bar { height:100%; width:0%; background:var(--primary); transition:width 0.3s; }
+        
+        .app-wrapper { display:flex; flex-direction:column; min-height:100%; }
+        .premium-banner {
+            background:linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius:20px; padding:6px 14px; display:flex;
+            justify-content:space-between; align-items:center; flex-wrap:wrap;
+            gap:6px; margin-bottom:12px; font-size:0.75rem;
+            animation: slideUp 0.3s ease;
+        }
+        .premium-banner span { color:white; font-weight:bold; display:flex; align-items:center; gap:4px; }
+        .premium-badge { background:var(--dark); color:var(--primary); padding:2px 8px; border-radius:20px; font-size:10px; }
+        .upgrade-btn { background:var(--warning); color:var(--dark); padding:2px 8px; border-radius:20px; cursor:pointer; border:none; font-size:10px; display:flex; align-items:center; gap:4px; transition:0.2s; }
+        .upgrade-btn:hover { transform:scale(1.05); }
+        
+        .nav {
+            background:var(--card-bg); border-radius:40px; padding:12px 16px;
+            display:flex; flex-direction:column; gap:12px; margin-bottom:12px;
+            border:1px solid var(--border); animation: slideUp 0.35s ease;
+        }
+        .nav h2 {
+            font-size:1.1rem; background:linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            text-align:center; margin:0; display:flex; align-items:center; justify-content:center; gap:6px;
+        }
+        .nav-buttons { display:flex; gap:8px; overflow-x:auto; white-space:nowrap; padding-bottom:4px; }
+        .nav-btn {
+            padding:6px 14px; background:transparent; border:1px solid var(--border);
+            border-radius:40px; cursor:pointer; font-size:11px; color:var(--gray);
+            display:inline-flex; align-items:center; gap:6px; text-decoration:none;
+            transition:0.2s; flex-shrink:0;
+        }
+        .nav-btn svg { width:14px; height:14px; stroke:currentColor; stroke-width:2; fill:none; }
+        .nav-btn:hover, .nav-btn.active {
+            background:linear-gradient(135deg, var(--primary), var(--secondary));
+            color:var(--dark); border-color:transparent; transform:translateY(-2px);
+        }
+        
+        .main-grid { display:grid; grid-template-columns:1fr 280px; gap:12px; align-items:start; }
+        .content-area { display:flex; flex-direction:column; gap:12px; }
+        .stats-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(130px,1fr)); gap:12px; }
+        .stat-card {
+            background:var(--card-bg); border-radius:20px; padding:14px 10px; text-align:center;
+            cursor:pointer; border:1px solid var(--border); transition:0.2s;
+            animation: slideUp 0.4s ease;
+        }
+        .stat-card:hover { border-color:var(--primary); transform:translateY(-2px); box-shadow:0 8px 16px rgba(16,185,129,0.2); }
+        .stat-number { font-size:1.8rem; font-weight:bold; background:linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        
+        .file-card { background:var(--card-bg); border-radius:20px; padding:14px; border:1px solid var(--border); animation: slideUp 0.4s ease; }
+        .file-card h3 { color:var(--primary); font-size:1rem; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+        
+        .icon-btn {
+            padding:6px 12px; background:var(--darker); border:1px solid var(--border);
+            border-radius:30px; cursor:pointer; font-size:11px; color:var(--gray);
+            display:inline-flex; align-items:center; gap:6px; transition:0.2s;
+        }
+        .icon-btn svg { width:12px; height:12px; stroke:currentColor; stroke-width:2; fill:none; }
+        .icon-btn:hover { background:var(--primary); color:var(--dark); transform:scale(1.02); }
+        
+        .file-manager {
+            background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border);
+            padding: 14px; position: sticky; top: 12px; max-width: 100%; overflow: hidden;
+            animation: slideUp 0.45s ease;
+        }
+        .file-list { max-height: 400px; overflow-y: auto; overflow-x: hidden; }
+        .file-item-compact {
+            display: flex; align-items: flex-start; justify-content: space-between; padding: 8px 10px;
+            background: var(--darker); border-radius: 14px; margin-bottom: 6px; cursor: pointer;
+            border: 1px solid transparent; transition: 0.2s; font-size: 11px; width: 100%; max-width: 100%;
+        }
+        .file-item-compact:hover { border-color: var(--primary); background: var(--card-bg); transform:translateX(4px); }
+        .file-info { flex: 1; min-width: 0; overflow: hidden; }
+        .file-title { font-weight: 600; margin-bottom: 4px; word-break: break-word; white-space: normal; line-height: 1.3; }
+        .file-meta { display: flex; flex-wrap: wrap; gap: 8px 12px; font-size: 9px; color: var(--gray); }
+        .file-meta span { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; }
+        .file-actions-compact { display: flex; gap: 2px; margin-left: 8px; flex-shrink: 0; }
+        .file-actions-compact button {
+            background: none; border: none; color: var(--gray); cursor: pointer; padding: 4px;
+            border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;
+        }
+        .file-actions-compact button:hover { background: var(--primary); color: var(--dark); }
+        .file-search input {
+            width:100%; padding:8px 12px; background:var(--darker); border:1px solid var(--border);
+            border-radius:30px; color:var(--light); font-size:11px; margin-bottom:10px;
+        }
+        .file-manager h3 { font-size:0.9rem; margin-bottom:10px; color:var(--primary); display:flex; align-items:center; gap:6px; }
+
+        /* Step Wizard */
+        .step-wizard { display: flex; gap: 20px; animation: slideUp 0.4s ease; }
+        .step-indicator {
+            width: 160px; flex-shrink: 0; background: var(--darker); border-radius: 20px;
+            padding: 16px 12px; border: 1px solid var(--border); height: fit-content;
+            position: sticky; top: 12px;
+        }
+        .step-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 0;
+            border-bottom: 1px solid var(--border); color: var(--gray); transition: 0.2s; cursor: pointer;
+        }
+        .step-item:last-child { border-bottom: none; }
+        .step-item.active { color: var(--primary); }
+        .step-number {
+            width: 32px; height: 32px; border-radius: 50%; background: var(--card-bg);
+            border: 2px solid var(--border); display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 14px; transition:0.2s;
+        }
+        .step-item.active .step-number { background: var(--primary); border-color: var(--primary); color: var(--dark); animation: pulse 1.5s infinite; }
+        .step-item.completed .step-number { background: var(--success); border-color: var(--success); color: white; }
+        .step-label { font-weight: 500; font-size: 13px; }
+        .step-content { flex: 1; min-width: 0; }
+        .step-panel { display: none; }
+        .step-panel.active { display: block; animation: fadeIn 0.3s ease; }
+        
+        .create-card-compact {
+            background: var(--card-bg); border-radius: 20px; padding: 16px; border: 1px solid var(--border);
+            max-width: 100%; overflow-x: hidden;
+        }
+        #questionsContainer { max-width: 100%; overflow-x: hidden; padding-right: 4px; }
+        .form-row { display: flex; gap: 12px; margin-bottom: 12px; }
+        .form-row .form-group { flex: 1; margin-bottom: 0; }
+        .question-card-compact {
+            background: var(--darker); border-radius: 14px; margin-bottom: 10px;
+            border: 1px solid var(--border); overflow: hidden; max-width: 100%;
+            transition:0.2s;
+        }
+        .question-card-compact:hover { border-color: var(--primary); }
+        .question-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 12px; cursor: pointer; background: rgba(0,0,0,0.2);
+        }
+        .question-header-left { display: flex; align-items: center; gap: 8px; }
+        .question-number {
+            background: var(--primary); color: var(--dark); width: 22px; height: 22px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: bold;
+        }
+        .question-preview { font-size: 12px; color: var(--gray); max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .question-body { padding: 12px; display: block; }
+        .question-body.collapsed { display: none; }
+        .options-grid-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+        .option-input-compact { display: flex; align-items: center; gap: 6px; min-width: 0; }
+        .option-input-compact input[type="radio"] { width: 16px; height: 16px; accent-color: var(--primary); }
+        .option-input-compact input[type="text"] {
+            flex: 1; min-width: 0; width: 100%; padding: 6px 8px;
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 10px; color: var(--light); font-size: 12px;
+        }
+        .delete-question-btn { background: none; border: none; color: var(--danger); cursor: pointer; padding: 4px 8px; border-radius: 6px; font-size: 11px; }
+        .delete-question-btn:hover { background: var(--danger); color: white; }
+
+        /* Results */
+        .review-summary { display: flex; gap: 16px; padding: 8px 0; font-size: 0.85rem; color: var(--gray); border-bottom: 1px dashed var(--border); margin-bottom: 8px; }
+        .review-question-item { background: var(--darker); border-radius: 12px; margin-bottom: 6px; overflow: hidden; border: 1px solid var(--border); }
+        .review-question-header { display: flex; align-items: center; gap: 10px; padding: 10px 12px; cursor: pointer; transition:0.2s; }
+        .review-question-header:hover { background: var(--card-bg); }
+        .review-status-icon { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+        .review-status-icon.correct { background: var(--success); color: white; }
+        .review-status-icon.incorrect { background: var(--danger); color: white; }
+        .review-question-text { flex: 1; font-size: 0.9rem; white-space: normal; word-break: break-word; }
+        .review-question-details { display: none; padding: 0 12px 12px 42px; font-size: 0.85rem; border-top: 1px solid var(--border); background: rgba(0,0,0,0.1); }
+        .review-question-details.show { display: block; }
+        .answer-row { margin: 8px 0; line-height: 1.4; word-break: break-word; }
+        .answer-label { color: var(--gray); margin-right: 6px; }
+
+        .btn {
+            padding:8px 16px; border-radius:40px; font-weight:600; font-size:0.8rem;
+            cursor:pointer; transition:0.2s; display:inline-flex; align-items:center; gap:6px;
+            background:var(--darker); color:var(--light); border:1px solid var(--border);
+        }
+        .btn-primary { background:linear-gradient(135deg, var(--primary), var(--primary-dark)); color:white; border:none; }
+        .btn-danger { background:var(--primary); color:white; border:none; }
+        .btn:hover { transform:scale(1.02); box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+        .btn-sm { padding:6px 12px; }
+        .form-input, .form-select, .form-textarea {
+            width:100%; padding:10px 14px; background:var(--darker); border:1px solid var(--border);
+            border-radius:16px; color:var(--light); font-size:13px; transition:0.2s;
+        }
+        .form-input:focus, .form-select:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(16,185,129,0.2); }
+
+        .modal {
+            display:none; position:fixed; z-index:10000; left:0; top:0; width:100%; height:100%;
+            background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); animation:fadeIn 0.2s ease;
+        }
+        .modal-content {
+            background:var(--card-bg); margin:3% auto; width:95%; max-width:800px;
+            border-radius:32px; height:90%; display:flex; flex-direction:column;
+            border:1px solid var(--primary); animation:slideUp 0.3s ease;
+        }
+        .modal-header { padding:12px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+        .modal-header h3 { color:var(--primary); font-size:1.2rem; }
+        .close { font-size:24px; cursor:pointer; color:var(--gray); transition:0.2s; }
+        .close:hover { color:var(--danger); transform:scale(1.1); }
+       .practice-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 12px;
+}
+
+.timer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--danger);
+    padding: 8px 18px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 60px;
+    border: 1.5px solid var(--danger);
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.timer.warning {
+    color: #f97316;
+    border-color: #f97316;
+    background: rgba(249, 115, 22, 0.1);
+    animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+.question-counter {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--primary);
+    background: rgba(16, 185, 129, 0.12);
+    padding: 8px 22px;
+    border-radius: 60px;
+    border: 1.5px solid var(--primary);
+}
+        .progress-bar { height:6px; background:var(--border); border-radius:10px; overflow:hidden; margin-bottom:16px; }
+        .progress-fill { height:100%; background:linear-gradient(90deg, var(--primary), var(--secondary)); width:0%; transition:0.2s; }
+        .questions-scroll-area { flex:1; overflow-y:auto; margin-bottom:16px; }
+        .question-card { background:var(--card-bg); border-radius:20px; padding:16px; margin-bottom:16px; border:1px solid var(--border); }
+        .question-text { font-size:1.1rem; font-weight:600; margin-bottom:14px; }
+        .options-grid { display:flex; flex-direction:column; gap:8px; }
+        .option-item {
+            display:flex; align-items:center; gap:12px; padding:10px 14px;
+            background:var(--darker); border-radius:16px; cursor:pointer; border:1px solid var(--border);
+            transition:0.2s;
+        }
+        .option-item:hover { background:var(--card-bg); border-color:var(--primary); transform:translateX(4px); }
+        input[type="radio"] { width:16px; height:16px; accent-color:var(--primary); }
+        .option-label { font-size:0.95rem; color:var(--light); flex:1; }
+.modal-body {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.practice-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.questions-scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 16px;
+    padding-right: 4px;
+}
+.timer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.timer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: var(--danger);
+    padding: 8px 20px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 60px;
+    border: 1.5px solid var(--danger);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.timer:hover {
+    background: rgba(239, 68, 68, 0.2);
+    transform: scale(1.02);
+}
+
+.timer:active {
+    transform: scale(0.98);
+}
+
+.timer.paused {
+    color: var(--warning);
+    border-color: var(--warning);
+    background: rgba(245, 158, 11, 0.1);
+    animation: none;
+}
+
+.timer.paused:hover {
+    background: rgba(245, 158, 11, 0.2);
+}
+
+.timer.warning {
+    animation: pulse 1.2s infinite;
+    animation-play-state: running;
+}
+
+.timer.paused.warning {
+    animation-play-state: paused;
+}
+
+.timer-status {
+    font-size: 11px;
+    color: var(--gray);
+    transition: color 0.3s;
+}
+
+.timer-status.paused {
+    color: var(--warning);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Pause overlay flash */
+.timer-flash {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    animation: flashOut 0.5s ease-out;
+    pointer-events: none;
+}
+
+@keyframes flashOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+.exam-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    background: var(--card-bg);
+    padding: 10px 12px;
+    border-radius: 60px;
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+    margin-top: auto;
+}
+        .counter-text {
+            background:rgba(16,185,129,0.2); color:var(--primary);
+            padding:6px 14px; border-radius:40px; font-size:0.85rem; font-weight:bold;
+        }
+
+        #pasteJsonInput, #generatedPromptDisplay {
+            background: var(--darker); border: 1px solid var(--border);
+            border-radius: 16px; color: var(--light); padding: 12px;
+            width: 100%; resize: vertical; font-family: monospace; font-size:12px;
+        }
+        .dist-slider { display:flex; align-items:center; gap:12px; }
+        .dist-slider input { flex:1; }
+.dist-slider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.dist-slider input {
+    flex: 1;
+    accent-color: var(--primary);
+}
+#generatedPromptDisplay {
+    background: var(--darker);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    color: var(--light);
+    padding: 12px;
+    width: 100%;
+    resize: vertical;
+    font-family: monospace;
+    font-size: 12px;
+    line-height: 1.4;
+}
+.vertical-slider {
+    -webkit-appearance: slider-vertical;
+    appearance: slider-vertical;
+    width: 8px;
+    height: 120px;
+    writing-mode: bt-lr;       
+    direction: rtl;              
+    background: var(--border);
+    border-radius: 4px;
+    outline: none;
+}
+.vertical-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid var(--dark);
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+    transition: transform 0.15s;
+}
+
+.vertical-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+.vertical-slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid var(--dark);
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+}
+.result-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    animation: slideUp 0.3s ease;
+}
+
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.result-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--light);
+}
+
+.result-score {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.result-score.excellent { color: var(--success); }
+.result-score.good { color: var(--primary); }
+.result-score.average { color: var(--warning); }
+.result-score.poor { color: #f97316; }
+
+.result-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 0.75rem;
+    color: var(--gray);
+    margin-bottom: 12px;
+}
+
+.result-meta span {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.result-summary {
+    display: flex;
+    gap: 20px;
+    padding: 10px 0;
+    font-size: 0.85rem;
+    color: var(--gray);
+    border-top: 1px dashed var(--border);
+    border-bottom: 1px dashed var(--border);
+    margin-bottom: 12px;
+}
+
+.result-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.result-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.btn-review {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    padding: 10px 14px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: 0.2s;
+}
+
+.btn-review:hover {
+    background: var(--primary);
+    color: var(--dark);
+}
+
+.btn-delete {
+    background: transparent;
+    border: 1px solid var(--warning);
+    color: var(--warning);
+    padding: 10px 16px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: 0.2s;
+}
+
+.btn-delete:hover {
+    background: var(--warning);
+    color: var(--dark);
+}
+
+.review-details {
+    display: none;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.review-details.show {
+    display: block;
+}
+
+.review-question-item {
+    background: var(--darker);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.review-question-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.review-question-header:hover {
+    background: var(--card-bg);
+}
+
+.review-status-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.review-status-icon.correct {
+    background: var(--success);
+    color: white;
+}
+
+.review-status-icon.incorrect {
+    background: var(--warning);
+    color: var(--dark);
+}
+
+.review-question-text {
+    flex: 1;
+    font-size: 0.9rem;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.review-question-details {
+    display: none;
+    padding: 0 14px 14px 50px;
+    font-size: 0.85rem;
+    border-top: 1px solid var(--border);
+    background: rgba(0,0,0,0.1);
+}
+
+.review-question-details.show {
+    display: block;
+}
+
+.answer-row {
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+.answer-label {
+    color: var(--gray);
+    margin-right: 8px;
+    font-weight: 500;
+}
+
+.answer-value {
+    color: var(--light);
+}
+
+.answer-value.correct-answer {
+    color: var(--success);
+}
+
+.clear-all-btn {
+    background: transparent;
+    border: 1px solid var(--warning);
+    color: var(--warning);
+    padding: 8px 16px;
+    border-radius: 40px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+}
+
+.clear-all-btn:hover {
+    background: var(--warning);
+    color: var(--dark);
+}
+    .exam-controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    background: var(--card-bg);
+    padding: 8px 10px;
+    border-radius: 60px;
+    border: 1px solid var(--border);
+    margin-top: auto;
+}
+
+.exam-controls .btn {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 4px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.reveal-panel {
+    background: var(--darker);
+    border-radius: 16px;
+    padding: 16px;
+    border-left: 4px solid var(--primary);
+    margin-top: 16px;
+}
+
+.reveal-panel .correct-answer {
+    color: var(--success);
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.reveal-panel .explanation {
+    color: var(--gray);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+     .explanation-html {
+    color: var(--gray);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-top: 4px;
+}
+.explanation-html ul {
+    margin: 8px 0 8px 20px;
+}
+.explanation-html li {
+    margin-bottom: 4px;
+}
+.explanation-html strong {
+    color: var(--primary);
+}
+.explanation-html em {
+    color: var(--light);
+    font-style: italic;
+} .explanation {
+    line-height: 1.6;
+    font-size: 0.95rem;
+    color: var(--light);
+}
+.explanation p {
+    margin: 0.8em 0;
+}
+.explanation .katex-display {
+    margin: 1.2em 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+.explanation strong {
+    color: var(--primary);
+}
+.explanation .katex {
+    font-size: 1.05em;
+}
+.toolbar-wrapper {
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+}
+.toolbar {
+    display: inline-flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+.toolbar .btn {
+    flex-shrink: 0;
+}
+
+.dist-slider input {
+    accent-color: var(--primary);
+}/* Desktop layout modifications */
+@media (min-width: 1024px) {
+    .main-grid {
+        grid-template-columns: 1fr; /* Single column on desktop */
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .file-manager {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 500px;
+        max-height: 80vh;
+        z-index: 1000;
+        display: none; /* Hidden by default, shown on Files page */
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    
+    .file-manager.visible {
+        display: block;
+    }
+    
+    /* Semi‑transparent overlay behind the file manager */
+    .file-manager-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+    
+    .file-manager-overlay.visible {
+        display: block;
+    }
+    
+    /* Center the content area */
+    .content-area {
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+    }
+    
+    /* Make stats cards larger on desktop */
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .stat-card {
+        padding: 24px 16px;
+    }
+    
+    .stat-number {
+        font-size: 2.2rem;
+    }
+    
+    /* Wider practice modal on desktop */
+    .modal-content {
+        max-width: 900px;
+    }
+    
+    /* Larger buttons on desktop */
+    .btn {
+        padding: 12px 24px;
+        font-size: 0.95rem;
+    }
+    
+    /* File items larger on desktop */
+    .file-item-compact {
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+}
+
+/* Even wider screens */
+@media (min-width: 1400px) {
+    .main-grid {
+        max-width: 1400px;
+    }
+    
+    .content-area {
+        max-width: 1400px;
+    }
+    
+    .modal-content {
+        max-width: 1100px;
+    }
+}
+  .toast {
+            position:fixed; bottom:max(20px, calc(20px + var(--safe-bottom))); left:50%; transform:translateX(-50%);
+            background:var(--primary); color:var(--dark); padding:8px 18px;
+            border-radius:40px; font-size:12px; z-index:10001; animation:slideUp 0.2s ease;
+        }
+        .toast.error { background:var(--danger); color:white; }
+        @media (max-width:800px) { .main-grid { grid-template-columns:1fr; } .step-wizard { flex-direction:column; } .step-indicator { width:100%; } }
+    </style>
 </head>
-<body>
+<body><!-- File Manager Overlay (desktop only) -->
+<div id="fileManagerOverlay" class="file-manager-overlay" onclick="closeFileManagerDesktop()"></div>
 <div id="loadingOverlay">
     <div class="loader-spinner"></div>
     <div class="loader-text">ExamMaster Pro</div>
@@ -19,9 +909,9 @@
 
 <div class="app-wrapper">
     <div class="premium-banner" id="premiumBanner">
-        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2"/></svg> FREE PLAN</span>
+        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2"/></svg> FREE ACCOUNT</span>
         <span class="premium-badge">2 files | 5 Q/file</span>
-        <button class="upgrade-btn" onclick="window.location.href='payment_dashboard.html'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Upgrade Pro</button>
+        <button class="upgrade-btn" onclick="window.location.href='payment_dashboard.html'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg> Upgrade</button>
     </div>
 
     <div class="nav">
@@ -37,7 +927,7 @@
              <div id="contentArea" class="content-area"></div>
 
         <div id="fileManagerPanel" class="file-manager" style="display:none;">
-            <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Files</h3>
+            <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Exams</h3>
             <div class="file-search"><input type="text" id="fileSearchInput" placeholder="🔍 Filter files..."></div>
             <div id="fileList" class="file-list"></div>
         </div>
@@ -94,7 +984,7 @@
     <div class="modal-content" style="max-width:750px; max-height:95vh;">
         <div class="modal-header">
             <h3>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><polyline points="8 2 4 6 8 10"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                 Paste JSON Questions
             </h3>
             <span class="modal-close" onclick="closePasteModal()">&times;</span>
@@ -106,11 +996,11 @@
                     Parse & Add
                 </button>
                 <button class="btn btn-outline" onclick="pasteFromClipboard()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><polyline points="8 2 4 6 8 10"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                     Paste
                 </button>
                 <button class="btn btn-outline" onclick="clearPasteInput()">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     Clear
                 </button>
                 <button class="btn btn-outline" onclick="closePasteModal()">
@@ -130,8 +1020,8 @@
                 <span style="font-size:11px; color:var(--light);">Paste a valid JSON array. Each question needs: text, options (4 strings), correct (0‑3), and optional explanation.</span>
             </div>
             <div style="display:flex; background:var(--darker); border-radius:16px; border:1px solid var(--border); overflow:hidden;">
-                <div id="lineNumbers" style="background:#0a0f1f; color:var(--gray); font-family:'Fira Code', 'Courier New', monospace; font-size:13px; padding:14px 10px; text-align:right; user-select:none;"></div>
-                <textarea id="pasteJsonInput" wrap="off" rows="14" placeholder='[{"text": "Question", "options": ["A","B","C","D"], "correct": 0, "explanation": "Optional"}]' style="flex:1; background:var(--darker); border:none; color:var(--light); padding:14px; font-family:monospace; font-size:12px; resize:none;"></textarea>
+                <div id="lineNumbers" style="background:#0a0f1f; color:var(--gray); font-family:'Fira Code', 'Courier New', monospace; font-size:13px; padding:14px 10px; text-align:right; user-select:none; border-right:1px solid var(--border); min-width:50px; line-height:1.6;"></div>
+                <textarea id="pasteJsonInput" wrap="off" rows="14" placeholder='[{"text": "Question", "options": ["A","B","C","D"], "correct": 0, "explanation": "Optional"}]' style="flex:1; background:transparent; border:none; color:var(--light); font-family:'Fira Code', 'Courier New', monospace; font-size:13px; line-height:1.6; padding:14px; resize:vertical; outline:none; white-space:pre; overflow-x:auto;"></textarea>
             </div>
             <div id="pasteErrorPanel" style="margin-top:12px; display:none;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
@@ -144,7 +1034,7 @@
                         Copy Error
                     </button>
                 </div>
-                <div id="pasteError" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); border-radius:12px; padding:12px; font-family:monospace; font-size:12px; color:var(--danger); word-break:break-word;"></div>
+                <div id="pasteError" style="background:rgba(239,68,68,0.1); border:1px solid var(--danger); border-radius:12px; padding:12px; font-family:monospace; font-size:12px; color:var(--danger); white-space:pre-wrap; word-break:break-word;"></div>
             </div>
         </div>
     </div>
@@ -175,9 +1065,9 @@
                         Subject
                     </label>
                     <div style="position:relative;">
-                        <input type="text" id="cfgSubject" class="form-input" value="Mathematics" oninput="updateSubjectTypeHint(); updateGeneratedPrompt();" style="padding:8px 12px; font-size:13px;">
+                        <input type="text" id="cfgSubject" class="form-input" value="Mathematics" oninput="updateSubjectTypeHint(); updateGeneratedPrompt();" style="padding:8px 12px; font-size:13px;" placeholder="Subject">
                         <span id="subjectTypeIcon" style="position:absolute; right:10px; top:50%; transform:translateY(-50%);">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M19.07 4.93l-2.83 2.83M6.9 17.07l2.83-2.83"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M19.07 4.93l-2.83 2.83M6.9 17.1l-2.82 2.82M17.1 6.9l2.82-2.82M4.93 19.07l2.83-2.83"/></svg>
                         </span>
                     </div>
                 </div>
@@ -187,14 +1077,14 @@
             <div class="toolbar" style="display:flex; gap:12px; align-items:flex-end;">
                 <div style="min-width:200px;">
                     <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 0 2.83 0z"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
                         Topics
                     </label>
                     <input type="text" id="cfgTopics" class="form-input" placeholder="algebra, geometry" oninput="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
                 </div>
                 <div style="min-width:140px;">
                     <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="14" y2="14"/></svg>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2" ry="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
                         Structure
                     </label>
                     <select id="cfgStructure" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
@@ -202,155 +1092,1470 @@
                         <option value="True/False">True/False</option>
                     </select>
                 </div>
+                
+                     <div style="min-width:160px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        Subject Type
+                    </label>
+                    <select id="cfgSubjectType" class="form-select" onchange="updateSubjectTypeHint(); updateGeneratedPrompt();" style="padding:8px 12px; font-size:12px;">
+                        <option value="calculation">📊 Calculation</option>
+                        <option value="theory" selected>📚 Theory</option>
+                    </select>
+                </div>
+                
             </div>
         </div>
         <div class="toolbar-wrapper" style="padding:12px 20px; border-bottom:1px solid var(--border);">
-            <button class="btn btn-primary" onclick="generateWithProfessor()" style="width:100%;">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Generate with AI
-            </button>
-        </div>
-        <div style="padding:12px 20px; border-bottom:1px solid var(--border); overflow-y:auto; max-height:200px;">
-            <label style="display:block; font-size:10px; color:var(--gray); margin-bottom:8px; font-weight:600;">GENERATED PROMPT</label>
-            <textarea id="generatedPromptDisplay" readonly rows="6"></textarea>
-        </div>
-        <div style="display:flex; gap:8px; padding:12px 20px;">
-            <button class="btn btn-outline" onclick="copyToClipboard()" style="flex:1;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                Copy Prompt
-            </button>
-            <button class="btn btn-outline" onclick="closeProfessorModal()" style="flex:1;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Close
-            </button>
-        </div>
-    </div>
-</div>
-
-<div id="createModal" class="modal">
-    <div class="modal-content" style="max-width:1000px;">
-        <div class="modal-header">
-            <h3>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-                Create Exam
-            </h3>
-            <span class="close" onclick="closeCreateModal()">&times;</span>
-        </div>
-        <div class="modal-body">
-            <div class="step-wizard">
-                <div class="step-indicator">
-                    <div class="step-item active" onclick="switchStep(0)">
-                        <div class="step-number">1</div>
-                        <div>
-                            <div class="step-label">Details</div>
-                        </div>
-                    </div>
-                    <div class="step-item" onclick="switchStep(1)">
-                        <div class="step-number">2</div>
-                        <div>
-                            <div class="step-label">Questions</div>
-                        </div>
-                    </div>
-                    <div class="step-item" onclick="switchStep(2)">
-                        <div class="step-number">3</div>
-                        <div>
-                            <div class="step-label">Review</div>
-                        </div>
-                    </div>
+            <div class="toolbar" style="display:flex; gap:12px; align-items:flex-end;">
+                <!-- Memory Tricks -->
+                <div style="min-width:130px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15 9H22L16 14L19 22L12 17L5 22L8 14L2 9H9L12 2Z"/></svg>
+                        Memory Tricks
+                    </label>
+                    <select id="cfgMemoryTricks" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                        <option value="none">None</option>
+                        <option value="few" selected>Few</option>
+                        <option value="many">Many</option>
+                    </select>
                 </div>
-                <div class="step-content">
-                    <div class="step-panel active" id="step-0">
-                        <div class="create-card-compact">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label style="font-size:12px; color:var(--gray); display:block; margin-bottom:6px;">Exam Name</label>
-                                    <input type="text" id="examName" class="form-input" placeholder="e.g., Biology Mid-term">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label style="font-size:12px; color:var(--gray); display:block; margin-bottom:6px;">Time Limit (minutes)</label>
-                                    <input type="number" id="timeLimit" class="form-input" min="1" value="30">
-                                </div>
-                                <div class="form-group">
-                                    <label style="font-size:12px; color:var(--gray); display:block; margin-bottom:6px;">Passing Score (%)</label>
-                                    <input type="number" id="passingScore" class="form-input" min="0" max="100" value="70">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label style="font-size:12px; color:var(--gray); display:block; margin-bottom:6px;">Description</label>
-                                    <textarea class="form-textarea" id="examDescription" style="height:80px; padding:10px 14px; background:var(--darker); border:1px solid var(--border); border-radius:16px; color:var(--light); font-size:13px;" placeholder="Optional exam description..."></textarea>
-                                </div>
-                            </div>
-                            <div style="display:flex; gap:8px; margin-top:16px;">
-                                <button class="btn btn-primary" onclick="nextStep()" style="flex:1; justify-content:center;">
-                                    Next
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step-panel" id="step-1">
-                        <div class="create-card-compact">
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                                <h4 style="color:var(--light); font-size:14px; margin:0;">Questions</h4>
-                                <button class="btn btn-primary btn-sm" onclick="addQuestionField()">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                    Add Question
-                                </button>
-                            </div>
-                            <div id="questionsContainer"></div>
-                            <div style="display:flex; gap:8px; margin-top:16px;">
-                                <button class="btn btn-outline" onclick="prevStep()" style="flex:1; justify-content:center;">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-                                    Back
-                                </button>
-                                <button class="btn btn-primary" onclick="nextStep()" style="flex:1; justify-content:center;">
-                                    Review
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="step-panel" id="step-2">
-                        <div class="create-card-compact">
-                            <div style="margin-bottom:16px;">
-                                <h4 style="color:var(--light); font-size:14px; margin:0 0 8px 0;">Review Summary</h4>
-                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                                    <div style="background:var(--darker); padding:12px; border-radius:12px; border:1px solid var(--border);">
-                                        <div style="font-size:11px; color:var(--gray); margin-bottom:4px;">Exam Name</div>
-                                        <div id="reviewName" style="color:var(--light); font-weight:600;"></div>
-                                    </div>
-                                    <div style="background:var(--darker); padding:12px; border-radius:12px; border:1px solid var(--border);">
-                                        <div style="font-size:11px; color:var(--gray); margin-bottom:4px;">Total Questions</div>
-                                        <div id="reviewCount" style="color:var(--light); font-weight:600;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div id="reviewQuestions" style="max-height:300px; overflow-y:auto; margin-bottom:16px;"></div>
-                            <div style="display:flex; gap:8px;">
-                                <button class="btn btn-outline" onclick="prevStep()" style="flex:1; justify-content:center;">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-                                    Back
-                                </button>
-                                <button class="btn btn-primary" onclick="createExam()" style="flex:1; justify-content:center;">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-                                    Create Exam
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div style="min-width:120px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        Real‑Life Qs
+                    </label>
+                    <input type="number" id="cfgRealLife" class="form-input" min="0" max="50" value="3" oninput="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px; width:100px;">
+                </div>
+                <div style="min-width:180px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Source
+                    </label>
+                    <select id="cfgSource" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                        <option value="Only from provided source">Only from provided</option>
+                        <option value="Include additional examples">Include examples</option>
+                    </select>
                 </div>
             </div>
         </div>
+        <div id="subjectHintBar" style="display:flex; align-items:center; gap:8px; padding:8px 20px; background:rgba(16,185,129,0.08); border-bottom:1px solid var(--border); font-size:11px;">
+            <span id="hintIcon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </span>
+            <span id="hintText" style="color:var(--gray);">Step‑by‑step solutions with formulas will be generated.</span>
+        <div id="distWarning" style="color:var(--danger); font-size:11px; margin-left:auto;"></div>
+        </div>
+<div class="form-group" style="margin-bottom:20px;align-items:center;">
+    <label style="display:flex; align-items:center; gap:6px; margin-bottom:12px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M19.07 4.93l-2.83 2.83M6.9 17.1l-2.82 2.82M17.1 6.9l2.82-2.82M4.93 19.07l2.83-2.83"/></svg>
+        Difficulty Distribution (%)
+    </label>
+    
+    <div style="display:flex; gap:20px; align-items:flex-end;">
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <span id="easyVal" style="font-size:12px; font-weight:600; color:var(--success);">20%</span>
+            <input type="range" id="cfgEasyPct" min="0" max="100" value="20" step="5" oninput="updateDistDisplay(); updateGeneratedPrompt();" class="vertical-slider">
+            <span style="font-size:10px; color:var(--gray);">Easy</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <span id="mediumVal" style="font-size:12px; font-weight:600; color:var(--warning);">60%</span>
+            <input type="range" id="cfgMediumPct" min="0" max="100" value="60" step="5" oninput="updateDistDisplay(); updateGeneratedPrompt();" class="vertical-slider">
+            <span style="font-size:10px; color:var(--gray);">Medium</span>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <span id="hardVal" style="font-size:12px; font-weight:600; color:var(--danger);">20%</span>
+            <input type="range" id="cfgHardPct" min="0" max="100" value="20" step="5" oninput="updateDistDisplay(); updateGeneratedPrompt();" class="vertical-slider">
+            <span style="font-size:10px; color:var(--gray);">Hard</span>
+        </div>
+                <div style="min-width:140px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        Concept Depth
+                    </label>
+                    <select id="cfgConceptDepth" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                        <option value="Basic">Basic</option>
+                        <option value="Intermediate" selected>Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                                    <div style="min-width:140px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-7 10 7-10 7z"/></svg>
+                        Education
+                    </label>
+                    <select id="cfgEduLevel" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                        <option value="Elementary">Elementary</option>
+                        <option value="High School" selected>High School</option>
+                        <option value="University">University</option>
+                    </select>
+                </div>
+                           <!-- Explanation Style -->
+                <div style="min-width:160px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        Explanation
+                    </label>
+                    <select id="cfgExplanationStyle" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                        <option value="stepwise">🔢 Step‑by‑Step</option>
+                        <option value="conceptual" selected>💡 Conceptual</option>
+                        <option value="brief">⚡ Brief</option>
+                    </select>
+                </div>
+
+                </div>
     </div>
+    <div id="distWarning" style="color:var(--danger); font-size:11px; margin-top:8px;"></div>
 </div>
 
-<script src="js/app.js"></script>
+        <div class="modal-body" style="padding:20px; overflow-y:auto;">
+            <!-- Additional Instructions -->
+            <div class="form-group" style="margin-bottom:16px;">
+                <label style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Additional Instructions (optional)
+                </label>
+                <textarea id="cfgAdditional" class="form-textarea" rows="2" placeholder="e.g., focus on calculus, avoid trigonometry..." oninput="updateGeneratedPrompt()"></textarea>
+            </div>
+            <div style="margin-top:8px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                    <span style="display:flex; align-items:center; gap:8px; color:var(--primary); font-weight:600;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Generated Prompt
+                    </span>
+                    <span style="font-size:11px; color:var(--gray);">
+                        <span id="tokenCount">~0</span> tokens
+                    </span>
+                    <button class="btn btn-primary" onclick="copyGeneratedPrompt()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    Copy Prompt
+                </button>
+                    
+                </div>
+                <textarea id="generatedPromptDisplay" rows="6" readonly style="background:var(--darker); border-radius:14px; padding:14px; width:100%; font-family:monospace; font-size:12px; line-height:1.5; resize:vertical; border:1px solid var(--border);"></textarea>
+            </div>
+                <button class="btn btn-primary" onclick="goToPasteFromProfessor()">
+                    Next: Paste JSON
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+            <p style="font-size:10px; color:var(--gray); text-align:center; margin-top:12px;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                After obtaining JSON from AI, paste it in the next screen.
+            </p>
+        </div>
+    </div>
+</div>
+<div id="toast" class="toast"></div>
 <script src="lib/katex/katex.min.js"></script>
 <script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="marked.min.js"></script>
+<script>
+(function(){
+    const DB_NAME = 'ExamMasterDB', DB_VERSION = 2;
+    let db = null;
+    async function openDB() {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open(DB_NAME, DB_VERSION);
+            req.onerror = () => reject(req.error);
+            req.onsuccess = () => { db = req.result; resolve(db); };
+            req.onupgradeneeded = (ev) => {
+                const db = ev.target.result;
+                if (!db.objectStoreNames.contains('exams')) { const s = db.createObjectStore('exams', { keyPath: 'id' }); s.createIndex('subject', 'subject'); s.createIndex('updatedAt', 'updatedAt'); }
+                if (!db.objectStoreNames.contains('results')) { const s = db.createObjectStore('results', { keyPath: 'id', autoIncrement: true }); s.createIndex('examId', 'examId'); s.createIndex('date', 'date'); }
+                if (!db.objectStoreNames.contains('jsonFiles')) { const s = db.createObjectStore('jsonFiles', { keyPath: 'name' }); s.createIndex('lastModified', 'lastModified'); }
+                if (!db.objectStoreNames.contains('settings')) db.createObjectStore('settings', { keyPath: 'key' });
+            };
+        });
+    }
+    async function dbGet(store, key) { return new Promise((resolve, reject) => { const tx = db.transaction(store, 'readonly'); const req = key ? tx.objectStore(store).get(key) : tx.objectStore(store).getAll(); req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error); }); }
+    async function dbPut(store, item) { return new Promise((resolve, reject) => { const tx = db.transaction(store, 'readwrite'); const req = tx.objectStore(store).put(item); req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error); }); }
+    async function dbDelete(store, key) { return new Promise((resolve, reject) => { const tx = db.transaction(store, 'readwrite'); const req = tx.objectStore(store).delete(key); req.onsuccess = () => resolve(); req.onerror = () => reject(req.error); }); }
+    async function dbClear(store) { return new Promise((resolve, reject) => { const tx = db.transaction(store, 'readwrite'); const req = tx.objectStore(store).clear(); req.onsuccess = () => resolve(); req.onerror = () => reject(req.error); }); }
+    async function dbGetAll(store) { return dbGet(store); }
+    async function migrateFromLocalStorage() {
+        const migrated = await dbGet('settings', 'migrated');
+        if (migrated) return;
+        loadingStatus.textContent = 'Migrating data…';
+        const exams = JSON.parse(localStorage.getItem('exams')||'[]');
+        for (const e of exams) await dbPut('exams', e);
+        const results = JSON.parse(localStorage.getItem('exam_results')||'[]');
+        for (const r of results) await dbPut('results', r);
+        const files = JSON.parse(localStorage.getItem('json_files')||'[]');
+        for (const f of files) await dbPut('jsonFiles', f);
+        const premium = localStorage.getItem('premium');
+        if (premium) await dbPut('settings', { key: 'premium', value: premium });
+        await dbPut('settings', { key: 'migrated', value: true });
+    }
+    const overlay = document.getElementById('loadingOverlay');
+    const progressBar = document.getElementById('loadingProgressBar');
+    const loadingStatus = document.getElementById('loadingStatus');
+    let loadProgress = 0;
+    function updateLoadProgress(percent, text) { loadProgress = percent; progressBar.style.width = percent + '%'; if (text) loadingStatus.textContent = text; if (percent >= 100) setTimeout(() => { overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 500); }, 200); }
+    let files = [], results = [], currentPage = 'home';
+    let currentFile = null, currentPracticeIndex = 0, userAnswers = [], examTimer = null, timeLeft = 0;
+    let editingExamId = null, questions = [];
+    const contentArea = document.getElementById('contentArea');
+    const fileManagerPanel = document.getElementById('fileManagerPanel');
+    async function getPremium() {
+        const localPremium = localStorage.getItem('premium');
+        if (localPremium) { try { const parsed = JSON.parse(localPremium); await dbPut('settings', { key: 'premium', value: localPremium }); return parsed; } catch(e) {} }
+        const entry = await dbGet('settings', 'premium');
+        if (entry) { try { return JSON.parse(entry.value); } catch(e) {} }
+        return { active: false };
+    }
+    async function updatePremiumUI() {
+        const premium = await getPremium();
+        const banner = document.getElementById('premiumBanner');
+        const gemIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2"/></svg>';
+        const crownIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4l4 8 6-6 6 6 4-8-6 4-4-6-4 6-6-4z"/><path d="M4 20h16"/></svg>';
+        if (premium.active) {
+            banner.innerHTML = `<span>${crownIcon} PREMIUM ACCOUNT</span><span class="premium-badge">Unlimited</span>`;
+            banner.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+        } else {
+            banner.innerHTML = `<span>${gemIcon} FREE ACCOUNT</span><span class="premium-badge">2 files | 5 Q/file</span><button class="upgrade-btn" onclick="window.location.href='payment_dashboard.html'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg> Upgrade</button>`;
+        }
+        window.isPremium = premium.active;
+    }
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'premium' || e.key === 'premium_updated') { updatePremiumUI(); if (e.key === 'premium_updated') localStorage.removeItem('premium_updated'); }
+        if (e.key === 'db_updated') { loadAllFilesFromDB(); if (currentPage === 'files') refreshFileList(); else if (currentPage === 'home') renderHome(); }
+    });
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            const updated = localStorage.getItem('premium_updated');
+            if (updated) { updatePremiumUI(); localStorage.removeItem('premium_updated'); }
+            loadAllFilesFromDB();
+        }
+    });
+// ---------- WEBVIEW LIMIT vs BROWSER FREE ----------
+(function() {
+    if (typeof window.AndroidCallback !== 'undefined') {
+        // Running inside Android WebView – enforce premium limits
+        console.log('📱 Android WebView detected – premium limits enforced.');
+        
+        // Override the getPremium function to return free tier in WebView
+        const originalGetPremium = getPremium;
+        getPremium = async function() {
+            const premium = await originalGetPremium();
+            // In WebView, only respect premium if explicitly activated
+            if (!premium.active) {
+                window.isPremium = false;
+                return { active: false };
+            }
+            window.isPremium = true;
+            return premium;
+        };
+        
+        // Force re‑check on startup
+        getPremium().then(() => updatePremiumUI());
+        
+        // Ensure free tier limits are active
+        window.isPremium = false;
+        console.log('🔒 WebView free tier limits active. Upgrade to Premium to unlock.');
+    } else {
+        // Running in a regular browser – completely free
+        console.log('🌐 Browser detected – all features unlocked.');
+        window.isPremium = true;
+        
+        // Override getPremium to always return active
+        getPremium = async function() {
+            return { active: true };
+        };
+        
+        // Update the premium banner to show "BROWSER MODE – FREE"
+        const banner = document.getElementById('premiumBanner');
+        if (banner) {
+            banner.innerHTML = '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4l4 8 6-6 6 6 4-8-6 4-4-6-4 6-6-4z"/><path d="M4 20h16"/></svg> BROWSER MODE – UNLIMITED</span><span class="premium-badge">Free</span>';
+            banner.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+        }
+        
+        // Also disable the upgrade button
+        const upgradeBtn = document.getElementById('upgradeBtn');
+        if (upgradeBtn) {
+            upgradeBtn.style.display = 'none';
+        }
+    }
+})();
+    async function loadAllFilesFromDB() {
+        files = await dbGetAll('exams');
+        files = files.map(f => ({ ...f, id: String(f.id), name: f.name || f.title || 'Untitled', questions: f.questions || [], timeLimit: f.timeLimit || 30 }));
+        results = await dbGetAll('results');
+    }
+
+    function showToast(msg, error=false) { const t = document.createElement('div'); t.className = 'toast' + (error ? ' error' : ''); t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.remove(), 2000); }
+
+    async function loadData() {
+        await loadAllFilesFromDB();
+        if (!files.length) { const sample = { id: 'sample1', name: 'Biology Basics', subject: 'Biology', difficulty: 'Easy', timeLimit: 20, questions: [{ text: 'What is the powerhouse of the cell?', options: ['Nucleus','Mitochondria','Ribosome','Golgi'], correct: 1 }] }; await dbPut('exams', sample); files = [sample]; }
+        loadFromJSONProcessor();
+    }
+async function loadFromJSONProcessor() {
+    const sync = localStorage.getItem('exam_json_sync');
+    if (sync) {
+        try {
+            const parsed = JSON.parse(sync);
+            for (const e of parsed) {
+                e.id = String(e.id || 'sync_' + Date.now());
+                await dbPut('exams', e);
+            }
+            localStorage.removeItem('exam_json_sync');
+            files = await dbGetAll('exams');
+        } catch(e) {}
+    }
+    
+    const single = localStorage.getItem('exam_json_single');
+    if (single) {
+        try {
+            const parsed = JSON.parse(single);
+            for (const e of parsed) {
+                e.id = String(e.id || 'single_' + Date.now());
+                await dbPut('exams', e);
+            }
+            localStorage.removeItem('exam_json_single');
+            files = await dbGetAll('exams');
+        } catch(e) {}
+    }
+}
+    async function checkLimits() {
+        if (window.isPremium) return { allowed: true };
+        const totalQ = files.reduce((s,e)=>s+(e.questions?.length||0),0);
+        if (!editingExamId && files.length >= 2) return { allowed: false, reason: 'Free tier: max 2 exams.' };
+        if (questions.length > 5) return { allowed: false, reason: 'Max 5 questions per exam.' };
+        let existing = totalQ; if (editingExamId) { const old = files.find(e=>e.id===editingExamId); if (old) existing -= old.questions?.length||0; }
+        if (existing + questions.length > 10) return { allowed: false, reason: 'Total questions cannot exceed 10.' };
+        return { allowed: true };
+    }
+
+function renderMixedExplanation(raw, subjectType = 'theory') {
+    if (!raw) return '';
+    if (typeof marked === 'undefined') {
+        return `<pre style="white-space:pre-wrap; word-break:break-word;">${escapeHtml(raw)}</pre>`;
+    }
+
+    // 1. Protect LaTeX blocks using placeholders that Markdown won't touch
+    const latexBlocks = [];
+    const latexInlines = [];
+    
+    // Match \[...\] and $$...$$
+    let processed = raw.replace(/\\\[([\s\S]*?)\\\]/g, (match, math) => {
+        latexBlocks.push(math);
+        return `{{LATEX_BLOCK_${latexBlocks.length - 1}}}`;
+    }).replace(/\$\$([\s\S]*?)\$\$/g, (match, math) => {
+        latexBlocks.push(math);
+        return `{{LATEX_BLOCK_${latexBlocks.length - 1}}}`;
+    });
+
+    // Match \(...\)
+    processed = processed.replace(/\\\(([\s\S]*?)\\\)/g, (match, math) => {
+        latexInlines.push(math);
+        return `{{LATEX_INLINE_${latexInlines.length - 1}}}`;
+    });
+
+    let html = marked.parse(processed);
+    latexBlocks.forEach((math, idx) => {
+        html = html.replace(new RegExp(`\\{\\{LATEX_BLOCK_${idx}\\}\\}`, 'g'), `\\[${math}\\]`);
+    });
+    latexInlines.forEach((math, idx) => {
+        html = html.replace(new RegExp(`\\{\\{LATEX_INLINE_${idx}\\}\\}`, 'g'), `\\(${math}\\)`);
+    });
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    
+    const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    
+    textNodes.forEach(node => {
+        let content = node.textContent;
+        content = content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+        content = content.replace(/\\\\(?=[a-zA-Z\(\)\[\]])/g, '\\');
+        if (/\\[a-zA-Z]+/.test(content) && !content.includes('\\(') && !content.includes('\\[')) {
+            content = `\\(${content}\\)`;
+        }
+        node.textContent = content;
+    });
+
+    return tempDiv.innerHTML;
+}
+function renderMarkdownWithLatex(markdown) {
+    if (!markdown) return '';
+    
+    let html = marked.parse(markdown);
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    const walker = document.createTreeWalker(
+        tempDiv,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+    );
+    
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    
+    textNodes.forEach(node => {
+        let content = node.textContent;
+        content = content
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&amp;/g, '&')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'");
+        content = content.replace(/\\\\/g, '\\');
+        const hasInline = content.includes('\\(\)');
+        const hasDisplay = content.includes('\\[') || content.includes('$$');
+        
+        if (hasInline || hasDisplay) {
+            const span = document.createElement('span');
+            try {
+                // Extract the math expression (remove delimiters)
+                let math = content;
+                const isDisplay = hasDisplay;
+                
+                if (isDisplay) {
+                    math = math.replace(/\\\[|\\\]/g, '').replace(/\$\$/g, '');
+                } else {
+                    math = math.replace(/\\\(|\\\)/g, '');
+                }
+                
+                katex.render(math.trim(), span, {
+                    displayMode: isDisplay,
+                    throwOnError: false
+                });
+                node.parentNode.replaceChild(span, node);
+            } catch (e) {
+                console.warn('KaTeX render error:', e);
+                // Leave original text if rendering fails
+            }
+        } else {
+            // No LaTeX – just update the text content with restored characters
+            node.textContent = content;
+        }
+    });
+    
+    return tempDiv.innerHTML;
+}
+    function renderHome() {
+        const totalQ = files.reduce((s,f)=>s+(f.questions?.length||0),0);
+        const avg = results.length ? Math.round(results.reduce((s,r)=>s+r.percentage,0)/results.length) : 0;
+        contentArea.innerHTML = `<div class="stats-grid"><div class="stat-card" onclick="setPage('files')"><div class="stat-number">${files.length}</div><div>Exams</div></div><div class="stat-card" onclick="setPage('files')"><div class="stat-number">${totalQ}</div><div>Questions</div></div><div class="stat-card" onclick="setPage('results')"><div class="stat-number">${avg}%</div><div>Avg Score</div></div><div class="stat-card" onclick="setPage('results')"><div class="stat-number">${results.length}</div><div>Completed</div></div></div>
+        <div class="file-card"><div style="display:flex; gap:10px;"><button class="icon-btn" onclick="setPage('create')">➕ Create Exam</button><button class="icon-btn" onclick="window.location.href='json_editor.html'">📄 JSON Editor</button></div></div>
+<div class="file-card">
+    <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        
+    </h3>
+    ${results.slice(0,5).map(r=>`
+        <div style="display:flex; justify-content:space-between; padding:8px 0;">
+            <span>${escapeHtml(r.examTitle||r.fileTitle)}</span>
+            <span style="color:${r.percentage>=70?'var(--success)':'var(--danger)'}">${r.percentage}%</span>
+        </div>
+    `).join('') || '<div>No exams taken</div>'}
+</div>`;
+        fileManagerPanel.style.display = 'none';
+    }
+function renderFiles() {
+    const isDesktop = window.innerWidth >= 1024;
+    
+    if (isDesktop) {
+        // Desktop: Show file manager as centered overlay
+        document.getElementById('fileManagerOverlay').classList.add('visible');
+        document.getElementById('fileManagerPanel').classList.add('visible');
+    } else {
+        // Mobile: Show file manager as right sidebar
+        document.getElementById('fileManagerPanel').style.display = 'block';
+    }
+    
+    refreshFileList();
+    contentArea.innerHTML = `
+        <div class="file-card">
+            <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Your Exam Files</h3>
+            <p style="color:var(--gray);">Select a file from the panel to practice, edit, or delete.</p>
+            <button class="btn btn-primary" onclick="setPage('create')" style="width:100%;">➕ Create New Exam</button>
+        </div>
+    `;
+}
+
+// Close file manager on desktop
+function closeFileManagerDesktop() {
+    document.getElementById('fileManagerOverlay').classList.remove('visible');
+    document.getElementById('fileManagerPanel').classList.remove('visible');
+}
+
+// Update the existing closeFileManager for mobile
+function closeFileManager() {
+    if (window.innerWidth >= 1024) {
+        closeFileManagerDesktop();
+    } else {
+        document.getElementById('fileManagerPanel').style.display = 'none';
+    }
+}
+
+// Update setPage to handle desktop file manager visibility
+function setPage(page) {
+    currentPage = page;
+    document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.nav-btn[data-page="${page}"]`)?.classList.add('active');
+    
+    // Hide desktop file manager when switching pages
+    if (window.innerWidth >= 1024) {
+        closeFileManagerDesktop();
+    }
+    
+    if (page === 'home') renderHome();
+    else if (page === 'files') renderFiles();
+    else if (page === 'results') renderResults();
+    else if (page === 'create') renderCreatePage();
+}  function refreshFileList() {
+    const term = document.getElementById('fileSearchInput').value.toLowerCase();
+    const filtered = term ? files.filter(f => (f.name || '').toLowerCase().includes(term)) : files;
+    const container = document.getElementById('fileList');
+    
+    if (!filtered.length) {
+        container.innerHTML = '<div class="file-item-compact" style="justify-content:center;">No files found</div>';
+        return;
+    }
+    
+    container.innerHTML = filtered.map(f => {
+        const questionCount = f.questions?.length || 0;
+        const timeLimit = f.timeLimit || 30;
+        const difficulty = f.difficulty || 'Medium';
+        
+        return `
+            <div class="file-item-compact" data-file-id="${f.id}">
+                <div class="file-info">
+                    <div class="file-title">${escapeHtml(f.name)}</div>
+                    <div class="file-meta">
+                        <span>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                            ${questionCount} Q
+                        </span>
+                        <span>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            ${timeLimit}m
+                        </span>
+                        <span>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M19.07 4.93l-2.83 2.83M6.9 17.1l-2.82 2.82M17.1 6.9l2.82-2.82M4.93 19.07l2.83-2.83"/></svg>
+                            ${difficulty}
+                        </span>
+                    </div>
+                </div>
+                <div class="file-actions-compact">
+                    <button class="edit-file-btn" data-id="${f.id}" title="Edit in App">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3l4 4L7 21H3v-4L17 3z"/></svg>
+                    </button>
+                    <button class="edit-json-btn" data-id="${f.id}" title="Edit in JSON Editor">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    </button>
+                    <button class="delete-file-btn" data-id="${f.id}" title="Delete">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                    <button class="practice-file-btn" data-id="${f.id}" title="Practice" style="background:var(--primary);">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+    container.querySelectorAll('.file-item-compact').forEach(item => {
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('button')) return;
+            startPractice(item.dataset.fileId);
+        });
+    });
+    container.querySelectorAll('.edit-file-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            editFile(btn.dataset.id);
+        });
+    });
+    container.querySelectorAll('.edit-json-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            editInJsonEditor(btn.dataset.id);
+        });
+    });
+    container.querySelectorAll('.delete-file-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (confirm('Delete this exam permanently?')) {
+                const id = btn.dataset.id;
+                await dbDelete('exams', id);
+                await dbDelete('jsonFiles', files.find(f => f.id === id)?.name + '.json');
+                files = files.filter(f => f.id !== id);
+                localStorage.setItem('db_updated', Date.now());
+                refreshFileList();
+                showToast('Exam deleted');
+            }
+        });
+    });
+    container.querySelectorAll('.practice-file-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            startPractice(btn.dataset.id);
+        });
+    });
+}
+function editInJsonEditor(id) {
+    const exam = files.find(f => String(f.id) === String(id));
+    if (!exam) {
+        showToast('Exam not found', true);
+        return;
+    }
+    localStorage.setItem('exam_to_edit', JSON.stringify(exam));
+    window.location.href = 'json_editor.html';
+}
+function editFile(id) {
+    const exam = files.find(f => String(f.id) === String(id));
+    if (exam) renderCreatePage(exam);
+}
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+function renderResults() {
+    fileManagerPanel.style.display = 'none';
+    
+    if (!results.length) {
+        contentArea.innerHTML = '<div class="file-card" style="text-align:center; padding:40px;"><p style="color:var(--gray);">No practice results yet. Take an exam to see your progress!</p></div>';
+        return;
+    }
+    
+    let html = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:12px; color:var(--primary); background:rgba(16,185,129,0.15); padding:4px 10px; border-radius:20px;"></span>
+            </h2>
+            <button class="clear-all-btn" id="clear-results-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                All
+            </button>
+        </div>
+    `;
+    results.forEach((r, idx) => {
+        const totalQ = r.total || r.answers?.length || 0;
+        const correctCount = r.score || 0;
+        const incorrectCount = totalQ - correctCount;
+        const percentage = r.percentage || 0;
+        
+        let scoreClass = 'poor';
+        if (percentage >= 90) scoreClass = 'excellent';
+        else if (percentage >= 75) scoreClass = 'good';
+        else if (percentage >= 50) scoreClass = 'average';
+        
+        html += `
+            <div class="result-card" data-result-index="${idx}">
+                <div class="result-header">
+                    <div class="result-title">${escapeHtml(r.examTitle || r.fileTitle || 'Untitled Exam')}</div>
+                    <div class="result-score ${scoreClass}">${percentage}%</div>
+                </div>
+                <div class="result-meta">
+                    <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${new Date(r.date).toLocaleDateString()}</span>
+                    <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${formatTime(r.timeSpent || 0)}</span>
+                    <span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> ${totalQ} Q</span>
+                </div>
+                <div class="result-summary">
+                    <div class="result-summary-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> ${correctCount} Correct</div>
+                    <div class="result-summary-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> ${incorrectCount} Incorrect</div>
+                    <div class="result-summary-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg> ${r.score}/${totalQ} Score</div>
+                </div>
+                
+                <div id="review-${idx}" class="review-details">
+                    ${(r.answers || []).map((a, qIdx) => {
+                        const explanationHtml = renderMixedExplanation(
+                            a.explanation || '',
+                            r.subjectType || 'calculation'
+                        );
+                        return `
+                            <div class="review-question-item">
+                                <div class="review-question-header" onclick="toggleQuestionDetail(this)">
+                                    <span class="review-status-icon ${a.isCorrect ? 'correct' : 'incorrect'}">
+                                        ${a.isCorrect ? '✓' : '✗'}
+                                    </span>
+                                    <span class="review-question-text">${qIdx+1}. ${escapeHtml(a.text)}</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                                </div>
+                                <div class="review-question-details">
+                                    <div class="answer-row">
+                                        <span class="answer-label">Your answer:</span>
+                                        <span class="answer-value" style="color:${a.isCorrect ? 'var(--success)' : 'var(--warning)'}">${escapeHtml(a.userAnswer)}</span>
+                                    </div>
+                                    ${!a.isCorrect ? `
+                                        <div class="answer-row">
+                                            <span class="answer-label">Correct answer:</span>
+                                            <span class="answer-value correct-answer">${escapeHtml(a.correctAnswer)}</span>
+                                        </div>
+                                    ` : ''}
+                                    ${a.explanation ? `
+                                        <div class="answer-row">
+                                            <span class="answer-label">💡 Explanation:</span>
+                                            <div class="explanation-html">${explanationHtml}</div>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                
+                <div class="result-actions">
+                    <button class="btn-review toggle-review-btn" data-index="${idx}">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                        Review Answers
+                    </button>
+                    <button class="btn-delete delete-result-btn" data-index="${idx}">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        Delete
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    contentArea.innerHTML = html;
+    document.querySelectorAll('.toggle-review-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const idx = this.dataset.index;
+            const reviewDiv = document.getElementById(`review-${idx}`);
+            if (reviewDiv.classList.contains('show')) {
+                reviewDiv.classList.remove('show');
+                this.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                    Review Answers
+                `;
+            } else {
+                reviewDiv.classList.add('show');
+                this.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                    Hide Answers
+                `;
+            }
+        });
+    });
+    document.querySelectorAll('.delete-result-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const index = parseInt(this.dataset.index);
+            if (confirm('Delete this result permanently?')) {
+                results.splice(index, 1);
+                await dbClear('results');
+                for (const r of results) await dbPut('results', r);
+                renderResults();
+                showToast('Result deleted');
+            }
+        });
+    });
+    const clearBtn = document.getElementById('clear-results-btn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', async () => {
+            if (confirm('Delete all results permanently?')) {
+                results = [];
+                await dbClear('results');
+                renderResults();
+                showToast('All results cleared');
+            }
+        });
+    }
+    document.querySelectorAll('.explanation-html').forEach(el => renderMath(el));
+    renderMath(contentArea);
+}
+window.toggleQuestionDetail = function(header) {
+    const details = header.nextElementSibling;
+    const arrow = header.querySelector('svg');
+    details.classList.toggle('show');
+    arrow.style.transform = details.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)';
+};
+    window.toggleQuestionDetail = function(h) { const d = h.nextElementSibling; d.classList.toggle('show'); h.querySelector('svg').style.transform = d.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0deg)'; };
+    function renderCreatePage(exam=null) {
+        fileManagerPanel.style.display = 'none';
+        editingExamId = exam ? String(exam.id) : null;
+        questions = exam ? (exam.questions||[]).map(q=>({...q})) : [];
+        contentArea.innerHTML = `<div class="step-wizard"><div class="step-indicator"><div class="step-item active" data-step="1" onclick="goToStep(1)"><span class="step-number">1</span><span class="step-label">Details</span></div><div class="step-item" data-step="2" onclick="goToStep(2)"><span class="step-number">2</span><span class="step-label">Questions</span></div><div class="step-item" data-step="3" onclick="goToStep(3)"><span class="step-number">3</span><span class="step-label">Review</span></div></div><div class="step-content">
+            <div class="step-panel active" id="step1"><div class="create-card-compact"><h4>1: Details</h4><div class="form-row"><div class="form-group"><label>Title</label><input type="text" id="exam-title" class="form-input" value="${exam?escapeHtml(exam.name):''}"></div><div class="form-group"><label>Subject</label><input type="text" id="exam-subject" class="form-input" value="${exam?escapeHtml(exam.subject):''}"></div></div><div class="form-row"><div class="form-group"><label>Difficulty</label><select id="exam-difficulty" class="form-select">${['Easy','Medium','Hard'].map(d=>`<option ${exam&&exam.difficulty===d?'selected':''}>${d}</option>`)}</select></div><div class="form-group"><label>Time (min)</label><input type="number" id="exam-time" class="form-input" value="${exam?exam.timeLimit:30}"></div></div><div style="display:flex; justify-content:flex-end;"><button class="btn btn-primary" onclick="goToStep(2)">Next</button></div></div></div>
+            <div class="step-panel" id="step2"><div class="create-card-compact"><h4>2: Questions (${questions.length})</h4><div style="display:flex; gap:6px; margin-bottom:12px;"><button class="btn btn-sm btn-outline" onclick="openProfessorModal()">🧑‍🏫 Professor</button><button class="btn btn-sm btn-outline" onclick="openPasteModal()">📋 Paste JSON</button><button class="btn btn-sm btn-primary" id="addQuestionBtn">➕ Add</button></div><div id="questionsContainer" style="max-height:400px; overflow-y:auto;"></div><div id="limitWarning" style="color:var(--danger); display:none;"></div><div style="display:flex; justify-content:space-between;"><button class="btn btn-outline" onclick="goToStep(1)">Back</button><button class="btn btn-primary" onclick="goToStep(3)">Next</button></div></div></div>
+            <div class="step-panel" id="step3"><div class="create-card-compact"><h4>3: Review & Save</h4><div id="reviewSummary"></div><div style="display:flex; justify-content:space-between;"><button class="btn btn-outline" onclick="goToStep(2)">Back</button><div><button class="btn btn-outline" onclick="setPage('files')">Cancel</button><button class="btn btn-primary" id="saveExamBtn">Save Exam</button></div></div></div></div>
+        </div></div>`;
+        renderQuestionsEditor();
+        document.getElementById('addQuestionBtn').addEventListener('click', addQuestion);
+        document.getElementById('saveExamBtn').addEventListener('click', saveExam);
+        updateReviewSummary();
+    }
+    function renderQuestionsEditor() {
+        const container = document.getElementById('questionsContainer');
+        if (!questions.length) { container.innerHTML = '<div style="text-align:center; padding:20px;">Click Add to create</div>'; return; }
+        container.innerHTML = questions.map((q,idx)=>`<div class="question-card-compact"><div class="question-header" onclick="toggleQuestion(${idx})"><div class="question-header-left"><span class="question-number">${idx+1}</span><span class="question-preview">${escapeHtml(q.text||'New question')}</span></div><div><button class="delete-question-btn" onclick="event.stopPropagation(); removeQuestion(${idx})">🗑️</button><svg width="14" height="14" viewBox="0 0 24 24" id="arrow-${idx}"><polyline points="6 9 12 15 18 9"/></svg></div></div><div class="question-body collapsed" id="body-${idx}"><input type="text" class="form-input q-text" placeholder="Question" value="${escapeHtml(q.text)}" data-index="${idx}"><div class="options-grid-compact">${q.options.map((opt,oIdx)=>`<div class="option-input-compact"><input type="radio" name="correct-${idx}" value="${oIdx}" ${q.correct===oIdx?'checked':''}><input type="text" class="q-option" value="${escapeHtml(opt)}" data-qidx="${idx}" data-oidx="${oIdx}"></div>`).join('')}</div><input type="text" class="form-input q-explanation" placeholder="Explanation" value="${escapeHtml(q.explanation||'')}" data-index="${idx}"></div></div>`).join('');
+        document.querySelectorAll('.q-text, .q-explanation').forEach(el=>el.addEventListener('input', updateQuestion));
+        document.querySelectorAll('.q-option').forEach(el=>el.addEventListener('input', updateQuestion));
+        document.querySelectorAll('input[type="radio"]').forEach(el=>el.addEventListener('change', updateQuestion));
+    }
+    window.toggleQuestion = function(idx) { const body = document.getElementById(`body-${idx}`), arrow = document.getElementById(`arrow-${idx}`); body.classList.toggle('collapsed'); arrow.style.transform = body.classList.contains('collapsed') ? 'rotate(-90deg)' : 'rotate(0deg)'; };
+    function updateQuestion(e) {
+        const el = e.target, idx = el.dataset.index;
+        if (idx === undefined) { if (el.checked) { const qIdx = el.name.split('-')[1]; questions[qIdx].correct = parseInt(el.value); } return; }
+        if (el.classList.contains('q-text')) { questions[idx].text = el.value; document.querySelector(`#q-${idx} .question-preview`).textContent = el.value || 'New question'; }
+        else if (el.classList.contains('q-explanation')) questions[idx].explanation = el.value;
+        else if (el.classList.contains('q-option')) { const qIdx = el.dataset.qidx, oIdx = el.dataset.oidx; questions[qIdx].options[oIdx] = el.value; }
+        updateReviewSummary();
+    }
+    function addQuestion() { questions.push({ id: 'q_'+Date.now(), text: '', options: ['','','',''], correct: 0, explanation: '' }); renderQuestionsEditor(); updateReviewSummary(); }
+    window.removeQuestion = function(idx) { questions.splice(idx,1); renderQuestionsEditor(); updateReviewSummary(); };
+    function updateReviewSummary() {
+        const container = document.getElementById('reviewSummary'); if (!container) return;
+        const title = document.getElementById('exam-title')?.value || '(No title)', subject = document.getElementById('exam-subject')?.value || '(No subject)';
+        let html = `<div><strong>${escapeHtml(title)}</strong> (${escapeHtml(subject)})</div><div>Questions: ${questions.length}</div>`;
+        questions.forEach((q,i)=>{ html += `<div style="margin-top:8px;">Q${i+1}: ${escapeHtml(q.text||'(No text)')} - Correct: ${String.fromCharCode(65+q.correct)}</div>`; });
+        container.innerHTML = html;
+    }
+    async function saveExam() {
+        const title = document.getElementById('exam-title').value.trim(), subject = document.getElementById('exam-subject').value.trim();
+        if (!title||!subject) { showToast('Title and subject required', true); return; }
+        if (!questions.length) { showToast('Add at least one question', true); return; }
+        const limit = await checkLimits(); if (!limit.allowed) { document.getElementById('limitWarning').style.display='block'; document.getElementById('limitWarning').textContent=limit.reason; return; }
+        const exam = { id: editingExamId || 'exam_'+Date.now(), name: title, title, subject, difficulty: document.getElementById('exam-difficulty').value, timeLimit: parseInt(document.getElementById('exam-time').value), questions, updatedAt: new Date().toISOString() };
+        if (editingExamId) files = files.map(e => e.id === editingExamId ? exam : e); else files.push(exam);
+        for (const e of files) await dbPut('exams', e);
+        localStorage.setItem('db_updated', Date.now());
+        showToast('Exam saved!'); setPage('files');
+    }
+    window.goToStep = function(step) {
+        document.querySelectorAll('.step-item').forEach((el,i)=>{ el.classList.remove('active','completed'); if (i+1 < step) el.classList.add('completed'); else if (i+1 === step) el.classList.add('active'); });
+        document.querySelectorAll('.step-panel').forEach((el,i)=>el.classList.toggle('active', i+1===step));
+        if (step===3) updateReviewSummary();
+    };
+function loadPreset(p) {
+        if (p==='hs_math') { document.getElementById('cfgSubject').value='Mathematics'; document.getElementById('cfgTopics').value='algebra,geometry'; document.getElementById('cfgTotalQuestions').value=10; document.getElementById('cfgEasyPct').value=20; document.getElementById('cfgMediumPct').value=60; document.getElementById('cfgHardPct').value=20; }
+        else if (p==='uni_physics') { document.getElementById('cfgSubject').value='Physics'; document.getElementById('cfgTopics').value='mechanics'; document.getElementById('cfgTotalQuestions').value=8; document.getElementById('cfgEasyPct').value=10; document.getElementById('cfgMediumPct').value=40; document.getElementById('cfgHardPct').value=50; document.getElementById('cfgEduLevel').value='University'; }
+        else if (p==='bio_easy') { document.getElementById('cfgSubject').value='Biology'; document.getElementById('cfgTopics').value='cells'; document.getElementById('cfgTotalQuestions').value=5; document.getElementById('cfgEasyPct').value=80; document.getElementById('cfgMediumPct').value=20; document.getElementById('cfgHardPct').value=0; document.getElementById('cfgEduLevel').value='Elementary'; }
+        updateDistDisplay(); updateGeneratedPrompt();
+    }
+    function openProfessorModal() { updateGeneratedPrompt(); document.getElementById('professorConfigModal').style.display = 'flex'; }
+    function closeProfessorModal() { document.getElementById('professorConfigModal').style.display = 'none'; }
+    function updateDistDisplay() {
+        const e=parseInt(document.getElementById('cfgEasyPct').value)||0, m=parseInt(document.getElementById('cfgMediumPct').value)||0, h=parseInt(document.getElementById('cfgHardPct').value)||0;
+        document.getElementById('easyVal').textContent=e+'%'; document.getElementById('mediumVal').textContent=m+'%'; document.getElementById('hardVal').textContent=h+'%';
+        document.getElementById('distWarning').textContent = (e+m+h)!==100 ? `⚠️ Total must be 100% (currently ${e+m+h}%)` : '';
+        updateGeneratedPrompt();
+    }
+    
+    function copyGeneratedPrompt() { const ta=document.getElementById('generatedPromptDisplay'); ta.select(); navigator.clipboard?.writeText(ta.value); showToast('Prompt copied'); }
+    function goToPasteFromProfessor() { closeProfessorModal(); openPasteModal(); }
+    // ---------- PROFESSOR MODAL ----------
+function openProfessorModal() { 
+    updateGeneratedPrompt(); 
+    document.getElementById('professorConfigModal').style.display = 'flex'; 
+}
+
+function closeProfessorModal() { 
+    document.getElementById('professorConfigModal').style.display = 'none'; 
+}
+function updateGeneratedPrompt() {
+        const subject = document.getElementById('cfgSubject').value, topics = document.getElementById('cfgTopics').value;
+        const total = document.getElementById('cfgTotalQuestions').value, structure = document.getElementById('cfgStructure').value;
+        const easy=document.getElementById('cfgEasyPct').value, medium=document.getElementById('cfgMediumPct').value, hard=document.getElementById('cfgHardPct').value;
+        const depth=document.getElementById('cfgConceptDepth').value, real=document.getElementById('cfgRealLife').value;
+        const edu=document.getElementById('cfgEduLevel').value, source=document.getElementById('cfgSource').value, add=document.getElementById('cfgAdditional').value;
+        const isMathPhys = /math|physics|calculus|algebra/i.test(subject);
+        let prompt = `You are an expert exam professor. Create ${total} ${structure} questions for ${edu} level ${subject}. Difficulty: ${easy}% Easy, ${medium}% Medium, ${hard}% Hard. Depth: ${depth}. Include ${real} real‑life questions. Source: ${source}. ${topics?'Topics: '+topics:''} ${add}`;
+        if (isMathPhys) prompt += ' Use LaTeX for math. Provide step‑wise explanations.';
+        prompt += ' Output valid JSON array with {text, options, correct, explanation}.';
+        document.getElementById('generatedPromptDisplay').value = prompt;
+    }
+function updateDistDisplay() {
+    const easy = parseInt(document.getElementById('cfgEasyPct').value) || 0;
+    const medium = parseInt(document.getElementById('cfgMediumPct').value) || 0;
+    const hard = parseInt(document.getElementById('cfgHardPct').value) || 0;
+    
+    document.getElementById('easyVal').textContent = easy + '%';
+    document.getElementById('mediumVal').textContent = medium + '%';
+    document.getElementById('hardVal').textContent = hard + '%';
+    
+    const total = easy + medium + hard;
+    const warningEl = document.getElementById('distWarning');
+    warningEl.textContent = total !== 100 ? `⚠️ Total must be 100% (currently ${total}%)` : '';
+    
+    updateGeneratedPrompt();
+}
+
+function updateGeneratedPrompt() {
+    const subject = document.getElementById('cfgSubject').value.trim() || 'General';
+    const topics = document.getElementById('cfgTopics').value.trim();
+    const total = document.getElementById('cfgTotalQuestions').value;
+    const structure = document.getElementById('cfgStructure').value;
+    const easy = document.getElementById('cfgEasyPct').value;
+    const medium = document.getElementById('cfgMediumPct').value;
+    const hard = document.getElementById('cfgHardPct').value;
+    const depth = document.getElementById('cfgConceptDepth').value;
+    const realLife = document.getElementById('cfgRealLife').value;
+    const eduLevel = document.getElementById('cfgEduLevel').value;
+    const additional = document.getElementById('cfgAdditional').value.trim();
+    const subjectType = document.getElementById('cfgSubjectType').value;
+    const explanationStyle = document.getElementById('cfgExplanationStyle').value;
+    const memoryTricks = document.getElementById('cfgMemoryTricks').value;
+    
+    let explanationInstruction = '';
+    if (subjectType === 'calculation') {
+        explanationInstruction = `Provide the explanation using **Markdown** for structure and **LaTeX** for all mathematical expressions.
+- Use numbered steps with bold titles: \`1. **Step Title**\`
+- Use \`\\[ ... \\]\` for display equations (centered, block-level).
+- Use \`\\( ... \\)\` for inline math.
+- End with \`**Answer:**\` followed by the final result.
+- Example format:
+\`\`\`
+1. **Write the characteristic equation**  
+\\[ \\det(A - \\lambda I) = 0 \\]
+where  
+\\[ A - \\lambda I = \\begin{pmatrix} 2-\\lambda & 0 & 0 \\\\ 1 & 3-\\lambda & 0 \\\\ 4 & 5 & 6-\\lambda \\end{pmatrix} \\]
+
+2. **Compute the determinant**  
+Since \\( A - \\lambda I \\) is lower triangular, its determinant is the product of its diagonal entries:  
+\\[ \\det(A - \\lambda I) = (2-\\lambda)(3-\\lambda)(6-\\lambda) \\]
+
+3. **Set the determinant to zero**  
+\\[ (2-\\lambda)(3-\\lambda)(6-\\lambda) = 0 \\]
+
+4. **Solve for \\(\\lambda\\)**  
+\\[ \\lambda = 2, \\quad \\lambda = 3, \\quad \\lambda = 6 \\]
+
+**Answer:** The eigenvalues are \\(2, 3, 6\\).
+\`\`\``;
+    } else {
+        explanationInstruction = `Provide the explanation in **Markdown**. Use **bold**, *italic*, - lists, and \\(...\\) for inline math, \\[...\\] for display math.`;
+        if (explanationStyle === 'stepwise') {
+            explanationInstruction += `\nStructure: **Key Point:** [summary]<br>**Why it matters:** [context]`;
+        } else if (explanationStyle === 'brief') {
+            explanationInstruction += `\nKeep it concise: 2‑3 sentences.`;
+        } else {
+            explanationInstruction += `\nStructure: **Main Idea:** [core] *Details:* [supporting info]`;
+        }
+    }
+    if (memoryTricks !== 'none') {
+        explanationInstruction += `\n💡 Include **${memoryTricks}** memory trick(s).`;
+    }
+    
+    let prompt = `You are an expert exam professor creating ${total} questions for ${eduLevel} level ${subject} exam.\n\nConfiguration:\n- Structure: ${structure}\n- Difficulty: ${easy}% Easy, ${medium}% Medium, ${hard}% Hard\n- Concept depth: ${depth}\n- Real‑life questions: ${realLife}\n${topics ? `- Topics: ${topics}\n` : ''}${additional ? `- Additional: ${additional}\n` : ''}\nExplanation Format:\n${explanationInstruction}\n\nReturn ONLY a valid JSON array:\n[{"text": "...", "options": ["...", "...", "...", "..."], "correct": 0, "explanation": "..."}]`;
+    prompt += `\n\nCRITICAL: Wrap ALL mathematical expressions in \\(...\\) for inline math and \\[...\\] for display math. Never output raw LaTeX commands without these delimiters.Make random correct answers like 3,0, 1..2`;
+    document.getElementById('generatedPromptDisplay').value = prompt;
+    document.getElementById('tokenCount').textContent = '~' + Math.round(prompt.length / 4);
+}
+function copyGeneratedPrompt() {
+    const textarea = document.getElementById('generatedPromptDisplay');
+    textarea.select();
+    textarea.setSelectionRange(0, 99999);
+    try {
+        navigator.clipboard?.writeText(textarea.value);
+        showToast('✅ Prompt copied to clipboard');
+    } catch (e) {
+        document.execCommand('copy');
+        showToast('✅ Prompt copied');
+    }
+}
+
+function goToPasteFromProfessor() {
+    closeProfessorModal();
+    openPasteModal();
+}
+
+function loadPreset(preset) {
+    if (preset === 'hs_math') {
+        document.getElementById('cfgSubject').value = 'Mathematics';
+        document.getElementById('cfgTopics').value = 'algebra, geometry, trigonometry';
+        document.getElementById('cfgTotalQuestions').value = 10;
+        document.getElementById('cfgStructure').value = 'Multiple Choice';
+        document.getElementById('cfgEasyPct').value = 20;
+        document.getElementById('cfgMediumPct').value = 60;
+        document.getElementById('cfgHardPct').value = 20;
+        document.getElementById('cfgConceptDepth').value = 'Intermediate';
+        document.getElementById('cfgRealLife').value = 2;
+        document.getElementById('cfgEduLevel').value = 'High School';
+    } else if (preset === 'uni_physics') {
+        document.getElementById('cfgSubject').value = 'Physics';
+        document.getElementById('cfgTopics').value = 'mechanics, electromagnetism';
+        document.getElementById('cfgTotalQuestions').value = 8;
+        document.getElementById('cfgStructure').value = 'Mixed';
+        document.getElementById('cfgEasyPct').value = 10;
+        document.getElementById('cfgMediumPct').value = 40;
+        document.getElementById('cfgHardPct').value = 50;
+        document.getElementById('cfgConceptDepth').value = 'Advanced';
+        document.getElementById('cfgRealLife').value = 5;
+        document.getElementById('cfgEduLevel').value = 'University';
+    } else if (preset === 'bio_easy') {
+        document.getElementById('cfgSubject').value = 'Biology';
+        document.getElementById('cfgTopics').value = 'cells, plants, animals';
+        document.getElementById('cfgTotalQuestions').value = 5;
+        document.getElementById('cfgStructure').value = 'Multiple Choice';
+        document.getElementById('cfgEasyPct').value = 80;
+        document.getElementById('cfgMediumPct').value = 20;
+        document.getElementById('cfgHardPct').value = 0;
+        document.getElementById('cfgConceptDepth').value = 'Basic';
+        document.getElementById('cfgRealLife').value = 1;
+        document.getElementById('cfgEduLevel').value = 'Elementary';
+    }
+    updateDistDisplay();
+    updateGeneratedPrompt();
+}
+window.openProfessorModal = openProfessorModal;
+window.closeProfessorModal = closeProfessorModal;
+window.updateDistDisplay = updateDistDisplay;
+window.updateGeneratedPrompt = updateGeneratedPrompt;
+window.copyGeneratedPrompt = copyGeneratedPrompt;
+window.goToPasteFromProfessor = goToPasteFromProfessor;
+window.loadPreset = loadPreset;
+function openPasteModal() {
+    document.getElementById('pasteJsonModal').style.display = 'flex';
+    document.getElementById('pasteJsonInput').value = '';
+    document.getElementById('pasteErrorPanel').style.display = 'none';
+    updateLineNumbers();
+}
+
+function closePasteModal() {
+    document.getElementById('pasteJsonModal').style.display = 'none';
+}
+function clearPasteInput() {
+    document.getElementById('pasteJsonInput').value = '';
+    document.getElementById('pasteErrorPanel').style.display = 'none';
+    updateLineNumbers();
+}
+function updateLineNumbers() {
+    const textarea = document.getElementById('pasteJsonInput');
+    const lineNumbers = document.getElementById('lineNumbers');
+    const lineCountSpan = document.getElementById('lineCount');
+    const lines = textarea.value.split('\n').length;
+    const numbers = Array.from({ length: lines }, (_, i) => i + 1).join('<br>');
+    lineNumbers.innerHTML = numbers;
+    lineCountSpan.textContent = lines;
+}
+function syncScroll() {
+    const textarea = document.getElementById('pasteJsonInput');
+    const lineNumbers = document.getElementById('lineNumbers');
+    lineNumbers.scrollTop = textarea.scrollTop;
+}
+async function pasteFromClipboard() {
+    const textarea = document.getElementById('pasteJsonInput');
+    try {
+        const text = await navigator.clipboard.readText();
+        textarea.value = text;
+        document.getElementById('pasteErrorPanel').style.display = 'none';
+        updateLineNumbers();
+    } catch (err) {
+        showPasteError('Clipboard access denied. Please paste manually.', 'Clipboard Error');
+    }
+}
+
+function showPasteError(message, title = 'Validation Error') {
+    const panel = document.getElementById('pasteErrorPanel');
+    const errorDiv = document.getElementById('pasteError');
+    panel.style.display = 'block';
+    errorDiv.innerHTML = `<strong>${escapeHtml(title)}</strong>\n${escapeHtml(message)}`;
+}
+
+function copyErrorMessage() {
+    const errorText = document.getElementById('pasteError').innerText;
+    navigator.clipboard?.writeText(errorText);
+    showToast('Error copied to clipboard');
+}
+function parseAndAddQuestions() {
+    const input = document.getElementById('pasteJsonInput').value.trim();
+    
+    if (!input) {
+        showPasteError('Please paste JSON data.', 'Empty Input');
+        return;
+    }
+    
+    let cleaned = input
+        .replace(/^\uFEFF/, '')
+        .replace(/\r\n/g, '\n')
+        .replace(/[\u200B-\u200D\uFEFF]/g, '');
+    
+    let parsed;
+    try {
+        parsed = JSON.parse(cleaned);
+    } catch (e) {
+        const match = e.message.match(/position (\d+)/);
+        let errorMsg = e.message;
+        if (match) {
+            const pos = parseInt(match[1]);
+            const lines = cleaned.substring(0, pos).split('\n');
+            const line = lines.length;
+            const column = lines[lines.length - 1].length + 1;
+            const context = cleaned.substring(Math.max(0, pos - 40), pos + 40);
+            errorMsg = `Unexpected token at line ${line}, column ${column}\n\nContext: ...${escapeHtml(context)}...`;
+        }
+        showPasteError(errorMsg, 'JSON Parse Error');
+        return;
+    }
+    
+    const newQuestions = (Array.isArray(parsed) ? parsed : [parsed])
+        .filter(q => q.text && Array.isArray(q.options) && q.options.length === 4 && q.correct !== undefined)
+        .map(q => ({
+            id: 'q_' + Date.now() + '_' + Math.random().toString(36),
+            text: q.text,
+            options: q.options,
+            correct: q.correct,
+            explanation: q.explanation || ''
+        }));
+    
+    if (!newQuestions.length) {
+        showPasteError('No valid questions found. Each question must have: text, options (4 strings), correct (0‑3).', 'Validation Failed');
+        return;
+    }
+    
+    if (!window.isPremium && questions.length + newQuestions.length > 5) {
+        showPasteError(`Free limit: max 5 questions per exam. You have ${questions.length}, adding ${newQuestions.length}.`, 'Limit Exceeded');
+        return;
+    }
+    
+    questions.push(...newQuestions);
+    renderQuestionsEditor();
+    closePasteModal();
+    showToast(`✅ Added ${newQuestions.length} question(s)`);
+}
+
+function bindPasteModalEvents() {
+    const textarea = document.getElementById('pasteJsonInput');
+    if (textarea) {
+        textarea.addEventListener('input', updateLineNumbers);
+        textarea.addEventListener('scroll', syncScroll);
+    }
+}
+window.openPasteModal = openPasteModal;
+window.closePasteModal = closePasteModal;
+window.clearPasteInput = clearPasteInput;
+window.pasteFromClipboard = pasteFromClipboard;
+window.copyErrorMessage = copyErrorMessage;
+window.parseAndAddQuestions = parseAndAddQuestions;
+    function startPractice(id) {
+        currentFile = files.find(f=>String(f.id)===String(id)); if (!currentFile) { showToast('Exam not found', true); return; }
+        currentPracticeIndex=0; userAnswers=Array(currentFile.questions.length).fill(null); timeLeft=currentFile.timeLimit*60;
+        document.getElementById('modalTitle').innerHTML=currentFile.name; renderPracticeQuestion();
+        if (examTimer) clearInterval(examTimer); examTimer=setInterval(updatePracticeTimer,1000);
+        document.getElementById('practiceModal').style.display='flex';
+    isTimerPaused = false;
+    document.getElementById('pauseIndicator').textContent = '';
+    document.querySelector('.timer').style.opacity = '1';
+}
+    
+function renderExplanation(htmlString) {
+    if (!htmlString) return '';
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
+    if (typeof renderMathInElement !== 'undefined') {
+        try {
+            renderMathInElement(tempDiv, {
+                delimiters: [
+                    { left: '\\(', right: '\\)', display: false },
+                    { left: '\\[', right: '\\]', display: true },
+                    { left: '$$', right: '$$', display: true }
+                ],
+                throwOnError: false,
+                preProcess: (math) => {
+                    const textarea = document.createElement('textarea');
+                    textarea.innerHTML = math;
+                    return textarea.value;
+                }
+            });
+        } catch (e) {
+            console.warn('LaTeX error in explanation:', e);
+        }
+    }
+    
+    return tempDiv.innerHTML;
+}
+function toggleRevealAnswer() {
+    const panel = document.getElementById('revealPanel');
+    const btn = document.getElementById('revealAnswerBtn');
+    const q = currentFile.questions[currentPracticeIndex];
+    const subjectType = currentFile.subjectType || 'calculation';
+
+    if (panel.style.display === 'none') {
+        const correctLetter = String.fromCharCode(65 + q.correct);
+        const correctAnswer = q.options[q.correct];
+        
+        const explanationHtml = renderMixedExplanation(
+            q.explanation || '*No explanation provided.*',
+            subjectType
+        );
+        panel.innerHTML = `
+            <div class="reveal-panel">
+                <div class="correct-answer">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                    Correct Answer: ${correctLetter}. ${escapeHtml(correctAnswer)}
+                </div>
+                <div class="explanation">
+                    ${explanationHtml}
+                </div>
+            </div>
+        `;
+        panel.style.display = 'block';
+        btn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+            Hide
+        `;
+        
+        renderMath(panel);
+    } else {
+        panel.style.display = 'none';
+        btn.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Reveal
+        `;
+    }
+}
+function renderPracticeQuestion() {
+    const q = currentFile.questions[currentPracticeIndex];
+    const progressPercent = ((currentPracticeIndex + 1) / currentFile.questions.length) * 100;
+    
+    document.getElementById('progressFill').style.width = progressPercent + '%';
+    document.getElementById('questionCounter').textContent = `${currentPracticeIndex + 1}/${currentFile.questions.length}`;
+    
+    const optionsHtml = q.options.map((opt, idx) => {
+        const isChecked = userAnswers[currentPracticeIndex] === idx;
+        return `
+            <div class="option-item ${isChecked ? 'selected' : ''}" onclick="selectPracticeOption(${idx})">
+                <input type="radio" name="practiceQ" value="${idx}" ${isChecked ? 'checked' : ''}>
+                <span class="option-label">${String.fromCharCode(65 + idx)}. ${escapeHtml(opt)}</span>
+            </div>
+        `;
+    }).join('');
+    
+    document.getElementById('questionDisplay').innerHTML = `
+        <div class="question-card">
+            <div class="question-text">${escapeHtml(q.text)}</div>
+            <div class="options-grid">${optionsHtml}</div>
+        </div>
+    `;
+    const panel = document.getElementById('revealPanel');
+    const btn = document.getElementById('revealAnswerBtn');
+    panel.style.display = 'none';
+    btn.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        Reveal
+    `;
+    
+    document.getElementById('prevBtn').disabled = (currentPracticeIndex === 0);
+    document.getElementById('nextBtn').innerHTML = currentPracticeIndex === currentFile.questions.length - 1 
+        ? 'Finish <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13h11.17l-5.59 5.59L12 20l8-8-8-8-1.41 1.41L16.17 11H5v2z"/></svg>' 
+        : 'Next <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+    
+    renderMath(document.getElementById('questionDisplay'));
+}
+function renderMath(container) {
+    if (!container || typeof renderMathInElement === 'undefined') return;
+    try {
+        renderMathInElement(container, {
+            delimiters: [
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true },
+                { left: '$$', right: '$$', display: true }
+            ],
+            throwOnError: false
+        });
+    } catch (e) {
+        console.warn('LaTeX error:', e);
+    }
+}
+window.toggleRevealAnswer = toggleRevealAnswer;
+    window.selectPracticeOption = function(idx) { userAnswers[currentPracticeIndex]=idx; document.querySelectorAll('input[name="practiceQ"]').forEach((r,i)=>r.checked=i===idx); };
+    function nextPrev(delta) { if (delta===1 && currentPracticeIndex===currentFile.questions.length-1) { if (confirm('Submit?')) submitPractice(); return; } currentPracticeIndex=Math.min(Math.max(currentPracticeIndex+delta,0), currentFile.questions.length-1); renderPracticeQuestion(); }
+
+let isTimerPaused = false;
+function toggleTimerPause() {
+    // **1. 定义状态变量 (确保它是全局的或者在函数外部)**
+    // 理想情况下应该在 startPractice 外部定义: let isTimerPaused = false;
+    // 如果只在函数内部定义，状态无法保持。
+
+    if (typeof isTimerPaused === 'undefined') {
+        window.isTimerPaused = false; // 强制挂载到 window 上确保全局可访问
+    }
+
+    window.isTimerPaused = !window.isTimerPaused;
+    const indicator = document.getElementById('pauseIndicator');
+    const timerEl = document.querySelector('.timer');
+
+    if (window.isTimerPaused) {
+        // 暂停逻辑
+        clearInterval(examTimer);
+        examTimer = null;
+        if (indicator) indicator.textContent = '⏸️ PAUSED';
+        if (timerEl) timerEl.style.opacity = '0.7';
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.style.pointerEvents = 'none';
+            item.style.opacity = '0.5';
+        });
+    } else {
+        // 继续逻辑
+        if (indicator) indicator.textContent = '';
+        if (timerEl) timerEl.style.opacity = '1';
+        document.querySelectorAll('.option-item').forEach(item => {
+            item.style.pointerEvents = 'auto';
+            item.style.opacity = '1';
+        });
+        examTimer = setInterval(updatePracticeTimer, 1000);
+    }
+}
+
+// 3. 确保将该函数挂载到 window 对象上，这样内联 onclick 才能找到它
+window.toggleTimerPause = toggleTimerPause;
+
+function updatePracticeTimer() {
+    if (isTimerPaused) return; // Don't count down while paused
+
+    if (timeLeft <= 0) {
+        clearInterval(examTimer);
+        examTimer = null;
+        submitPractice();
+        return;
+    }
+
+    timeLeft--;
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    document.getElementById('timerText').textContent =
+        `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+    const timerEl = document.querySelector('.timer');
+    if (timerEl) {
+        if (timeLeft <= 60) {
+            timerEl.classList.add('warning');
+        } else {
+            timerEl.classList.remove('warning');
+        }
+    }
+}
+function startPractice(id) {
+    // Find the exam by ID
+    currentFile = files.find(f => String(f.id) === String(id));
+    if (!currentFile) {
+        showToast('Exam not found', true);
+        return;
+    }
+
+    // Reset practice state
+    currentPracticeIndex = 0;
+    userAnswers = new Array(currentFile.questions.length).fill(null);
+    timeLeft = currentFile.timeLimit * 60;
+
+    // Reset timer UI
+    isTimerPaused = false;
+    const timerEl = document.querySelector('.timer');
+    const pauseIndicator = document.getElementById('pauseIndicator');
+
+    if (pauseIndicator) pauseIndicator.textContent = '';
+    if (timerEl) {
+        timerEl.style.opacity = '1';
+        timerEl.classList.remove('warning');
+    }
+
+    // Set the exam title in the modal
+    document.getElementById('modalTitle').innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        ${escapeHtml(currentFile.name)}
+    `;
+
+    // Render the first question
+    renderPracticeQuestion();
+
+    // Clear any existing timer
+    if (examTimer) {
+        clearInterval(examTimer);
+        examTimer = null;
+    }
+
+    // Start the countdown
+    examTimer = setInterval(updatePracticeTimer, 1000);
+
+    // Show the practice modal
+    document.getElementById('practiceModal').style.display = 'flex';
+}
+
+// Update submitPractice to handle pause state
+async function submitPractice() {
+    if (examTimer) {
+        clearInterval(examTimer);
+        examTimer = null;
+    }
+    isTimerPaused = false;
+    
+    // Restore question area
+    const scrollArea = document.getElementById('questionsScrollArea');
+    if (scrollArea) {
+        scrollArea.style.opacity = '1';
+        scrollArea.style.filter = 'none';
+        scrollArea.style.pointerEvents = 'auto';
+    }
+    clearInterval(examTimer); let correct=0;
+        const answers=currentFile.questions.map((q,i)=>{ const isCorrect=userAnswers[i]===q.correct; if (isCorrect) correct++; return { text:q.text, userAnswer:userAnswers[i]!==null?q.options[userAnswers[i]]:'Not answered', correctAnswer:q.options[q.correct], isCorrect, explanation:q.explanation||'' }; });
+        const percentage=Math.round((correct/currentFile.questions.length)*100);
+        const result = { examId: currentFile.id, examTitle: currentFile.name, date: new Date().toISOString(), score: correct, total: currentFile.questions.length, percentage, timeSpent: (currentFile.timeLimit*60)-timeLeft, answers };
+        await dbPut('results', result); results = await dbGetAll('results');
+        closePracticeModal(); setPage('results'); showToast(`Score: ${percentage}%`);
+    // ... rest of existing submitPractice code ...
+}
+
+// Keyboard shortcut: Space to pause/continue
+document.addEventListener('keydown', function(e) {
+    if (e.code === 'Space' && document.getElementById('practiceModal').style.display === 'flex') {
+        e.preventDefault();
+        toggleTimerPause();
+    }
+});
+   
+    //async function submitPractice() {
+        
+  //  }
+    function closePracticeModal() {
+    if (examTimer) {
+        clearInterval(examTimer);
+        examTimer = null;
+    }
+    isTimerPaused = false;
+    
+    // Restore question area
+    const scrollArea = document.getElementById('questionsScrollArea');
+    if (scrollArea) {
+        scrollArea.style.opacity = '1';
+        scrollArea.style.filter = 'none';
+        scrollArea.style.pointerEvents = 'auto';
+    }
+    
+    document.getElementById('practiceModal').style.display = 'none';
+    currentFile = null;
+}
+window.editFile = function(id) {
+    const exam = files.find(f => String(f.id) === String(id));
+    if (!exam) return;
+    localStorage.setItem('exam_to_edit', JSON.stringify(exam));
+    window.location.href = 'json_editor.html';
+};
+    window.addEventListener('resize', () => {
+    const isDesktop = window.innerWidth >= 1024;
+    if (!isDesktop) {
+        document.getElementById('fileManagerOverlay').classList.remove('visible');
+        document.getElementById('fileManagerPanel').classList.remove('visible');
+        document.getElementById('fileManagerPanel').style.display = 'none';
+    }
+});
+    window.deleteFile = async id => { if(confirm('Delete?')) { await dbDelete('exams', id); files = files.filter(f=>String(f.id)!==String(id)); localStorage.setItem('db_updated', Date.now()); setPage(currentPage); } };
+
+    function formatTime(s) { const m=Math.floor(s/60), sec=s%60; return `${m}:${sec.toString().padStart(2,'0')}`; }
+    function escapeHtml(t) { const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+    window.setPage = setPage; window.startPractice = startPractice; window.closePracticeModal = closePracticeModal;
+    window.openPasteModal = openPasteModal; window.closePasteModal = closePasteModal; window.pasteFromClipboard = pasteFromClipboard; window.parseAndAddQuestions = parseAndAddQuestions;
+    window.openProfessorModal = openProfessorModal; window.closeProfessorModal = closeProfessorModal; window.updateDistDisplay = updateDistDisplay; window.updateGeneratedPrompt = updateGeneratedPrompt;
+    window.copyGeneratedPrompt = copyGeneratedPrompt; window.goToPasteFromProfessor = goToPasteFromProfessor; window.loadPreset = loadPreset;
+    (async () => {
+        updateLoadProgress(20, 'Opening DB…'); await openDB();
+        updateLoadProgress(40, 'Migrating…'); await migrateFromLocalStorage();
+        updateLoadProgress(70, 'Loading…'); await updatePremiumUI(); await loadData();
+        setPage('home'); updateLoadProgress(100, 'Ready!');
+        bindPasteModalEvents();
+        document.getElementById('fileSearchInput').addEventListener('input', refreshFileList);
+        document.getElementById('prevBtn').addEventListener('click', ()=>nextPrev(-1));
+        document.getElementById('nextBtn').addEventListener('click', ()=>nextPrev(1));
+        document.getElementById('submitBtn').addEventListener('click', ()=>{ if(confirm('Submit?')) submitPractice(); });
+        document.querySelectorAll('.nav-btn[data-page]').forEach(b=>b.addEventListener('click', ()=>setPage(b.dataset.page)));
+    })();
+})();
+</script>
 </body>
 </html>
