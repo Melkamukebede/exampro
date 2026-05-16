@@ -1553,6 +1553,15 @@ function renderMarkdownWithLatex(markdown) {
 </div>`;
         fileManagerPanel.style.display = 'none';
     }
+
+
+// Close file manager on desktop
+
+
+// Update setPage to handle desktop file manager visibility
+
+// ---------- FILE MANAGER (DESKTOP OVERLAY SUPPORT) ----------
+
 function renderFiles() {
     const isDesktop = window.innerWidth >= 1024;
     
@@ -1560,6 +1569,7 @@ function renderFiles() {
         // Desktop: Show file manager as centered overlay
         document.getElementById('fileManagerOverlay').classList.add('visible');
         document.getElementById('fileManagerPanel').classList.add('visible');
+        document.getElementById('fileManagerPanel').style.display = 'block';
     } else {
         // Mobile: Show file manager as right sidebar
         document.getElementById('fileManagerPanel').style.display = 'block';
@@ -1575,37 +1585,24 @@ function renderFiles() {
     `;
 }
 
-// Close file manager on desktop
 function closeFileManagerDesktop() {
     document.getElementById('fileManagerOverlay').classList.remove('visible');
     document.getElementById('fileManagerPanel').classList.remove('visible');
+    document.getElementById('fileManagerPanel').style.display = 'none';
 }
 
-// Update the existing closeFileManager for mobile
-function closeFileManager() {
+// Override the original closeFileManager if it exists
+const originalCloseFileManager = window.closeFileManager;
+window.closeFileManager = function() {
     if (window.innerWidth >= 1024) {
         closeFileManagerDesktop();
     } else {
         document.getElementById('fileManagerPanel').style.display = 'none';
     }
-}
+};
 
-// Update setPage to handle desktop file manager visibility
-function setPage(page) {
-    currentPage = page;
-    document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.classList.remove('active'));
-    document.querySelector(`.nav-btn[data-page="${page}"]`)?.classList.add('active');
-    
-    // Hide desktop file manager when switching pages
-    if (window.innerWidth >= 1024) {
-        closeFileManagerDesktop();
-    }
-    
-    if (page === 'home') renderHome();
-    else if (page === 'files') renderFiles();
-    else if (page === 'results') renderResults();
-    else if (page === 'create') renderCreatePage();
-}  function refreshFileList() {
+// Ensure refreshFileList attaches click handlers correctly
+function refreshFileList() {
     const term = document.getElementById('fileSearchInput').value.toLowerCase();
     const filtered = term ? files.filter(f => (f.name || '').toLowerCase().includes(term)) : files;
     const container = document.getElementById('fileList');
@@ -1625,18 +1622,9 @@ function setPage(page) {
                 <div class="file-info">
                     <div class="file-title">${escapeHtml(f.name)}</div>
                     <div class="file-meta">
-                        <span>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                            ${questionCount} Q
-                        </span>
-                        <span>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            ${timeLimit}m
-                        </span>
-                        <span>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M19.07 4.93l-2.83 2.83M6.9 17.1l-2.82 2.82M17.1 6.9l2.82-2.82M4.93 19.07l2.83-2.83"/></svg>
-                            ${difficulty}
-                        </span>
+                        <span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>${questionCount} Q</span>
+                        <span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${timeLimit}m</span>
+                        <span><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M19.07 4.93l-2.83 2.83M6.9 17.1l-2.82 2.82M17.1 6.9l2.82-2.82M4.93 19.07l2.83-2.83"/></svg>${difficulty}</span>
                     </div>
                 </div>
                 <div class="file-actions-compact">
@@ -1656,24 +1644,29 @@ function setPage(page) {
             </div>
         `;
     }).join('');
+    
+    // ✅ Attach event listeners – this must run regardless of desktop/mobile
     container.querySelectorAll('.file-item-compact').forEach(item => {
         item.addEventListener('click', (e) => {
             if (e.target.closest('button')) return;
             startPractice(item.dataset.fileId);
         });
     });
+    
     container.querySelectorAll('.edit-file-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             editFile(btn.dataset.id);
         });
     });
+    
     container.querySelectorAll('.edit-json-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
             editInJsonEditor(btn.dataset.id);
         });
     });
+    
     container.querySelectorAll('.delete-file-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             e.stopPropagation();
@@ -1688,6 +1681,7 @@ function setPage(page) {
             }
         });
     });
+    
     container.querySelectorAll('.practice-file-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -1695,6 +1689,33 @@ function setPage(page) {
         });
     });
 }
+
+// Update setPage to handle desktop file manager
+function setPage(page) {
+    currentPage = page;
+    document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.nav-btn[data-page="${page}"]`)?.classList.add('active');
+    
+    // Hide desktop file manager when switching away from Files page
+    if (page !== 'files' && window.innerWidth >= 1024) {
+        closeFileManagerDesktop();
+    }
+    
+    if (page === 'home') renderHome();
+    else if (page === 'files') renderFiles();
+    else if (page === 'results') renderResults();
+    else if (page === 'create') renderCreatePage();
+}
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    const isDesktop = window.innerWidth >= 1024;
+    if (!isDesktop) {
+        document.getElementById('fileManagerOverlay').classList.remove('visible');
+        document.getElementById('fileManagerPanel').classList.remove('visible');
+        document.getElementById('fileManagerPanel').style.display = 'none';
+    }
+});
 function editInJsonEditor(id) {
     const exam = files.find(f => String(f.id) === String(id));
     if (!exam) {
@@ -2527,14 +2548,7 @@ window.editFile = function(id) {
     localStorage.setItem('exam_to_edit', JSON.stringify(exam));
     window.location.href = 'json_editor.html';
 };
-    window.addEventListener('resize', () => {
-    const isDesktop = window.innerWidth >= 1024;
-    if (!isDesktop) {
-        document.getElementById('fileManagerOverlay').classList.remove('visible');
-        document.getElementById('fileManagerPanel').classList.remove('visible');
-        document.getElementById('fileManagerPanel').style.display = 'none';
-    }
-});
+   
     window.deleteFile = async id => { if(confirm('Delete?')) { await dbDelete('exams', id); files = files.filter(f=>String(f.id)!==String(id)); localStorage.setItem('db_updated', Date.now()); setPage(currentPage); } };
 
     function formatTime(s) { const m=Math.floor(s/60), sec=s%60; return `${m}:${sec.toString().padStart(2,'0')}`; }
