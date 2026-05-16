@@ -820,22 +820,29 @@
         display: block;
     }
     
-    /* Semi‑transparent overlay behind the file manager */
-    .file-manager-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
+
+.file-manager-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+}
+
+.file-manager-overlay.visible {
+    display: block;
+}
+
+/* Ensure the file manager panel appears above the overlay on desktop */
+@media (min-width: 1024px) {
+    .file-manager.visible {
+        z-index: 1000;
     }
-    
-    .file-manager-overlay.visible {
-        display: block;
-    }
-    
+}
     /* Center the content area */
     .content-area {
         max-width: 1200px;
@@ -1555,41 +1562,8 @@ function renderMarkdownWithLatex(markdown) {
     }
 
 
-// Close file manager on desktop
 
 
-// Update setPage to handle desktop file manager visibility
-
-// ---------- FILE MANAGER (DESKTOP OVERLAY SUPPORT) ----------
-
-function renderFiles() {
-    const isDesktop = window.innerWidth >= 1024;
-    
-    if (isDesktop) {
-        // Desktop: Show file manager as centered overlay
-        document.getElementById('fileManagerOverlay').classList.add('visible');
-        document.getElementById('fileManagerPanel').classList.add('visible');
-        document.getElementById('fileManagerPanel').style.display = 'block';
-    } else {
-        // Mobile: Show file manager as right sidebar
-        document.getElementById('fileManagerPanel').style.display = 'block';
-    }
-    
-    refreshFileList();
-    contentArea.innerHTML = `
-        <div class="file-card">
-            <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Your Exam Files</h3>
-            <p style="color:var(--gray);">Select a file from the panel to practice, edit, or delete.</p>
-            <button class="btn btn-primary" onclick="setPage('create')" style="width:100%;">➕ Create New Exam</button>
-        </div>
-    `;
-}
-
-function closeFileManagerDesktop() {
-    document.getElementById('fileManagerOverlay').classList.remove('visible');
-    document.getElementById('fileManagerPanel').classList.remove('visible');
-    document.getElementById('fileManagerPanel').style.display = 'none';
-}
 
 // Override the original closeFileManager if it exists
 const originalCloseFileManager = window.closeFileManager;
@@ -1690,22 +1664,132 @@ function refreshFileList() {
     });
 }
 
-// Update setPage to handle desktop file manager
-function setPage(page) {
-    currentPage = page;
-    document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.classList.remove('active'));
-    document.querySelector(`.nav-btn[data-page="${page}"]`)?.classList.add('active');
-    
     // Hide desktop file manager when switching away from Files page
-    if (page !== 'files' && window.innerWidth >= 1024) {
+// ---------- FILE MANAGER OVERLAY (DESKTOP) ----------
+
+// Close desktop file manager
+function closeFileManagerDesktop() {
+    const overlay = document.getElementById('fileManagerOverlay');
+    const panel = document.getElementById('fileManagerPanel');
+    
+    if (overlay) overlay.classList.remove('visible');
+    if (panel) {
+        panel.classList.remove('visible');
+        panel.style.display = 'none';
+    }
+}
+
+// Override closeFileManager for both desktop and mobile
+window.closeFileManager = function() {
+    if (window.innerWidth >= 1024) {
         closeFileManagerDesktop();
+    } else {
+        document.getElementById('fileManagerPanel').style.display = 'none';
+    }
+};
+
+// Render files page
+function renderFiles() {
+    const isDesktop = window.innerWidth >= 1024;
+    
+    if (isDesktop) {
+        // Desktop: Show file manager as centered overlay
+        const overlay = document.getElementById('fileManagerOverlay');
+        const panel = document.getElementById('fileManagerPanel');
+        
+        if (overlay) overlay.classList.add('visible');
+        if (panel) {
+            panel.classList.add('visible');
+            panel.style.display = 'block';
+        }
+    } else {
+        // Mobile: Show file manager as right sidebar
+        const panel = document.getElementById('fileManagerPanel');
+        if (panel) panel.style.display = 'block';
     }
     
-    if (page === 'home') renderHome();
-    else if (page === 'files') renderFiles();
-    else if (page === 'results') renderResults();
-    else if (page === 'create') renderCreatePage();
+    refreshFileList();
+    contentArea.innerHTML = `
+        <div class="file-card">
+            <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg> Your Exam Files</h3>
+            <p style="color:var(--gray);">Select a file from the panel to practice, edit, or delete.</p>
+            <button class="btn btn-primary" onclick="setPage('create')" style="width:100%;">➕ Create New Exam</button>
+        </div>
+    `;
 }
+
+// Hide file manager when leaving Files page
+function hideFileManager() {
+    const isDesktop = window.innerWidth >= 1024;
+    
+    if (isDesktop) {
+        closeFileManagerDesktop();
+    } else {
+        const panel = document.getElementById('fileManagerPanel');
+        if (panel) panel.style.display = 'none';
+    }
+}
+
+// ✅ FIXED: setPage – handles all navigation correctly
+function setPage(page) {
+    currentPage = page;
+    
+    // Update active nav button
+    document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.classList.remove('active'));
+    const activeBtn = document.querySelector(`.nav-btn[data-page="${page}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+    
+    // Hide file manager overlay/panel when NOT on Files page
+    if (page !== 'files') {
+        hideFileManager();
+    }
+    
+    // Render the correct page
+    switch (page) {
+        case 'home':
+            renderHome();
+            break;
+        case 'files':
+            renderFiles();
+            break;
+        case 'results':
+            renderResults();
+            break;
+        case 'create':
+            renderCreatePage();
+            break;
+        default:
+            renderHome();
+    }
+}
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    const isDesktop = window.innerWidth >= 1024;
+    const panel = document.getElementById('fileManagerPanel');
+    
+    if (!isDesktop && panel) {
+        panel.classList.remove('visible');
+        panel.style.display = 'none';
+    }
+    
+    const overlay = document.getElementById('fileManagerOverlay');
+    if (overlay) overlay.classList.remove('visible');
+});
+
+// ✅ FIXED: Navigation button click handlers
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.nav-btn[data-page]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.dataset.page;
+            setPage(page);
+        });
+    });
+});
+
+// Also bind to window.setPage for inline onclick handlers
+window.setPage = setPage;
 
 // Handle window resize
 window.addEventListener('resize', () => {
