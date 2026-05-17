@@ -2098,31 +2098,31 @@ function updateGeneratedPrompt() {
     let explanationInstruction = '';
     if (subjectType === 'calculation') {
         explanationInstruction = `Provide the explanation using **Markdown** for structure and **LaTeX** for all mathematical expressions.
-- Use numbered steps with bold titles: \`1. **Step Title**\`
-- Use \`\\[ ... \\]\` for display equations (centered, block-level).
-- Use \`\\( ... \\)\` for inline math.
+-  Use numbered steps with bold titles: \`1. **Step Title**\`
+- Use \`\\\\[ ... \\\\]\` for display equations (centered, block-level).
+- Use \`\\\\( ... \\\\)\` for inline math.
 - End with \`**Answer:**\` followed by the final result.
 - Example format:
 \`\`\`
 1. **Write the characteristic equation**  
-\\[ \\det(A - \\lambda I) = 0 \\]
+\\\\[ \\\\det(A - \\\\lambda I) = 0 \\\\]
 where  
-\\[ A - \\lambda I = \\begin{pmatrix} 2-\\lambda & 0 & 0 \\\\ 1 & 3-\\lambda & 0 \\\\ 4 & 5 & 6-\\lambda \\end{pmatrix} \\]
+\\\\[ A - \\\\lambda I = \\\\begin{pmatrix} 2-\\\\lambda & 0 & 0 \\\\ 1 & 3-\\\\lambda & 0 \\\\ 4 & 5 & 6-\\\\lambda \\\\end{pmatrix} \\\\]
 
 2. **Compute the determinant**  
-Since \\( A - \\lambda I \\) is lower triangular, its determinant is the product of its diagonal entries:  
-\\[ \\det(A - \\lambda I) = (2-\\lambda)(3-\\lambda)(6-\\lambda) \\]
+Since \\\\( A - \\\\lambda I \\\\) is lower triangular, its determinant is the product of its diagonal entries:  
+\\\\[ \\\\det(A - \\\\lambda I) = (2-\\\\lambda)(3-\\\\lambda)(6-\\\\lambda) \\\\]
 
 3. **Set the determinant to zero**  
-\\[ (2-\\lambda)(3-\\lambda)(6-\\lambda) = 0 \\]
+\\\\[ (2-\\\\lambda)(3-\\\\lambda)(6-\\\\lambda) = 0 \\\\]
 
-4. **Solve for \\(\\lambda\\)**  
-\\[ \\lambda = 2, \\quad \\lambda = 3, \\quad \\lambda = 6 \\]
+4. **Solve for \\\\(\\\\lambda\\\\)**  
+\\\\[ \\\\lambda = 2, \\\\quad \\\\lambda = 3, \\\\quad \\\\lambda = 6 \\\\]
 
-**Answer:** The eigenvalues are \\(2, 3, 6\\).
+**Answer:** The eigenvalues are \\\\(2, 3, 6\\\\).
 \`\`\``;
     } else {
-        explanationInstruction = `Provide the explanation in **Markdown**. Use **bold**, *italic*, - lists, and \\(...\\) for inline math, \\[...\\] for display math.`;
+        explanationInstruction = `Provide the explanation in **Markdown**. Use **bold**, *italic*, - lists, and \\\\(...\\\\) for inline math, \\\\[...\\\\] for display math.`;
         if (explanationStyle === 'stepwise') {
             explanationInstruction += `\nStructure: **Key Point:** [summary]<br>**Why it matters:** [context]`;
         } else if (explanationStyle === 'brief') {
@@ -2136,10 +2136,11 @@ Since \\( A - \\lambda I \\) is lower triangular, its determinant is the product
     }
     
     let prompt = `You are an expert exam professor creating ${total} questions for ${eduLevel} level ${subject} exam.\n\nConfiguration:\n- Structure: ${structure}\n- Difficulty: ${easy}% Easy, ${medium}% Medium, ${hard}% Hard\n- Concept depth: ${depth}\n- Real‑life questions: ${realLife}\n${topics ? `- Topics: ${topics}\n` : ''}${additional ? `- Additional: ${additional}\n` : ''}\nExplanation Format:\n${explanationInstruction}\n\nReturn ONLY a valid JSON array:\n[{"text": "...", "options": ["...", "...", "...", "..."], "correct": 0, "explanation": "..."}]`;
-    prompt += `\n\nCRITICAL: Wrap ALL mathematical expressions in \\(...\\) for inline math and \\[...\\] for display math. Never output raw LaTeX commands without these delimiters.Make random correct answers like 3,0, 1..2`;
+    prompt += `\n\nCRITICAL: Wrap ALL mathematical expressions in \\\\(...\\\\) for inline math and \\\\[...\\\\] for display math. Never output raw LaTeX commands without these delimiters.Make random correct answers like 3,0, 1..2`;
     document.getElementById('generatedPromptDisplay').value = prompt;
     document.getElementById('tokenCount').textContent = '~' + Math.round(prompt.length / 4);
 }
+
 function copyGeneratedPrompt() {
     const textarea = document.getElementById('generatedPromptDisplay');
     textarea.select();
