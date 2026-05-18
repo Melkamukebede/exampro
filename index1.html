@@ -1,0 +1,2112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>ExamMaster Pro</title>
+    <link rel="stylesheet" href="lib/katex/katex.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --emerald:    #00d68f;
+            --emerald-dk: #00a86b;
+            --sapphire:   #3b82f6;
+            --amber:      #f59e0b;
+            --crimson:    #ef4444;
+            --surface-0:  #060d18;
+            --surface-1:  #0d1829;
+            --surface-2:  #132034;
+            --surface-3:  #1a2b45;
+            --surface-4:  #213655;
+            --rim:        rgba(255,255,255,0.07);
+            --text-hi:    #e8f0fe;
+            --text-md:    #8ea3c3;
+            --text-lo:    #4a6180;
+            --radius-xl:  24px;
+            --radius-lg:  18px;
+            --radius-md:  12px;
+            --radius-sm:  8px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --font-head:  'Syne', sans-serif;
+            --font-body:  'DM Sans', sans-serif;
+            --glow-e: 0 0 24px rgba(0, 214, 143, 0.18);
+            --glow-b: 0 0 24px rgba(59, 130, 246, 0.18);
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--surface-0);
+            color: var(--text-hi);
+            min-height: 100vh;
+            padding: 16px;
+            padding-bottom: max(16px, var(--safe-bottom));
+            overflow-x: hidden;
+            /* Subtle noise grain overlay */
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0,214,143,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 80% 80%, rgba(59,130,246,0.06) 0%, transparent 55%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .app-wrapper { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 14px; }
+
+        /* ── ANIMATIONS ─────────────────────────────────── */
+        @keyframes fadeUp   { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn   { from { opacity:0; } to { opacity:1; } }
+        @keyframes spin     { to { transform: rotate(360deg); } }
+        @keyframes pulse    { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
+        @keyframes glow-ping { 0% { box-shadow: 0 0 0 0 rgba(0,214,143,0.5); } 70% { box-shadow: 0 0 0 10px rgba(0,214,143,0); } 100% { box-shadow: 0 0 0 0 rgba(0,214,143,0); } }
+
+        .anim-0 { animation: fadeUp 0.35s ease both; }
+        .anim-1 { animation: fadeUp 0.35s 0.05s ease both; }
+        .anim-2 { animation: fadeUp 0.35s 0.10s ease both; }
+        .anim-3 { animation: fadeUp 0.35s 0.15s ease both; }
+        .anim-4 { animation: fadeUp 0.35s 0.20s ease both; }
+
+        /* ── LOADING OVERLAY ─────────────────────────────── */
+        #loadingOverlay {
+            position: fixed; inset: 0;
+            background: var(--surface-0);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 99999; transition: opacity 0.6s;
+        }
+        .loader-logo {
+            font-family: var(--font-head); font-size: 2rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--emerald), var(--sapphire));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 32px; letter-spacing: -0.5px;
+        }
+        .loader-ring {
+            width: 56px; height: 56px;
+            border: 3px solid var(--surface-3);
+            border-top-color: var(--emerald);
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+            margin-bottom: 24px;
+        }
+        .loader-label { font-size: 0.8rem; color: var(--text-md); margin-bottom: 16px; letter-spacing: 0.05em; }
+        .loader-track { width: 200px; height: 3px; background: var(--surface-3); border-radius: 99px; overflow: hidden; }
+        .loader-fill  { height: 100%; background: linear-gradient(90deg, var(--emerald), var(--sapphire)); transition: width 0.3s; }
+
+        /* ── PREMIUM BANNER ──────────────────────────────── */
+        .premium-banner {
+            background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface-3) 100%);
+            border: 1px solid var(--rim);
+            border-radius: var(--radius-lg);
+            padding: 8px 16px;
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+            font-size: 0.72rem;
+        }
+        .premium-banner span { color: var(--text-hi); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .premium-pill {
+            background: var(--surface-4); color: var(--emerald);
+            padding: 3px 10px; border-radius: 99px; font-size: 10px; font-weight: 700;
+            border: 1px solid rgba(0,214,143,0.25);
+        }
+        .upgrade-btn {
+            background: linear-gradient(135deg, var(--amber), #e08800);
+            color: #0d0d0d; padding: 4px 12px; border-radius: 99px;
+            cursor: pointer; border: none; font-size: 10px; font-weight: 700;
+            display: flex; align-items: center; gap: 4px; transition: transform 0.15s, box-shadow 0.15s;
+            font-family: var(--font-head);
+        }
+        .upgrade-btn:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(245,158,11,0.35); }
+
+        /* ── NAV ─────────────────────────────────────────── */
+        .nav {
+            background: var(--surface-1);
+            border: 1px solid var(--rim);
+            border-radius: var(--radius-xl);
+            padding: 12px 16px;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .nav-brand {
+            font-family: var(--font-head); font-size: 1.05rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--emerald) 30%, var(--sapphire));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px;
+            letter-spacing: -0.3px;
+        }
+        .nav-brand svg { flex-shrink: 0; }
+        .nav-buttons { display: flex; gap: 6px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; scrollbar-width: none; }
+        .nav-buttons::-webkit-scrollbar { display: none; }
+        .nav-btn {
+            padding: 7px 16px; background: transparent;
+            border: 1px solid var(--rim);
+            border-radius: 99px; cursor: pointer; font-size: 11px; font-weight: 500;
+            color: var(--text-md); font-family: var(--font-body);
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: all 0.18s; flex-shrink: 0;
+        }
+        .nav-btn svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .nav-btn:hover { color: var(--text-hi); border-color: rgba(255,255,255,0.15); transform: translateY(-1px); }
+        .nav-btn.active {
+            background: linear-gradient(135deg, var(--emerald), var(--emerald-dk));
+            color: #030d0a; border-color: transparent; font-weight: 700;
+            box-shadow: var(--glow-e);
+        }
+
+        /* ── MAIN GRID ───────────────────────────────────── */
+        .main-grid { display: grid; grid-template-columns: 1fr 290px; gap: 14px; align-items: start; }
+        .content-area { display: flex; flex-direction: column; gap: 14px; }
+
+        /* ── STAT CARDS ──────────────────────────────────── */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; }
+        .stat-card {
+            background: var(--surface-1);
+            border: 1px solid var(--rim);
+            border-radius: var(--radius-xl);
+            padding: 18px 14px; text-align: center;
+            cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+        }
+        .stat-card::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(0,214,143,0.04), transparent);
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .stat-card:hover { border-color: rgba(0,214,143,0.35); transform: translateY(-3px); box-shadow: var(--glow-e); }
+        .stat-card:hover::after { opacity: 1; }
+        .stat-number {
+            font-family: var(--font-head); font-size: 2rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--emerald), var(--sapphire));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+        .stat-label { font-size: 0.72rem; color: var(--text-md); margin-top: 5px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+
+        /* ── CARDS ───────────────────────────────────────── */
+        .card {
+            background: var(--surface-1);
+            border: 1px solid var(--rim);
+            border-radius: var(--radius-xl);
+            padding: 18px;
+        }
+        .card-title {
+            font-family: var(--font-head); font-size: 0.85rem; font-weight: 700;
+            color: var(--emerald); margin-bottom: 14px;
+            display: flex; align-items: center; gap: 7px; letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+        .card-title svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; flex-shrink: 0; }
+
+        /* ── TOOLBAR BUTTONS ─────────────────────────────── */
+        .action-row { display: flex; gap: 8px; flex-wrap: wrap; }
+        .icon-btn {
+            padding: 8px 16px; background: var(--surface-2);
+            border: 1px solid var(--rim);
+            border-radius: 99px; cursor: pointer; font-size: 11px; font-weight: 600;
+            color: var(--text-md); font-family: var(--font-body);
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: all 0.18s;
+        }
+        .icon-btn svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .icon-btn:hover { background: var(--emerald); color: #030d0a; border-color: transparent; box-shadow: var(--glow-e); transform: translateY(-1px); }
+        .icon-btn.accent { background: linear-gradient(135deg, var(--sapphire), #2563eb); color: white; border-color: transparent; }
+        .icon-btn.accent:hover { box-shadow: var(--glow-b); }
+
+        /* ── RECENT RESULTS (home) ───────────────────────── */
+        .result-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px solid var(--rim);
+            font-size: 0.85rem;
+        }
+        .result-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .result-row-name { color: var(--text-hi); font-weight: 500; }
+        .result-row-pct { font-family: var(--font-head); font-weight: 700; font-size: 0.95rem; }
+        .pct-pass { color: var(--emerald); }
+        .pct-fail { color: var(--crimson); }
+
+        /* ── FILE MANAGER (sidebar) ──────────────────────── */
+        .file-manager {
+            background: var(--surface-1);
+            border: 1px solid var(--rim);
+            border-radius: var(--radius-xl);
+            padding: 16px;
+            position: sticky; top: 12px;
+            overflow: hidden;
+        }
+        .file-manager-title {
+            font-family: var(--font-head); font-size: 0.8rem; font-weight: 700;
+            color: var(--emerald); margin-bottom: 12px;
+            display: flex; align-items: center; gap: 6px;
+            text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .file-manager-title svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .file-search input {
+            width: 100%; padding: 8px 14px;
+            background: var(--surface-2); border: 1px solid var(--rim);
+            border-radius: 99px; color: var(--text-hi); font-size: 11px;
+            font-family: var(--font-body); margin-bottom: 10px; outline: none;
+            transition: border-color 0.2s;
+        }
+        .file-search input:focus { border-color: rgba(0,214,143,0.4); }
+        .file-list { max-height: 420px; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--surface-4) transparent; }
+        .file-item {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            padding: 10px 12px; background: var(--surface-2);
+            border-radius: var(--radius-md); margin-bottom: 6px;
+            cursor: pointer; border: 1px solid transparent;
+            transition: all 0.18s; font-size: 11px;
+        }
+        .file-item:hover { border-color: rgba(0,214,143,0.3); background: var(--surface-3); transform: translateX(3px); }
+        .file-info { flex: 1; min-width: 0; overflow: hidden; }
+        .file-title { font-weight: 600; margin-bottom: 4px; word-break: break-word; line-height: 1.3; color: var(--text-hi); }
+        .file-meta { display: flex; flex-wrap: wrap; gap: 6px 10px; font-size: 9.5px; color: var(--text-lo); }
+        .file-meta span { display: inline-flex; align-items: center; gap: 3px; }
+        .file-meta svg { width: 9px; height: 9px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .file-actions { display: flex; gap: 2px; margin-left: 8px; flex-shrink: 0; }
+        .file-actions button {
+            background: none; border: none; color: var(--text-lo);
+            cursor: pointer; padding: 5px; border-radius: 6px;
+            display: inline-flex; align-items: center; justify-content: center;
+            transition: all 0.15s;
+        }
+        .file-actions button:hover { background: var(--surface-4); color: var(--text-hi); }
+        .file-actions .btn-play:hover { background: var(--emerald); color: #030d0a; }
+        .file-actions .btn-del:hover  { background: var(--crimson); color: white; }
+        .file-actions svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+        /* ── BUTTONS ─────────────────────────────────────── */
+        .btn {
+            padding: 9px 18px; border-radius: 99px; font-weight: 600; font-size: 0.78rem;
+            cursor: pointer; transition: all 0.18s; display: inline-flex; align-items: center; gap: 7px;
+            background: var(--surface-2); color: var(--text-hi); border: 1px solid var(--rim);
+            font-family: var(--font-body);
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(0,0,0,0.35); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--emerald), var(--emerald-dk)); color: #030d0a; border: none; font-weight: 700; }
+        .btn-primary:hover { box-shadow: var(--glow-e); }
+        .btn-outline { background: transparent; border-color: rgba(255,255,255,0.12); color: var(--text-md); }
+        .btn-outline:hover { border-color: var(--emerald); color: var(--text-hi); }
+        .btn-danger  { background: transparent; border-color: rgba(239,68,68,0.3); color: var(--crimson); }
+        .btn-danger:hover  { background: var(--crimson); color: white; }
+        .btn-sm { padding: 6px 14px; font-size: 0.72rem; }
+        .btn svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+        /* ── FORM ELEMENTS ───────────────────────────────── */
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: 10px 16px;
+            background: var(--surface-2); border: 1px solid var(--rim);
+            border-radius: var(--radius-md); color: var(--text-hi); font-size: 13px;
+            font-family: var(--font-body); outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: rgba(0,214,143,0.4);
+            box-shadow: 0 0 0 3px rgba(0,214,143,0.08);
+        }
+        .form-select option { background: var(--surface-2); }
+        .form-label { font-size: 10.5px; font-weight: 600; color: var(--text-lo); margin-bottom: 5px; display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .form-group { margin-bottom: 14px; }
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; margin-bottom: 0; }
+
+        /* ── MODALS ──────────────────────────────────────── */
+        .modal {
+            display: none; position: fixed; inset: 0; z-index: 10000;
+            background: rgba(0,0,0,0.75); backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background: var(--surface-1);
+            margin: 2% auto; width: 95%; max-width: 820px;
+            border-radius: 28px; height: 92%; display: flex; flex-direction: column;
+            border: 1px solid rgba(0,214,143,0.2);
+            box-shadow: 0 0 60px rgba(0,214,143,0.08), 0 32px 64px rgba(0,0,0,0.6);
+            animation: fadeUp 0.25s ease;
+        }
+        .modal-header {
+            padding: 16px 20px; border-bottom: 1px solid var(--rim);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0;
+        }
+        .modal-header h3 {
+            font-family: var(--font-head); font-size: 1rem; font-weight: 700;
+            color: var(--emerald); display: flex; align-items: center; gap: 8px;
+        }
+        .modal-header h3 svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .modal-close { font-size: 22px; cursor: pointer; color: var(--text-lo); line-height: 1; transition: color 0.15s; background: none; border: none; }
+        .modal-close:hover { color: var(--crimson); }
+        .modal-body { padding: 18px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+        /* ── PRACTICE MODAL ──────────────────────────────── */
+        .practice-container { display: flex; flex-direction: column; height: 100%; }
+        .practice-top-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px; gap: 12px;
+        }
+        .timer-container { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+        .timer {
+            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-head); font-size: 1.25rem; font-weight: 700;
+            color: var(--crimson); padding: 8px 20px;
+            background: rgba(239,68,68,0.08); border-radius: 99px;
+            border: 1.5px solid rgba(239,68,68,0.35);
+            cursor: pointer; transition: all 0.25s; user-select: none;
+        }
+        .timer:hover { background: rgba(239,68,68,0.15); transform: scale(1.02); }
+        .timer.paused { color: var(--amber); border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.08); }
+        .timer.warning { animation: pulse 1.1s infinite; }
+        .timer-status { font-size: 10px; color: var(--text-lo); transition: color 0.2s; }
+        .timer-status.paused { color: var(--amber); }
+
+        .question-counter {
+            font-family: var(--font-head); font-size: 1.1rem; font-weight: 700;
+            color: var(--emerald); padding: 8px 22px;
+            background: rgba(0,214,143,0.08); border-radius: 99px;
+            border: 1.5px solid rgba(0,214,143,0.3);
+        }
+        .progress-bar { height: 4px; background: var(--surface-3); border-radius: 99px; overflow: hidden; margin-bottom: 18px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--emerald), var(--sapphire)); transition: width 0.3s ease; }
+
+        .questions-scroll-area { flex: 1; overflow-y: auto; margin-bottom: 16px; padding-right: 4px; }
+        .question-card {
+            background: var(--surface-2); border-radius: var(--radius-xl);
+            padding: 20px; border: 1px solid var(--rim);
+        }
+        .question-text {
+            font-size: 1.05rem; font-weight: 500; margin-bottom: 18px; line-height: 1.55;
+            color: var(--text-hi);
+        }
+        .options-grid { display: flex; flex-direction: column; gap: 9px; }
+        .option-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            background: var(--surface-3); border-radius: var(--radius-md);
+            cursor: pointer; border: 1px solid var(--rim);
+            transition: all 0.18s;
+        }
+        .option-item:hover { background: var(--surface-4); border-color: rgba(0,214,143,0.3); transform: translateX(4px); }
+        .option-item.selected { border-color: var(--emerald); background: rgba(0,214,143,0.07); }
+        .option-item input[type="radio"] { width: 15px; height: 15px; accent-color: var(--emerald); flex-shrink: 0; }
+        .option-label { font-size: 0.92rem; color: var(--text-hi); flex: 1; line-height: 1.45; }
+
+        .exam-controls {
+            display: flex; justify-content: space-between; gap: 7px;
+            background: var(--surface-2); padding: 10px 12px;
+            border-radius: 99px; border: 1px solid var(--rim);
+            flex-shrink: 0; margin-top: auto;
+        }
+        .exam-controls .btn { flex: 1; justify-content: center; padding: 10px 6px; font-size: 0.73rem; }
+
+        /* ── REVEAL PANEL ────────────────────────────────── */
+        .reveal-panel {
+            background: var(--surface-2); border-radius: var(--radius-lg);
+            padding: 18px; border-left: 3px solid var(--emerald); margin-top: 16px;
+        }
+        .reveal-panel .correct-answer {
+            color: var(--emerald); font-weight: 600; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px; font-size: 0.95rem;
+        }
+        .reveal-panel .correct-answer svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+        .explanation { line-height: 1.65; font-size: 0.9rem; color: var(--text-md); }
+        .explanation p { margin: 0.7em 0; }
+        .explanation strong { color: var(--emerald); }
+        .explanation .katex-display { margin: 1em 0; overflow-x: auto; }
+
+        /* ── RESULTS PAGE ────────────────────────────────── */
+        .result-card {
+            background: var(--surface-1); border-radius: var(--radius-xl);
+            padding: 18px; border: 1px solid var(--rim); margin-bottom: 12px;
+            transition: border-color 0.2s;
+        }
+        .result-card:hover { border-color: rgba(0,214,143,0.25); }
+        .result-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; gap: 12px; }
+        .result-title { font-family: var(--font-head); font-weight: 700; font-size: 0.95rem; color: var(--text-hi); }
+        .result-score {
+            font-family: var(--font-head); font-weight: 800; font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+        .result-score.excellent { color: var(--emerald); }
+        .result-score.good      { color: #4ade80; }
+        .result-score.average   { color: var(--amber); }
+        .result-score.poor      { color: var(--crimson); }
+        .result-meta { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: var(--text-lo); margin-bottom: 10px; }
+        .result-meta span { display: flex; align-items: center; gap: 4px; }
+        .result-meta svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2; fill: none; }
+        .result-summary { display: flex; gap: 18px; font-size: 12px; color: var(--text-md); border-top: 1px dashed var(--rim); padding-top: 10px; }
+        .result-summary-item { display: flex; align-items: center; gap: 6px; }
+        .result-actions { display: flex; gap: 9px; margin-top: 12px; }
+        .btn-review {
+            flex: 1; background: transparent; border: 1px solid rgba(0,214,143,0.3); color: var(--emerald);
+            padding: 9px 14px; border-radius: 99px; font-weight: 600; font-size: 0.75rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.18s;
+            font-family: var(--font-body);
+        }
+        .btn-review:hover { background: var(--emerald); color: #030d0a; }
+        .clear-all-btn {
+            background: transparent; border: 1px solid rgba(239,68,68,0.3); color: var(--crimson);
+            padding: 7px 16px; border-radius: 99px; font-weight: 600; font-size: 0.75rem; cursor: pointer;
+            display: flex; align-items: center; gap: 6px; transition: all 0.18s; font-family: var(--font-body);
+        }
+        .clear-all-btn:hover { background: var(--crimson); color: white; }
+
+        /* ── REVIEW DETAILS ──────────────────────────────── */
+        .review-details { display: none; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rim); }
+        .review-details.show { display: block; }
+        .review-question-item {
+            background: var(--surface-2); border-radius: var(--radius-md);
+            margin-bottom: 8px; overflow: hidden; border: 1px solid var(--rim);
+        }
+        .review-question-header {
+            display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .review-question-header:hover { background: var(--surface-3); }
+        .review-status-icon {
+            width: 22px; height: 22px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0;
+        }
+        .review-status-icon.correct   { background: var(--emerald); color: #030d0a; }
+        .review-status-icon.incorrect { background: var(--amber); color: #0d0d0d; }
+        .review-question-text { flex: 1; font-size: 0.88rem; word-break: break-word; }
+        .review-question-details {
+            display: none; padding: 0 14px 14px 46px; font-size: 0.85rem;
+            border-top: 1px solid var(--rim); background: rgba(0,0,0,0.12);
+        }
+        .review-question-details.show { display: block; }
+        .answer-row { margin: 9px 0; line-height: 1.5; }
+        .answer-label { color: var(--text-lo); margin-right: 6px; font-weight: 500; }
+        .answer-value { color: var(--text-hi); }
+        .answer-value.correct-answer { color: var(--emerald); }
+
+        /* ── CREATE / WIZARD ─────────────────────────────── */
+        .step-wizard { display: flex; gap: 18px; }
+        .step-indicator {
+            width: 155px; flex-shrink: 0; background: var(--surface-2);
+            border-radius: var(--radius-xl); padding: 16px 14px;
+            border: 1px solid var(--rim); height: fit-content; position: sticky; top: 12px;
+        }
+        .step-item {
+            display: flex; align-items: center; gap: 10px; padding: 11px 0;
+            border-bottom: 1px solid var(--rim); color: var(--text-lo); transition: color 0.2s; cursor: pointer;
+        }
+        .step-item:last-child { border-bottom: none; }
+        .step-item.active { color: var(--emerald); }
+        .step-item.completed { color: var(--text-md); }
+        .step-number {
+            width: 30px; height: 30px; border-radius: 50%; background: var(--surface-3);
+            border: 2px solid var(--rim); display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 12px; transition: all 0.2s; flex-shrink: 0;
+            font-family: var(--font-head);
+        }
+        .step-item.active .step-number { background: var(--emerald); border-color: var(--emerald); color: #030d0a; animation: glow-ping 1.8s infinite; }
+        .step-item.completed .step-number { background: var(--surface-4); border-color: rgba(0,214,143,0.4); color: var(--emerald); }
+        .step-label { font-weight: 500; font-size: 12px; }
+        .step-content { flex: 1; min-width: 0; }
+        .step-panel { display: none; }
+        .step-panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+        .create-card {
+            background: var(--surface-1); border-radius: var(--radius-xl);
+            padding: 18px; border: 1px solid var(--rim); max-width: 100%; overflow-x: hidden;
+        }
+
+        /* ── QUESTION CARDS (create) ─────────────────────── */
+        .question-card-compact {
+            background: var(--surface-2); border-radius: var(--radius-md);
+            margin-bottom: 10px; border: 1px solid var(--rim);
+            overflow: hidden; transition: border-color 0.18s;
+        }
+        .question-card-compact:hover { border-color: rgba(0,214,143,0.3); }
+        .question-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 14px; cursor: pointer; background: rgba(0,0,0,0.15);
+        }
+        .question-header-left { display: flex; align-items: center; gap: 8px; }
+        .question-number {
+            background: var(--emerald); color: #030d0a; width: 22px; height: 22px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700; font-family: var(--font-head);
+        }
+        .question-preview { font-size: 11.5px; color: var(--text-lo); max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .question-body { padding: 14px; display: block; }
+        .question-body.collapsed { display: none; }
+        .options-grid-compact { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
+        .option-input-compact { display: flex; align-items: center; gap: 6px; min-width: 0; }
+        .option-input-compact input[type="radio"] { width: 15px; height: 15px; accent-color: var(--emerald); }
+        .option-input-compact input[type="text"] {
+            flex: 1; min-width: 0; padding: 7px 10px;
+            background: var(--surface-1); border: 1px solid var(--rim);
+            border-radius: var(--radius-sm); color: var(--text-hi); font-size: 12px;
+            font-family: var(--font-body); outline: none;
+            transition: border-color 0.15s;
+        }
+        .option-input-compact input[type="text"]:focus { border-color: rgba(0,214,143,0.4); }
+        .delete-question-btn {
+            background: none; border: none; color: var(--crimson); cursor: pointer;
+            padding: 4px 8px; border-radius: 6px; font-size: 11px; transition: all 0.15s;
+        }
+        .delete-question-btn:hover { background: rgba(239,68,68,0.15); }
+
+        /* ── PASTE JSON MODAL ────────────────────────────── */
+        .toolbar-wrapper { overflow-x: auto; white-space: nowrap; scrollbar-width: thin; -webkit-overflow-scrolling: touch; }
+        .toolbar { display: inline-flex; gap: 8px; flex-wrap: nowrap; }
+        #pasteJsonInput, #generatedPromptDisplay {
+            background: var(--surface-0); border: 1px solid var(--rim);
+            border-radius: var(--radius-md); color: var(--text-hi); padding: 14px;
+            width: 100%; resize: vertical; font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 12.5px; line-height: 1.6; outline: none;
+        }
+        #pasteJsonInput:focus { border-color: rgba(0,214,143,0.4); }
+
+        /* ── PROFESSOR MODAL ─────────────────────────────── */
+        .dist-slider { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .dist-slider input { flex: 1; accent-color: var(--emerald); }
+
+        /* ── TOAST ───────────────────────────────────────── */
+        .toast {
+            position: fixed; bottom: max(20px, calc(20px + var(--safe-bottom))); left: 50%;
+            transform: translateX(-50%); background: var(--emerald); color: #030d0a;
+            padding: 9px 22px; border-radius: 99px; font-size: 12px; font-weight: 700;
+            z-index: 10001; animation: fadeUp 0.2s ease;
+            font-family: var(--font-head); letter-spacing: 0.02em;
+            box-shadow: 0 8px 28px rgba(0,214,143,0.3);
+        }
+        .toast.error { background: var(--crimson); color: white; box-shadow: 0 8px 28px rgba(239,68,68,0.3); }
+
+        /* ── INFO HINT ───────────────────────────────────── */
+        .info-hint {
+            display: flex; align-items: flex-start; gap: 10px;
+            padding: 10px 14px; background: rgba(59,130,246,0.08);
+            border-radius: var(--radius-md); margin-bottom: 16px;
+            border-left: 3px solid var(--sapphire);
+        }
+        .info-hint svg { flex-shrink: 0; width: 15px; height: 15px; stroke: var(--sapphire); stroke-width: 2; fill: none; margin-top: 1px; }
+        .info-hint span { font-size: 11.5px; color: var(--text-md); line-height: 1.5; }
+
+        /* ── CODE EDITOR AREA ────────────────────────────── */
+        .code-editor-wrap {
+            display: flex; background: var(--surface-0);
+            border-radius: var(--radius-md); border: 1px solid var(--rim); overflow: hidden;
+        }
+        #lineNumbers {
+            background: var(--surface-1); color: var(--text-lo);
+            font-family: 'Fira Code', 'Courier New', monospace; font-size: 12.5px;
+            padding: 14px 10px; text-align: right; user-select: none;
+            border-right: 1px solid var(--rim); min-width: 48px; line-height: 1.6;
+        }
+
+        /* ── RESPONSIVE ──────────────────────────────────── */
+        @media (max-width: 820px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .step-wizard { flex-direction: column; }
+            .step-indicator { width: 100%; position: static; }
+        }
+        @media (max-width: 500px) {
+            body { padding: 10px; }
+            .options-grid-compact { grid-template-columns: 1fr; }
+            .form-row { flex-direction: column; }
+        }
+
+        /* ── SCROLLBARS ──────────────────────────────────── */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--surface-4); border-radius: 99px; }
+    </style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay">
+    <div class="loader-logo">ExamMaster Pro</div>
+    <div class="loader-ring"></div>
+    <div class="loader-label" id="loadingStatus">Initializing…</div>
+    <div class="loader-track"><div class="loader-fill" id="loadingProgressBar" style="width:0%"></div></div>
+</div>
+
+<div class="app-wrapper">
+
+    <!-- Premium Banner -->
+    <div class="premium-banner anim-0" id="premiumBanner">
+        <span>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2"/></svg>
+            FREE ACCOUNT
+        </span>
+        <span class="premium-pill">2 files · 5 Q/file</span>
+        <button class="upgrade-btn" onclick="window.location.href='payment_dashboard.html'">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+            Upgrade
+        </button>
+    </div>
+
+    <!-- Nav -->
+    <div class="nav anim-1">
+        <div class="nav-brand">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            ExamMaster Pro
+        </div>
+        <div class="nav-buttons">
+            <button class="nav-btn active" data-page="home">
+                <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2h-5v-8H10v8H5a2 2 0 0 1-2-2z"/></svg>
+                Home
+            </button>
+            <button class="nav-btn" data-page="files">
+                <svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                Files
+            </button>
+            <button class="nav-btn" data-page="results">
+                <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                Results
+            </button>
+            <button class="nav-btn" data-page="create">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Create
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid anim-2">
+        <div id="contentArea" class="content-area"></div>
+        <div id="fileManagerPanel" class="file-manager" style="display:none;">
+            <div class="file-manager-title">
+                <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                Exams
+            </div>
+            <div class="file-search">
+                <input type="text" id="fileSearchInput" placeholder="🔍 Filter exams…">
+            </div>
+            <div id="fileList" class="file-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ── PRACTICE MODAL ──────────────────────────────────────────────── -->
+<div id="practiceModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Exam
+            </h3>
+            <button class="modal-close" onclick="closePracticeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="practice-container">
+                <div class="practice-top-bar">
+                    <div class="timer-container">
+                        <div class="timer" id="timerDisplay" onclick="toggleTimerPause()" title="Click to pause/resume">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span id="timerText">00:00</span>
+                            <span id="pauseIndicator" style="font-size:11px;"></span>
+                        </div>
+                        <div class="timer-status" id="timerStatus">tap to pause</div>
+                    </div>
+                    <div class="question-counter" id="questionCounter">1 / 10</div>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+                <div class="questions-scroll-area" id="questionsScrollArea">
+                    <div id="questionDisplay"></div>
+                    <div id="revealPanel" style="display:none; margin-top:16px;"></div>
+                </div>
+                <div class="exam-controls">
+                    <button class="btn btn-outline" id="prevBtn">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                        Prev
+                    </button>
+                    <button class="btn btn-outline" id="revealAnswerBtn" onclick="toggleRevealAnswer()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                        Reveal
+                    </button>
+                    <button class="btn btn-outline" id="nextBtn">
+                        Next
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    </button>
+                    <button class="btn btn-primary" id="submitBtn">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                        Submit
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── PASTE JSON MODAL ────────────────────────────────────────────── -->
+<div id="pasteJsonModal" class="modal">
+    <div class="modal-content" style="max-width:760px; max-height:95vh;">
+        <div class="modal-header">
+            <h3>
+                <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                Paste JSON Questions
+            </h3>
+            <button class="modal-close" onclick="closePasteModal()">&times;</button>
+        </div>
+        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--rim);">
+            <div class="toolbar">
+                <button class="btn btn-primary btn-sm" onclick="parseAndAddQuestions()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Parse & Add
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="pasteFromClipboard()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                    Paste
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="clearPasteInput()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    Clear
+                </button>
+                <button class="btn btn-outline btn-sm" onclick="closePasteModal()">Cancel</button>
+                <span style="flex:1"></span>
+                <span style="font-size:11px; color:var(--text-lo); display:flex; align-items:center; gap:4px;">
+                    <span id="lineCount">0</span> lines
+                </span>
+            </div>
+        </div>
+        <div class="modal-body" style="padding:16px; overflow-y:auto;">
+            <div class="info-hint">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <span>Paste a valid JSON array. Each question needs: <code>text</code>, <code>options</code> (4 strings), <code>correct</code> (0–3), and optional <code>explanation</code>.</span>
+            </div>
+            <div class="code-editor-wrap">
+                <div id="lineNumbers"></div>
+                <textarea id="pasteJsonInput" wrap="off" rows="14"
+                    placeholder='[{"text": "Question", "options": ["A","B","C","D"], "correct": 0, "explanation": "Optional"}]'
+                    style="flex:1; background:transparent; border:none; color:var(--text-hi); font-family:'Fira Code','Courier New',monospace; font-size:12.5px; line-height:1.6; padding:14px; resize:vertical; outline:none; white-space:pre; overflow-x:auto;"></textarea>
+            </div>
+            <div id="pasteErrorPanel" style="margin-top:12px; display:none;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                    <span style="display:flex; align-items:center; gap:6px; color:var(--crimson); font-weight:600; font-size:12px;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        Validation Error
+                    </span>
+                    <button class="btn btn-sm btn-outline" onclick="copyErrorMessage()">Copy Error</button>
+                </div>
+                <div id="pasteError" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-md); padding:12px; font-family:monospace; font-size:12px; color:var(--crimson); white-space:pre-wrap; word-break:break-word;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── PROFESSOR CONFIG MODAL ──────────────────────────────────────── -->
+<div id="professorConfigModal" class="modal">
+    <div class="modal-content" style="max-width:900px; max-height:95vh;">
+
+        <div class="modal-header">
+            <h3>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                Exam Professor
+            </h3>
+            <span class="modal-close" onclick="closeProfessorModal()">&times;</span>
+        </div>
+
+        <!-- ROW 1: Total Q · Subject -->
+        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--border);">
+            <div class="toolbar" style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+                <div style="min-width:100px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        Total Q
+                    </label>
+                    <input type="number" id="cfgTotalQuestions" class="form-input" min="1" max="50" value="10"
+                        oninput="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px; width:100px;">
+                </div>
+                <div style="min-width:180px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h6M8 16h4"/></svg>
+                        Subject
+                    </label>
+                    <div style="position:relative;">
+                        <input type="text" id="cfgSubject" class="form-input" value="Mathematics"
+                            oninput="updateSubjectTypeHint(); updateGeneratedPrompt();"
+                            style="padding:8px 12px; font-size:13px; padding-right:32px;" placeholder="Subject">
+                        <span id="subjectTypeIcon" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:14px; pointer-events:none;">🔢</span>
+                    </div>
+                </div>
+                <!-- Preset selector -->
+                <div>
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-6 4.5 2.5 7.5L12 17l-6.5 4 2.5-7.5L2 9h7z"/></svg>
+                        Preset
+                    </label>
+                    <select class="form-select" onchange="loadPreset(this.value); this.value='';"
+                        style="padding:8px 12px; font-size:12px; min-width:160px;">
+                        <option value="">— Load Preset —</option>
+                        <option value="hs_math">📐 HS Mathematics</option>
+                        <option value="uni_physics">⚛️ University Physics</option>
+                        <option value="bio_easy">🌿 Biology (Easy)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 2: Topics · Structure · Subject Type -->
+        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--border);">
+            <div class="toolbar" style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+                <div style="min-width:200px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                        Topics
+                    </label>
+                    <input type="text" id="cfgTopics" class="form-input" placeholder="algebra, geometry"
+                        oninput="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                </div>
+                <div style="min-width:140px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+                        Structure
+                    </label>
+                    <select id="cfgStructure" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                        <option value="Multiple Choice">Multiple Choice</option>
+                        <option value="True/False">True/False</option>
+                    </select>
+                </div>
+                <div style="min-width:160px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        Subject Type
+                    </label>
+                    <select id="cfgSubjectType" class="form-select"
+                        onchange="updateSubjectTypeHint(); updateGeneratedPrompt();" style="padding:8px 12px; font-size:12px;">
+                        <option value="calculation">📊 Calculation</option>
+                        <option value="theory" selected>📚 Theory</option>
+                    </select>
+                </div>
+                <div style="min-width:160px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        Explanation
+                    </label>
+                    <select id="cfgExplanationStyle" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                        <option value="stepwise">🔢 Step‑by‑Step</option>
+                        <option value="conceptual" selected>💡 Conceptual</option>
+                        <option value="brief">⚡ Brief</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 3: Memory Tricks · Real‑Life · Source -->
+        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--border);">
+            <div class="toolbar" style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+                <div style="min-width:130px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15 9H22L16 14L19 22L12 17L5 22L8 14L2 9H9L12 2Z"/></svg>
+                        Memory Tricks
+                    </label>
+                    <select id="cfgMemoryTricks" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                        <option value="none">None</option>
+                        <option value="few" selected>Few</option>
+                        <option value="many">Many</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        Real‑Life Qs
+                    </label>
+                    <input type="number" id="cfgRealLife" class="form-input" min="0" max="50" value="3"
+                        oninput="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px; width:90px;">
+                </div>
+                <div style="min-width:180px;">
+                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        Source
+                    </label>
+                    <select id="cfgSource" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                        <option value="Only from provided source">Only from provided</option>
+                        <option value="Include additional examples">Include examples</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 4: Difficulty sliders · Concept Depth · Education · Subject hint bar -->
+        <div style="padding:12px 18px; border-bottom:1px solid var(--border); display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
+            <!-- Vertical sliders -->
+            <div>
+                <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:8px;">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+                    Difficulty Distribution (%)
+                </label>
+                <div style="display:flex; gap:18px; align-items:flex-end;">
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                        <span id="easyVal" style="font-size:12px; font-weight:700; color:var(--success);">20%</span>
+                        <input type="range" id="cfgEasyPct" min="0" max="100" value="20" step="5"
+                            oninput="updateDistDisplay();" class="vertical-slider" style="writing-mode:vertical-lr; direction:rtl; width:28px; height:80px; accent-color:var(--success);">
+                        <span style="font-size:10px; color:var(--gray);">Easy</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                        <span id="mediumVal" style="font-size:12px; font-weight:700; color:var(--warning);">60%</span>
+                        <input type="range" id="cfgMediumPct" min="0" max="100" value="60" step="5"
+                            oninput="updateDistDisplay();" class="vertical-slider" style="writing-mode:vertical-lr; direction:rtl; width:28px; height:80px; accent-color:var(--warning);">
+                        <span style="font-size:10px; color:var(--gray);">Medium</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                        <span id="hardVal" style="font-size:12px; font-weight:700; color:var(--danger);">20%</span>
+                        <input type="range" id="cfgHardPct" min="0" max="100" value="20" step="5"
+                            oninput="updateDistDisplay();" class="vertical-slider" style="writing-mode:vertical-lr; direction:rtl; width:28px; height:80px; accent-color:var(--danger);">
+                        <span style="font-size:10px; color:var(--gray);">Hard</span>
+                    </div>
+                </div>
+                <div id="distWarning" style="color:var(--danger); font-size:10px; margin-top:6px; min-height:14px;"></div>
+            </div>
+
+            <!-- Right-side selects + hint bar -->
+            <div style="display:flex; flex-direction:column; gap:10px; flex:1; min-width:280px;">
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                    <div style="min-width:140px;">
+                        <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                            Concept Depth
+                        </label>
+                        <select id="cfgConceptDepth" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                            <option value="Basic">Basic</option>
+                            <option value="Intermediate" selected>Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div style="min-width:140px;">
+                        <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-7 10 7-10 7z"/></svg>
+                            Education
+                        </label>
+                        <select id="cfgEduLevel" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                            <option value="Elementary">Elementary</option>
+                            <option value="High School" selected>High School</option>
+                            <option value="University">University</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Subject hint bar -->
+                <div id="subjectHintBar" style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:rgba(16,185,129,0.08); border-radius:10px; border:1px solid rgba(16,185,129,0.2); font-size:11px;">
+                    <span id="hintIcon" style="font-size:16px;">📐</span>
+                    <span id="hintText" style="color:var(--gray);">Step‑by‑step solutions with formulas will be generated.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BODY: Additional instructions + generated prompt -->
+        <div class="modal-body" style="padding:18px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px;">
+
+            <div class="form-group" style="margin-bottom:0;">
+                <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--gray); margin-bottom:6px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    Additional Instructions (optional)
+                </label>
+                <textarea id="cfgAdditional" class="form-textarea" rows="2"
+                    placeholder="e.g., focus on integration by parts, avoid trigonometry…"
+                    oninput="updateGeneratedPrompt()"></textarea>
+            </div>
+
+            <div>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
+                    <span style="display:flex; align-items:center; gap:7px; color:var(--primary); font-weight:600; font-size:13px;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Generated Prompt
+                    </span>
+                    <span style="font-size:11px; color:var(--gray);">~<span id="tokenCount">0</span> tokens</span>
+                    <button class="btn btn-primary btn-sm" onclick="copyGeneratedPrompt()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Copy Prompt
+                    </button>
+                </div>
+                <textarea id="generatedPromptDisplay" rows="8" readonly
+                    style="background:var(--darker); border-radius:14px; padding:14px; width:100%; font-family:monospace; font-size:12px; line-height:1.55; resize:vertical; border:1px solid var(--border); color:var(--light); outline:none;"></textarea>
+            </div>
+
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <button class="btn btn-primary" onclick="goToPasteFromProfessor()">
+                    Next: Paste JSON
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+                <p style="font-size:10px; color:var(--gray); display:flex; align-items:center; gap:5px; margin:0;">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                    Copy the prompt → run in any AI → paste the JSON back
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+
+// ── DB ────────────────────────────────────────────────────────────────
+const DB_NAME = 'ExamMasterDB', DB_VERSION = 2;
+let db;
+
+function openDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onerror = () => reject(req.error);
+        req.onsuccess = () => { db = req.result; resolve(db); };
+        req.onupgradeneeded = ev => {
+            const d = ev.target.result;
+            if (!d.objectStoreNames.contains('exams')) {
+                const s = d.createObjectStore('exams', { keyPath: 'id' });
+                s.createIndex('subject', 'subject');
+                s.createIndex('updatedAt', 'updatedAt');
+            }
+            if (!d.objectStoreNames.contains('results')) {
+                const s = d.createObjectStore('results', { keyPath: 'id', autoIncrement: true });
+                s.createIndex('examId', 'examId');
+                s.createIndex('date', 'date');
+            }
+            if (!d.objectStoreNames.contains('jsonFiles')) {
+                const s = d.createObjectStore('jsonFiles', { keyPath: 'name' });
+                s.createIndex('lastModified', 'lastModified');
+            }
+            if (!d.objectStoreNames.contains('settings'))
+                d.createObjectStore('settings', { keyPath: 'key' });
+        };
+    });
+}
+
+const dbGet    = (store, key) => new Promise((res, rej) => { const tx = db.transaction(store, 'readonly'); const req = key ? tx.objectStore(store).get(key) : tx.objectStore(store).getAll(); req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
+const dbPut    = (store, item) => new Promise((res, rej) => { const tx = db.transaction(store, 'readwrite'); const req = tx.objectStore(store).put(item); req.onsuccess = () => res(req.result); req.onerror = () => rej(req.error); });
+const dbDelete = (store, key) => new Promise((res, rej) => { const tx = db.transaction(store, 'readwrite'); const req = tx.objectStore(store).delete(key); req.onsuccess = () => res(); req.onerror = () => rej(req.error); });
+const dbClear  = (store) => new Promise((res, rej) => { const tx = db.transaction(store, 'readwrite'); const req = tx.objectStore(store).clear(); req.onsuccess = () => res(); req.onerror = () => rej(req.error); });
+const dbGetAll = (store) => dbGet(store);
+
+async function migrateFromLocalStorage() {
+    const migrated = await dbGet('settings', 'migrated');
+    if (migrated) return;
+    loadingStatus.textContent = 'Migrating data…';
+    for (const e of JSON.parse(localStorage.getItem('exams') || '[]')) await dbPut('exams', e);
+    for (const r of JSON.parse(localStorage.getItem('exam_results') || '[]')) await dbPut('results', r);
+    for (const f of JSON.parse(localStorage.getItem('json_files') || '[]')) await dbPut('jsonFiles', f);
+    const prem = localStorage.getItem('premium');
+    if (prem) await dbPut('settings', { key: 'premium', value: prem });
+    await dbPut('settings', { key: 'migrated', value: true });
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let files = [], results = [], currentPage = 'home';
+let currentFile = null, currentPracticeIndex = 0, userAnswers = [], examTimer = null, timeLeft = 0;
+let editingExamId = null, questions = [];
+let isTimerPaused = false;
+
+const contentArea      = document.getElementById('contentArea');
+const fileManagerPanel = document.getElementById('fileManagerPanel');
+const overlay          = document.getElementById('loadingOverlay');
+const progressBar      = document.getElementById('loadingProgressBar');
+const loadingStatus    = document.getElementById('loadingStatus');
+
+// ── LOADING ───────────────────────────────────────────────────────────
+function updateLoadProgress(pct, text) {
+    progressBar.style.width = pct + '%';
+    if (text) loadingStatus.textContent = text;
+    if (pct >= 100) setTimeout(() => { overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 600); }, 200);
+}
+
+// ── PREMIUM ───────────────────────────────────────────────────────────
+async function getPremium() {
+    const local = localStorage.getItem('premium');
+    if (local) { try { const p = JSON.parse(local); await dbPut('settings', { key: 'premium', value: local }); return p; } catch(e) {} }
+    const entry = await dbGet('settings', 'premium');
+    if (entry) { try { return JSON.parse(entry.value); } catch(e) {} }
+    return { active: false };
+}
+
+async function updatePremiumUI() {
+    const p = await getPremium();
+    const banner = document.getElementById('premiumBanner');
+    const star = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15 9 22 9 16 14 19 22 12 17 5 22 8 14 2 9 9 9 12 2"/></svg>';
+    const crown = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4l4 8 6-6 6 6 4-8-6 4-4-6-4 6-6-4z"/><path d="M4 20h16"/></svg>';
+    if (p.active) {
+        banner.innerHTML = `<span>${crown} PREMIUM ACCOUNT</span><span class="premium-pill">Unlimited</span>`;
+        banner.style.background = 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(217,119,6,0.15))';
+        banner.style.borderColor = 'rgba(245,158,11,0.3)';
+    } else {
+        banner.innerHTML = `<span>${star} FREE ACCOUNT</span><span class="premium-pill">2 files · 5 Q/file</span><button class="upgrade-btn" onclick="window.location.href='payment_dashboard.html'"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg> Upgrade</button>`;
+    }
+    window.isPremium = p.active;
+}
+
+// ── DATA ──────────────────────────────────────────────────────────────
+async function loadAllFilesFromDB() {
+    files = (await dbGetAll('exams')).map(f => ({
+        ...f, id: String(f.id),
+        name: f.name || f.title || 'Untitled',
+        questions: f.questions || [],
+        timeLimit: f.timeLimit || 30
+    }));
+    results = await dbGetAll('results');
+}
+
+async function loadData() {
+    await loadAllFilesFromDB();
+    if (!files.length) {
+        const sample = { id: 'sample1', name: 'Biology Basics', subject: 'Biology', difficulty: 'Easy', timeLimit: 20, questions: [{ text: 'What is the powerhouse of the cell?', options: ['Nucleus','Mitochondria','Ribosome','Golgi'], correct: 1 }] };
+        await dbPut('exams', sample);
+        files = [sample];
+    }
+    loadFromJSONProcessor();
+}
+
+async function loadFromJSONProcessor() {
+    const sync = localStorage.getItem('exam_json_sync');
+    if (sync) {
+        try {
+            const parsed = JSON.parse(sync);
+            for (const e of parsed) { e.id = String(e.id || 'sync_' + Date.now()); await dbPut('exams', e); }
+            localStorage.removeItem('exam_json_sync');
+            files = await dbGetAll('exams');
+        } catch(e) {}
+    }
+    const single = localStorage.getItem('exam_json_single');
+    if (single) {
+        try {
+            const parsed = JSON.parse(single);
+            for (const e of parsed) { e.id = String(e.id || 'single_' + Date.now()); await dbPut('exams', e); }
+            localStorage.removeItem('exam_json_single');
+            files = await dbGetAll('exams');
+        } catch(e) {}
+    }
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+function showToast(msg, error = false) {
+    const t = document.createElement('div');
+    t.className = 'toast' + (error ? ' error' : '');
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 2400);
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────
+function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+function formatTime(s) { const m = Math.floor(s / 60), sec = s % 60; return `${m}:${sec.toString().padStart(2, '0')}`; }
+
+// ── PAGE ROUTING ──────────────────────────────────────────────────────
+function setPage(page) {
+    currentPage = page;
+    document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+    if (page === 'home')    renderHome();
+    else if (page === 'files')   renderFiles();
+    else if (page === 'results') renderResults();
+    else if (page === 'create')  renderCreatePage();
+}
+
+// ── HOME ──────────────────────────────────────────────────────────────
+function renderHome() {
+    fileManagerPanel.style.display = 'none';
+    const totalQ = files.reduce((s, f) => s + (f.questions?.length || 0), 0);
+    const avg    = results.length ? Math.round(results.reduce((s, r) => s + r.percentage, 0) / results.length) : 0;
+
+    contentArea.innerHTML = `
+        <div class="stats-grid">
+            <div class="stat-card anim-0" onclick="setPage('files')">
+                <div class="stat-number">${files.length}</div>
+                <div class="stat-label">Exams</div>
+            </div>
+            <div class="stat-card anim-1" onclick="setPage('files')">
+                <div class="stat-number">${totalQ}</div>
+                <div class="stat-label">Questions</div>
+            </div>
+            <div class="stat-card anim-2" onclick="setPage('results')">
+                <div class="stat-number">${avg}%</div>
+                <div class="stat-label">Avg Score</div>
+            </div>
+            <div class="stat-card anim-3" onclick="setPage('results')">
+                <div class="stat-number">${results.length}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+
+        <div class="card anim-1">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                Quick Actions
+            </div>
+            <div class="action-row">
+                <button class="icon-btn" onclick="setPage('create')">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Create Exam
+                </button>
+                <button class="icon-btn" onclick="openPasteModal()">
+                    <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                    Paste JSON
+                </button>
+                <button class="icon-btn accent" onclick="openProfessorModal()">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    Exam Professor
+                </button>
+                <button class="icon-btn" onclick="window.location.href='json_editor.html'">
+                    <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    JSON Editor
+                </button>
+            </div>
+        </div>
+
+        <div class="card anim-2">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Recent Results
+            </div>
+            ${results.length === 0 ? '<div style="color:var(--text-lo); font-size:0.85rem; text-align:center; padding:20px 0;">No exams taken yet — start practising!</div>' :
+            results.slice(0, 5).map(r => `
+                <div class="result-row">
+                    <span class="result-row-name">${escapeHtml(r.examTitle || r.fileTitle || 'Untitled')}</span>
+                    <span class="result-row-pct ${r.percentage >= 70 ? 'pct-pass' : 'pct-fail'}">${r.percentage}%</span>
+                </div>
+            `).join('')}
+        </div>
+    `;
+}
+
+// ── FILES ─────────────────────────────────────────────────────────────
+function renderFiles() {
+    fileManagerPanel.style.display = 'block';
+    refreshFileList();
+    contentArea.innerHTML = `<div class="card"><div style="color:var(--text-lo); font-size:0.85rem;">Select an exam from the panel →</div></div>`;
+}
+
+function refreshFileList() {
+    const term = (document.getElementById('fileSearchInput')?.value || '').toLowerCase();
+    const filtered = term ? files.filter(f => (f.name || '').toLowerCase().includes(term)) : files;
+    const container = document.getElementById('fileList');
+    if (!filtered.length) { container.innerHTML = '<div style="color:var(--text-lo); font-size:12px; text-align:center; padding:16px;">No exams found</div>'; return; }
+
+    container.innerHTML = filtered.map(f => `
+        <div class="file-item" data-file-id="${f.id}">
+            <div class="file-info">
+                <div class="file-title">${escapeHtml(f.name)}</div>
+                <div class="file-meta">
+                    <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> ${f.questions?.length || 0} Q</span>
+                    <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${f.timeLimit || 30}m</span>
+                    <span>${f.difficulty || 'Medium'}</span>
+                </div>
+            </div>
+            <div class="file-actions">
+                <button class="edit-file-btn" data-id="${f.id}" title="Edit">
+                    <svg viewBox="0 0 24 24"><path d="M17 3l4 4L7 21H3v-4L17 3z"/></svg>
+                </button>
+                <button class="edit-json-btn" data-id="${f.id}" title="JSON Editor">
+                    <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                </button>
+                <button class="delete-file-btn btn-del" data-id="${f.id}" title="Delete">
+                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+                <button class="practice-file-btn btn-play" data-id="${f.id}" title="Practice">
+                    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    container.querySelectorAll('.file-item').forEach(item => {
+        item.addEventListener('click', e => { if (e.target.closest('button')) return; startPractice(item.dataset.fileId); });
+    });
+    container.querySelectorAll('.edit-file-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); editFile(btn.dataset.id); }));
+    container.querySelectorAll('.edit-json-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); editInJsonEditor(btn.dataset.id); }));
+    container.querySelectorAll('.delete-file-btn').forEach(btn => btn.addEventListener('click', async e => {
+        e.stopPropagation();
+        if (!confirm('Delete this exam permanently?')) return;
+        const id = btn.dataset.id;
+        await dbDelete('exams', id);
+        files = files.filter(f => f.id !== id);
+        localStorage.setItem('db_updated', Date.now());
+        refreshFileList();
+        showToast('Exam deleted');
+    }));
+    container.querySelectorAll('.practice-file-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); startPractice(btn.dataset.id); }));
+}
+
+function editInJsonEditor(id) {
+    const exam = files.find(f => String(f.id) === String(id));
+    if (!exam) { showToast('Exam not found', true); return; }
+    localStorage.setItem('exam_to_edit', JSON.stringify(exam));
+    window.location.href = 'json_editor.html';
+}
+
+function editFile(id) {
+    const exam = files.find(f => String(f.id) === String(id));
+    if (exam) renderCreatePage(exam);
+}
+
+// ── RESULTS ───────────────────────────────────────────────────────────
+function renderResults() {
+    fileManagerPanel.style.display = 'none';
+    if (!results.length) {
+        contentArea.innerHTML = '<div class="card" style="text-align:center; padding:40px;"><div style="color:var(--text-lo); font-size:0.9rem;">No practice results yet.<br>Take an exam to see your progress!</div></div>';
+        return;
+    }
+
+    let html = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div style="font-family:var(--font-head); font-weight:700; font-size:1rem; color:var(--text-hi);">${results.length} Result${results.length !== 1 ? 's' : ''}</div>
+        <button class="clear-all-btn" id="clear-results-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Clear All
+        </button>
+    </div>`;
+
+    results.forEach((r, idx) => {
+        const totalQ = r.total || r.answers?.length || 0;
+        const correct = r.score || 0;
+        const pct = r.percentage || 0;
+        let scoreClass = pct >= 90 ? 'excellent' : pct >= 75 ? 'good' : pct >= 50 ? 'average' : 'poor';
+
+        html += `<div class="result-card">
+            <div class="result-header">
+                <div class="result-title">${escapeHtml(r.examTitle || r.fileTitle || 'Untitled Exam')}</div>
+                <div class="result-score ${scoreClass}">${pct}%</div>
+            </div>
+            <div class="result-meta">
+                <span><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${new Date(r.date).toLocaleDateString()}</span>
+                <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${formatTime(r.timeSpent || 0)}</span>
+                <span>${totalQ} questions</span>
+            </div>
+            <div class="result-summary">
+                <div class="result-summary-item"><span style="color:var(--emerald);">✓</span> ${correct} correct</div>
+                <div class="result-summary-item"><span style="color:var(--crimson);">✗</span> ${totalQ - correct} wrong</div>
+            </div>
+            <div class="result-actions">
+                <button class="btn-review" onclick="toggleReviewDetails(${idx})">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    Review Answers
+                </button>
+                <button class="clear-all-btn btn-sm" onclick="deleteResult(${idx})" style="padding:9px 14px;">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                </button>
+            </div>
+            <div class="review-details" id="review-${idx}">
+                ${(r.answers || []).map((a, ai) => `
+                    <div class="review-question-item">
+                        <div class="review-question-header" onclick="this.nextElementSibling.classList.toggle('show')">
+                            <div class="review-status-icon ${a.isCorrect ? 'correct' : 'incorrect'}">${a.isCorrect ? '✓' : '✗'}</div>
+                            <div class="review-question-text">${escapeHtml(a.text)}</div>
+                        </div>
+                        <div class="review-question-details">
+                            <div class="answer-row"><span class="answer-label">Your answer:</span><span class="answer-value ${a.isCorrect ? 'correct-answer' : ''}">${escapeHtml(a.userAnswer)}</span></div>
+                            ${!a.isCorrect ? `<div class="answer-row"><span class="answer-label">Correct:</span><span class="answer-value correct-answer">${escapeHtml(a.correctAnswer)}</span></div>` : ''}
+                            ${a.explanation ? `<div class="answer-row"><span class="answer-label">Explanation:</span><span class="answer-value">${escapeHtml(a.explanation)}</span></div>` : ''}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>`;
+    });
+
+    contentArea.innerHTML = html;
+
+    document.getElementById('clear-results-btn')?.addEventListener('click', async () => {
+        if (!confirm('Clear all results?')) return;
+        await dbClear('results');
+        results = [];
+        renderResults();
+        showToast('Results cleared');
+    });
+}
+
+window.toggleReviewDetails = function(idx) {
+    const el = document.getElementById('review-' + idx);
+    if (el) el.classList.toggle('show');
+};
+
+window.deleteResult = async function(idx) {
+    if (!confirm('Delete this result?')) return;
+    const r = results[idx];
+    if (r?.id) await dbDelete('results', r.id);
+    results.splice(idx, 1);
+    renderResults();
+    showToast('Result deleted');
+};
+
+// ── CREATE PAGE ───────────────────────────────────────────────────────
+let currentStep = 1;
+
+function renderCreatePage(examToEdit = null) {
+    fileManagerPanel.style.display = 'none';
+    if (examToEdit) {
+        editingExamId = examToEdit.id;
+        questions = examToEdit.questions ? examToEdit.questions.map(q => ({ ...q })) : [];
+    } else {
+        editingExamId = null;
+        questions = [];
+    }
+    currentStep = 1;
+
+    contentArea.innerHTML = `
+    <div class="step-wizard">
+        <div class="step-indicator">
+            ${[['1','Details'],['2','Questions'],['3','Settings'],['4','Review']].map(([n,l]) => `
+            <div class="step-item ${+n === currentStep ? 'active' : +n < currentStep ? 'completed' : ''}" onclick="goToStep(${n})">
+                <div class="step-number">${n}</div>
+                <div class="step-label">${l}</div>
+            </div>`).join('')}
+        </div>
+        <div class="step-content" id="stepContent"></div>
+    </div>`;
+
+    renderStep(1, examToEdit);
+}
+
+function renderStep(step, examData = null) {
+    currentStep = step;
+    // Update indicator
+    document.querySelectorAll('.step-item').forEach((el, i) => {
+        el.className = 'step-item' + (i + 1 === step ? ' active' : i + 1 < step ? ' completed' : '');
+    });
+    const content = document.getElementById('stepContent');
+    if (!content) return;
+
+    if (step === 1) {
+        const d = examData || {};
+        content.innerHTML = `<div class="create-card">
+            <div class="form-group">
+                <div class="form-label">Exam Name *</div>
+                <input id="examName" class="form-input" placeholder="e.g. Biology Chapter 3" value="${escapeHtml(d.name || '')}">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <div class="form-label">Subject</div>
+                    <input id="examSubject" class="form-input" placeholder="Biology" value="${escapeHtml(d.subject || '')}">
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Difficulty</div>
+                    <select id="examDifficulty" class="form-select">
+                        ${['Easy','Medium','Hard'].map(v => `<option ${(d.difficulty || 'Medium') === v ? 'selected' : ''}>${v}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-label">Description (optional)</div>
+                <textarea id="examDesc" class="form-input form-textarea" rows="3" placeholder="What is this exam about?">${escapeHtml(d.description || '')}</textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+                <button class="btn btn-primary" onclick="goToStep(2)">Next → Questions</button>
+            </div>
+        </div>`;
+    } else if (step === 2) {
+        content.innerHTML = `<div class="create-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                <div style="font-family:var(--font-head); font-weight:700; color:var(--text-hi);">${questions.length} Question${questions.length !== 1 ? 's' : ''}</div>
+                <div style="display:flex; gap:7px; flex-wrap:wrap;">
+                    <button class="btn btn-outline btn-sm" onclick="addQuestion()">+ Add Question</button>
+                    <button class="btn btn-outline btn-sm" onclick="openPasteModal()">Paste JSON</button>
+                </div>
+            </div>
+            <div id="questionsContainer">${renderQuestionsHTML()}</div>
+            <div style="display:flex; justify-content:space-between; margin-top:12px;">
+                <button class="btn btn-outline btn-sm" onclick="goToStep(1)">← Back</button>
+                <button class="btn btn-primary" onclick="goToStep(3)">Next → Settings</button>
+            </div>
+        </div>`;
+    } else if (step === 3) {
+        const d = examData || {};
+        content.innerHTML = `<div class="create-card">
+            <div class="form-row">
+                <div class="form-group">
+                    <div class="form-label">Time Limit (minutes)</div>
+                    <input id="examTime" type="number" class="form-input" min="1" max="300" value="${d.timeLimit || 30}">
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Passing Score (%)</div>
+                    <input id="examPass" type="number" class="form-input" min="0" max="100" value="${d.passingScore || 70}">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-label">Subject Type</div>
+                <select id="examSubjectType" class="form-select">
+                    <option value="theory" ${(d.subjectType || 'theory') === 'theory' ? 'selected' : ''}>📚 Theory</option>
+                    <option value="calculation" ${d.subjectType === 'calculation' ? 'selected' : ''}>📊 Calculation</option>
+                </select>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:8px;">
+                <button class="btn btn-outline btn-sm" onclick="goToStep(2)">← Back</button>
+                <button class="btn btn-primary" onclick="goToStep(4)">Next → Review</button>
+            </div>
+        </div>`;
+    } else if (step === 4) {
+        const name = document.getElementById('examName')?.value || 'Untitled';
+        const qCount = questions.length;
+        content.innerHTML = `<div class="create-card">
+            <div style="text-align:center; padding:20px 0;">
+                <div style="font-family:var(--font-head); font-size:1.4rem; font-weight:800; color:var(--emerald); margin-bottom:8px;">${escapeHtml(name)}</div>
+                <div style="color:var(--text-md); font-size:0.9rem; margin-bottom:24px;">${qCount} question${qCount !== 1 ? 's' : ''} ready</div>
+                ${qCount === 0 ? `<div style="color:var(--amber); font-size:0.85rem; margin-bottom:16px;">⚠ Add at least one question before saving.</div>` : ''}
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                    <button class="btn btn-outline" onclick="goToStep(3)">← Back</button>
+                    <button class="btn btn-primary" onclick="saveExam()" ${qCount === 0 ? 'disabled' : ''}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                        Save Exam
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }
+}
+
+window.goToStep = function(step) { renderStep(step); };
+
+function renderQuestionsHTML() {
+    if (!questions.length) return '<div style="color:var(--text-lo); font-size:0.85rem; text-align:center; padding:20px;">No questions yet — click Add Question.</div>';
+    return questions.map((q, i) => `
+        <div class="question-card-compact" id="qcard-${i}">
+            <div class="question-header" onclick="toggleQuestionBody(${i})">
+                <div class="question-header-left">
+                    <div class="question-number">${i + 1}</div>
+                    <div class="question-preview">${escapeHtml(q.text || 'New question…')}</div>
+                </div>
+                <button class="delete-question-btn" onclick="event.stopPropagation(); deleteQuestion(${i})">✕</button>
+            </div>
+            <div class="question-body" id="qbody-${i}">
+                <div class="form-group">
+                    <div class="form-label">Question Text</div>
+                    <textarea class="form-input" rows="2" onchange="updateQuestionText(${i}, this.value)">${escapeHtml(q.text || '')}</textarea>
+                </div>
+                <div class="options-grid-compact">
+                    ${['A','B','C','D'].map((letter, oi) => `
+                    <div class="option-input-compact">
+                        <input type="radio" name="correct-${i}" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateCorrect(${i}, ${oi})">
+                        <input type="text" placeholder="${letter}" value="${escapeHtml(q.options?.[oi] || '')}" onchange="updateOption(${i}, ${oi}, this.value)">
+                    </div>`).join('')}
+                </div>
+                <div class="form-group" style="margin-top:8px; margin-bottom:0;">
+                    <div class="form-label">Explanation (optional)</div>
+                    <textarea class="form-input" rows="2" onchange="updateExplanation(${i}, this.value)">${escapeHtml(q.explanation || '')}</textarea>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+window.toggleQuestionBody = i => {
+    const b = document.getElementById('qbody-' + i);
+    if (b) b.classList.toggle('collapsed');
+};
+window.addQuestion = () => {
+    questions.push({ text: '', options: ['', '', '', ''], correct: 0, explanation: '' });
+    const c = document.getElementById('questionsContainer');
+    if (c) c.innerHTML = renderQuestionsHTML();
+};
+window.deleteQuestion = i => { questions.splice(i, 1); const c = document.getElementById('questionsContainer'); if (c) c.innerHTML = renderQuestionsHTML(); };
+window.updateQuestionText = (i, v) => { questions[i].text = v; };
+window.updateOption = (i, oi, v) => { if (!questions[i].options) questions[i].options = ['','','','']; questions[i].options[oi] = v; };
+window.updateCorrect = (i, oi) => { questions[i].correct = oi; };
+window.updateExplanation = (i, v) => { questions[i].explanation = v; };
+
+async function checkLimits() {
+    if (window.isPremium) return { allowed: true };
+    const totalQ = files.reduce((s, e) => s + (e.questions?.length || 0), 0);
+    if (!editingExamId && files.length >= 2) return { allowed: false, reason: 'Free tier: max 2 exams.' };
+    if (questions.length > 5) return { allowed: false, reason: 'Max 5 questions per exam.' };
+    let existing = totalQ;
+    if (editingExamId) { const old = files.find(e => e.id === editingExamId); if (old) existing -= old.questions?.length || 0; }
+    if (existing + questions.length > 10) return { allowed: false, reason: 'Total questions cannot exceed 10.' };
+    return { allowed: true };
+}
+
+window.saveExam = async function() {
+    const name = document.getElementById('examName')?.value?.trim();
+    if (!name) { showToast('Please enter an exam name', true); goToStep(1); return; }
+    if (!questions.length) { showToast('Add at least one question', true); return; }
+    const limit = await checkLimits();
+    if (!limit.allowed) { showToast(limit.reason, true); return; }
+    const exam = {
+        id: editingExamId || String(Date.now()),
+        name,
+        subject: document.getElementById('examSubject')?.value?.trim() || '',
+        difficulty: document.getElementById('examDifficulty')?.value || 'Medium',
+        description: document.getElementById('examDesc')?.value?.trim() || '',
+        timeLimit: parseInt(document.getElementById('examTime')?.value) || 30,
+        passingScore: parseInt(document.getElementById('examPass')?.value) || 70,
+        subjectType: document.getElementById('examSubjectType')?.value || 'theory',
+        questions,
+        updatedAt: new Date().toISOString()
+    };
+    await dbPut('exams', exam);
+    files = await dbGetAll('exams');
+    localStorage.setItem('db_updated', Date.now());
+    editingExamId = null;
+    questions = [];
+    setPage('files');
+    showToast(editingExamId ? 'Exam updated!' : 'Exam saved!');
+};
+
+// ── PRACTICE ──────────────────────────────────────────────────────────
+function startPractice(id) {
+    currentFile = files.find(f => String(f.id) === String(id));
+    if (!currentFile) { showToast('Exam not found', true); return; }
+    currentPracticeIndex = 0;
+    userAnswers = new Array(currentFile.questions.length).fill(null);
+    timeLeft = currentFile.timeLimit * 60;
+    isTimerPaused = false;
+
+    const timerEl = document.getElementById('timerDisplay');
+    const pause = document.getElementById('pauseIndicator');
+    const status = document.getElementById('timerStatus');
+    if (pause) pause.textContent = '';
+    if (timerEl) { timerEl.style.opacity = '1'; timerEl.classList.remove('warning', 'paused'); }
+    if (status) { status.textContent = 'tap to pause'; status.classList.remove('paused'); }
+
+    const mTitle = document.getElementById('modalTitle');
+    if (mTitle) mTitle.innerHTML = `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> ${escapeHtml(currentFile.name)}`;
+
+    renderPracticeQuestion();
+    if (examTimer) clearInterval(examTimer);
+    examTimer = setInterval(updatePracticeTimer, 1000);
+    document.getElementById('practiceModal').style.display = 'flex';
+}
+
+window.closePracticeModal = function() {
+    if (examTimer) { clearInterval(examTimer); examTimer = null; }
+    isTimerPaused = false;
+    const scroll = document.getElementById('questionsScrollArea');
+    if (scroll) { scroll.style.opacity = '1'; scroll.style.filter = 'none'; scroll.style.pointerEvents = 'auto'; }
+    document.getElementById('practiceModal').style.display = 'none';
+    currentFile = null;
+};
+
+function renderPracticeQuestion() {
+    const q = currentFile.questions[currentPracticeIndex];
+    const pct = ((currentPracticeIndex + 1) / currentFile.questions.length) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('questionCounter').textContent = `${currentPracticeIndex + 1} / ${currentFile.questions.length}`;
+
+    const optionsHtml = q.options.map((opt, idx) => `
+        <div class="option-item ${userAnswers[currentPracticeIndex] === idx ? 'selected' : ''}" onclick="selectPracticeOption(${idx})">
+            <input type="radio" name="practiceQ" value="${idx}" ${userAnswers[currentPracticeIndex] === idx ? 'checked' : ''}>
+            <span class="option-label">${String.fromCharCode(65 + idx)}. ${escapeHtml(opt)}</span>
+        </div>
+    `).join('');
+
+    document.getElementById('questionDisplay').innerHTML = `
+        <div class="question-card">
+            <div class="question-text">${escapeHtml(q.text)}</div>
+            <div class="options-grid">${optionsHtml}</div>
+        </div>
+    `;
+
+    const panel = document.getElementById('revealPanel');
+    const btn = document.getElementById('revealAnswerBtn');
+    panel.style.display = 'none';
+    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> Reveal`;
+
+    document.getElementById('prevBtn').disabled = (currentPracticeIndex === 0);
+    document.getElementById('nextBtn').innerHTML = currentPracticeIndex === currentFile.questions.length - 1
+        ? 'Finish <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13h11.17l-5.59 5.59L12 20l8-8-8-8-1.41 1.41L16.17 11H5v2z"/></svg>'
+        : 'Next <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>';
+
+    if (typeof renderMathInElement !== 'undefined') renderMath(document.getElementById('questionDisplay'));
+}
+
+window.selectPracticeOption = function(idx) {
+    userAnswers[currentPracticeIndex] = idx;
+    document.querySelectorAll('input[name="practiceQ"]').forEach((r, i) => r.checked = i === idx);
+    document.querySelectorAll('.option-item').forEach((el, i) => el.classList.toggle('selected', i === idx));
+};
+
+function nextPrev(delta) {
+    if (delta === 1 && currentPracticeIndex === currentFile.questions.length - 1) {
+        if (confirm('Submit exam?')) submitPractice();
+        return;
+    }
+    currentPracticeIndex = Math.min(Math.max(currentPracticeIndex + delta, 0), currentFile.questions.length - 1);
+    renderPracticeQuestion();
+}
+
+// ── TIMER ─────────────────────────────────────────────────────────────
+window.toggleTimerPause = function() {
+    isTimerPaused = !isTimerPaused;
+    const timerEl   = document.getElementById('timerDisplay');
+    const indicator = document.getElementById('pauseIndicator');
+    const status    = document.getElementById('timerStatus');
+    const scroll    = document.getElementById('questionsScrollArea');
+    if (isTimerPaused) {
+        clearInterval(examTimer); examTimer = null;
+        if (indicator) indicator.textContent = '⏸';
+        if (timerEl)   timerEl.classList.add('paused');
+        if (status)    { status.textContent = 'paused'; status.classList.add('paused'); }
+        if (scroll)    { scroll.style.opacity = '0.4'; scroll.style.filter = 'blur(3px)'; scroll.style.pointerEvents = 'none'; }
+    } else {
+        if (indicator) indicator.textContent = '';
+        if (timerEl)   timerEl.classList.remove('paused');
+        if (status)    { status.textContent = 'tap to pause'; status.classList.remove('paused'); }
+        if (scroll)    { scroll.style.opacity = '1'; scroll.style.filter = 'none'; scroll.style.pointerEvents = 'auto'; }
+        examTimer = setInterval(updatePracticeTimer, 1000);
+    }
+};
+window.toggleTimerPause = window.toggleTimerPause;
+
+function updatePracticeTimer() {
+    if (isTimerPaused) return;
+    if (timeLeft <= 0) { clearInterval(examTimer); examTimer = null; submitPractice(); return; }
+    timeLeft--;
+    const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+    const timerText = document.getElementById('timerText');
+    if (timerText) timerText.textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    const timerEl = document.getElementById('timerDisplay');
+    if (timerEl) timerEl.classList.toggle('warning', timeLeft <= 60);
+}
+
+// ── REVEAL ────────────────────────────────────────────────────────────
+window.toggleRevealAnswer = function() {
+    const panel = document.getElementById('revealPanel');
+    const btn   = document.getElementById('revealAnswerBtn');
+    const q     = currentFile.questions[currentPracticeIndex];
+
+    if (panel.style.display === 'none') {
+        const correctLetter = String.fromCharCode(65 + q.correct);
+        const explanationHtml = renderMixedExplanation(q.explanation || '_No explanation provided._', currentFile.subjectType || 'theory');
+        panel.innerHTML = `<div class="reveal-panel">
+            <div class="correct-answer"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg> Answer: ${correctLetter}. ${escapeHtml(q.options[q.correct])}</div>
+            <div class="explanation">${explanationHtml}</div>
+        </div>`;
+        panel.style.display = 'block';
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg> Hide`;
+        if (typeof renderMathInElement !== 'undefined') renderMath(panel);
+    } else {
+        panel.style.display = 'none';
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg> Reveal`;
+    }
+};
+
+// ── SUBMIT ────────────────────────────────────────────────────────────
+async function submitPractice() {
+    if (examTimer) { clearInterval(examTimer); examTimer = null; }
+    isTimerPaused = false;
+    const scroll = document.getElementById('questionsScrollArea');
+    if (scroll) { scroll.style.opacity = '1'; scroll.style.filter = 'none'; scroll.style.pointerEvents = 'auto'; }
+
+    let correct = 0;
+    const answers = currentFile.questions.map((q, i) => {
+        const isCorrect = userAnswers[i] === q.correct;
+        if (isCorrect) correct++;
+        return { text: q.text, userAnswer: userAnswers[i] !== null ? q.options[userAnswers[i]] : 'Not answered', correctAnswer: q.options[q.correct], isCorrect, explanation: q.explanation || '' };
+    });
+    const pct = Math.round((correct / currentFile.questions.length) * 100);
+    const result = { examId: currentFile.id, examTitle: currentFile.name, date: new Date().toISOString(), score: correct, total: currentFile.questions.length, percentage: pct, timeSpent: (currentFile.timeLimit * 60) - timeLeft, answers };
+    await dbPut('results', result);
+    results = await dbGetAll('results');
+    closePracticeModal();
+    setPage('results');
+    showToast(`Score: ${pct}%`);
+}
+
+// ── MATH / MARKDOWN ───────────────────────────────────────────────────
+function renderMath(container) {
+    if (!container || typeof renderMathInElement === 'undefined') return;
+    try {
+        renderMathInElement(container, {
+            delimiters: [{ left: '\\(', right: '\\)', display: false }, { left: '\\[', right: '\\]', display: true }, { left: '$$', right: '$$', display: true }],
+            throwOnError: false
+        });
+    } catch(e) {}
+}
+
+function renderMixedExplanation(raw, subjectType = 'theory') {
+    if (!raw) return '';
+    if (typeof marked === 'undefined') return `<pre style="white-space:pre-wrap; word-break:break-word;">${escapeHtml(raw)}</pre>`;
+    const latexBlocks = [], latexInlines = [];
+    let processed = raw
+        .replace(/\\\[([\s\S]*?)\\\]/g, (_, m) => { latexBlocks.push(m); return `{{LB_${latexBlocks.length-1}}}`; })
+        .replace(/\$\$([\s\S]*?)\$\$/g, (_, m) => { latexBlocks.push(m); return `{{LB_${latexBlocks.length-1}}}`; })
+        .replace(/\\\(([\s\S]*?)\\\)/g, (_, m) => { latexInlines.push(m); return `{{LI_${latexInlines.length-1}}}`; });
+    let html = marked.parse(processed);
+    latexBlocks.forEach((m, i) => { html = html.replace(new RegExp(`\\{\\{LB_${i}\\}\\}`, 'g'), `\\[${m}\\]`); });
+    latexInlines.forEach((m, i) => { html = html.replace(new RegExp(`\\{\\{LI_${i}\\}\\}`, 'g'), `\\(${m}\\)`); });
+    return html;
+}
+
+// ── PASTE JSON MODAL ──────────────────────────────────────────────────
+let pasteTargetExamId = null;
+
+window.openPasteModal = function(examId) {
+    pasteTargetExamId = examId || null;
+    document.getElementById('pasteJsonModal').style.display = 'flex';
+    document.getElementById('pasteErrorPanel').style.display = 'none';
+    updateLineNumbers();
+};
+window.closePasteModal = function() { document.getElementById('pasteJsonModal').style.display = 'none'; };
+window.clearPasteInput = function() { document.getElementById('pasteJsonInput').value = ''; updateLineNumbers(); };
+window.pasteFromClipboard = async function() {
+    try { document.getElementById('pasteJsonInput').value = await navigator.clipboard.readText(); updateLineNumbers(); }
+    catch(e) { showToast('Clipboard access denied', true); }
+};
+window.copyErrorMessage = function() {
+    const err = document.getElementById('pasteError')?.textContent || '';
+    navigator.clipboard.writeText(err).then(() => showToast('Error copied'));
+};
+
+function updateLineNumbers() {
+    const ta = document.getElementById('pasteJsonInput');
+    const ln = document.getElementById('lineNumbers');
+    if (!ta || !ln) return;
+    const lines = ta.value.split('\n');
+    document.getElementById('lineCount').textContent = lines.length;
+    ln.innerHTML = lines.map((_, i) => i + 1).join('<br>');
+}
+
+function bindPasteModalEvents() {
+    const ta = document.getElementById('pasteJsonInput');
+    if (ta) ta.addEventListener('input', updateLineNumbers);
+}
+
+window.parseAndAddQuestions = async function() {
+    const raw = document.getElementById('pasteJsonInput')?.value?.trim();
+    const errPanel = document.getElementById('pasteErrorPanel');
+    const errEl = document.getElementById('pasteError');
+    if (!raw) { errEl.textContent = 'Input is empty.'; errPanel.style.display = 'block'; return; }
+    let parsed;
+    try { parsed = JSON.parse(raw); } catch(e) { errEl.textContent = 'JSON parse error: ' + e.message; errPanel.style.display = 'block'; return; }
+    if (!Array.isArray(parsed)) { errEl.textContent = 'Expected a JSON array.'; errPanel.style.display = 'block'; return; }
+
+    // Validate
+    const errors = [];
+    parsed.forEach((q, i) => {
+        if (!q.text) errors.push(`Q${i+1}: missing "text"`);
+        if (!Array.isArray(q.options) || q.options.length < 2) errors.push(`Q${i+1}: invalid "options"`);
+        if (typeof q.correct !== 'number') errors.push(`Q${i+1}: missing "correct"`);
+    });
+    if (errors.length) { errEl.textContent = errors.join('\n'); errPanel.style.display = 'block'; return; }
+
+    if (currentPage === 'create') {
+        questions.push(...parsed);
+        const c = document.getElementById('questionsContainer');
+        if (c) c.innerHTML = renderQuestionsHTML();
+        closePasteModal();
+        showToast(`${parsed.length} question${parsed.length !== 1 ? 's' : ''} added`);
+    } else {
+        // Save as new exam
+        const exam = { id: String(Date.now()), name: 'Imported Exam ' + new Date().toLocaleDateString(), subject: '', difficulty: 'Medium', timeLimit: 30, questions: parsed };
+        await dbPut('exams', exam);
+        files = await dbGetAll('exams');
+        localStorage.setItem('db_updated', Date.now());
+        closePasteModal();
+        setPage('files');
+        showToast(`Exam imported: ${parsed.length} questions`);
+    }
+    errPanel.style.display = 'none';
+};
+
+// ── PROFESSOR MODAL ───────────────────────────────────────────────────
+function openProfessorModal() {
+    updateGeneratedPrompt();
+    document.getElementById('professorConfigModal').style.display = 'flex';
+}
+function closeProfessorModal() {
+    document.getElementById('professorConfigModal').style.display = 'none';
+}
+
+function updateSubjectTypeHint() {
+    const subj = (document.getElementById('cfgSubject')?.value || '').toLowerCase();
+    const calcSubjects = ['math','physics','calculus','algebra','chemistry','engineering','statistics'];
+    const isCalc = calcSubjects.some(s => subj.includes(s));
+
+    const icon   = document.getElementById('subjectTypeIcon');
+    const hint   = document.getElementById('hintText');
+    const hIcon  = document.getElementById('hintIcon');
+    const bar    = document.getElementById('subjectHintBar');
+    const typeSel = document.getElementById('cfgSubjectType');
+
+    if (icon) icon.textContent = isCalc ? '🔢' : '📚';
+    if (typeSel && !typeSel.dataset.manual) typeSel.value = isCalc ? 'calculation' : 'theory';
+
+    if (isCalc) {
+        if (bar)  { bar.style.background = 'rgba(16,185,129,0.08)'; bar.style.borderColor = 'rgba(16,185,129,0.2)'; }
+        if (hIcon) hIcon.textContent = '📐';
+        if (hint)  hint.textContent = 'Step‑by‑step solutions with LaTeX formulas will be generated.';
+    } else {
+        if (bar)  { bar.style.background = 'rgba(59,130,246,0.08)'; bar.style.borderColor = 'rgba(59,130,246,0.2)'; }
+        if (hIcon) hIcon.textContent = '📚';
+        if (hint)  hint.textContent = 'Conceptual explanations with examples will be generated.';
+    }
+}
+
+function updateDistDisplay() {
+    const e = parseInt(document.getElementById('cfgEasyPct')?.value) || 0;
+    const m = parseInt(document.getElementById('cfgMediumPct')?.value) || 0;
+    const h = parseInt(document.getElementById('cfgHardPct')?.value) || 0;
+    const warn = document.getElementById('distWarning');
+    document.getElementById('easyVal').textContent   = e + '%';
+    document.getElementById('mediumVal').textContent = m + '%';
+    document.getElementById('hardVal').textContent   = h + '%';
+    if (warn) warn.textContent = (e + m + h) !== 100 ? `⚠️ Must total 100% (currently ${e+m+h}%)` : '';
+    updateGeneratedPrompt();
+}
+
+function updateGeneratedPrompt() {
+    const subject     = document.getElementById('cfgSubject')?.value.trim() || 'General';
+    const topics      = document.getElementById('cfgTopics')?.value.trim() || '';
+    const total       = document.getElementById('cfgTotalQuestions')?.value || 10;
+    const structure   = document.getElementById('cfgStructure')?.value || 'Multiple Choice';
+    const easy        = document.getElementById('cfgEasyPct')?.value || 20;
+    const medium      = document.getElementById('cfgMediumPct')?.value || 60;
+    const hard        = document.getElementById('cfgHardPct')?.value || 20;
+    const depth       = document.getElementById('cfgConceptDepth')?.value || 'Intermediate';
+    const realLife    = document.getElementById('cfgRealLife')?.value || 3;
+    const eduLevel    = document.getElementById('cfgEduLevel')?.value || 'High School';
+    const additional  = document.getElementById('cfgAdditional')?.value.trim() || '';
+    const subjectType = document.getElementById('cfgSubjectType')?.value || 'theory';
+    const expStyle    = document.getElementById('cfgExplanationStyle')?.value || 'conceptual';
+    const memory      = document.getElementById('cfgMemoryTricks')?.value || 'few';
+    const source      = document.getElementById('cfgSource')?.value || 'Include additional examples';
+
+    // Build explanation instruction
+    let expInstruction = '';
+    if (subjectType === 'calculation') {
+        expInstruction = `Provide the explanation using **Markdown** and **LaTeX**:
+- Numbered steps with bold titles: \`1. **Step Title**\`
+- Use \`\\\\[ ... \\\\]\` for display equations, \`\\\\( ... \\\\)\` for inline math.
+- End with \`**Answer:**\` followed by the final result.
+Example:
+\`\`\`
+1. **Write the equation**
+\\\\[ f(x) = ax^2 + bx + c \\\\]
+2. **Solve**
+\\\\[ x = \\\\frac{-b \\\\pm \\\\sqrt{b^2 - 4ac}}{2a} \\\\]
+**Answer:** \\\\( x = ... \\\\)
+\`\`\``;
+    } else {
+        expInstruction = `Provide explanation in **Markdown**. Use **bold**, *italic*, bullet lists, and \\\\(...\\\\) for inline math.`;
+        if (expStyle === 'stepwise') {
+            expInstruction += `\nStructure: **Key Point:** [summary] → **Why it matters:** [context]`;
+        } else if (expStyle === 'brief') {
+            expInstruction += `\nKeep it concise — 2‑3 sentences max.`;
+        } else {
+            expInstruction += `\nStructure: **Main Idea:** [core concept] — *Details:* [supporting info]`;
+        }
+    }
+
+    if (memory !== 'none') expInstruction += `\n💡 Include **${memory}** memory trick(s) or mnemonic(s).`;
+
+    const prompt =
+`You are an expert exam professor creating ${total} questions for a ${eduLevel} level ${subject} exam.
+
+Configuration:
+- Structure: ${structure}
+- Difficulty: ${easy}% Easy · ${medium}% Medium · ${hard}% Hard
+- Concept depth: ${depth}
+- Real‑life questions: ${realLife}
+- Source: ${source}${topics ? `\n- Topics: ${topics}` : ''}${additional ? `\n- Additional: ${additional}` : ''}
+
+Explanation Format:
+${expInstruction}
+
+Return ONLY a valid JSON array — no extra text, no markdown fences:
+[
+  {
+    "text": "Question text?",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "correct": 0,
+    "explanation": "Detailed explanation here."
+  }
+]
+
+CRITICAL:
+- Wrap ALL math in \\\\(...\\\\) inline or \\\\[...\\\\] display. Never output raw LaTeX without delimiters.
+- Randomise correct answer positions (not always 0).`;
+
+    const el = document.getElementById('generatedPromptDisplay');
+    if (el) el.value = prompt;
+    const tc = document.getElementById('tokenCount');
+    if (tc) tc.textContent = Math.round(prompt.length / 4);
+}
+
+function copyGeneratedPrompt() {
+    const ta = document.getElementById('generatedPromptDisplay');
+    if (!ta) return;
+    ta.select();
+    navigator.clipboard?.writeText(ta.value)
+        .then(() => showToast('✅ Prompt copied to clipboard'))
+        .catch(() => { document.execCommand('copy'); showToast('✅ Prompt copied'); });
+}
+
+function goToPasteFromProfessor() {
+    closeProfessorModal();
+    openPasteModal();
+}
+
+function loadPreset(preset) {
+    const presets = {
+        hs_math: {
+            subject:'Mathematics', topics:'algebra, geometry, trigonometry',
+            total:10, easy:20, medium:60, hard:20,
+            depth:'Intermediate', edu:'High School', realLife:2, structure:'Multiple Choice'
+        },
+        uni_physics: {
+            subject:'Physics', topics:'mechanics, electromagnetism',
+            total:8, easy:10, medium:40, hard:50,
+            depth:'Advanced', edu:'University', realLife:5, structure:'Multiple Choice'
+        },
+        bio_easy: {
+            subject:'Biology', topics:'cells, plants, animals',
+            total:5, easy:80, medium:20, hard:0,
+            depth:'Basic', edu:'Elementary', realLife:1, structure:'Multiple Choice'
+        }
+    };
+    const p = presets[preset];
+    if (!p) return;
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+    set('cfgSubject', p.subject);
+    set('cfgTopics', p.topics);
+    set('cfgTotalQuestions', p.total);
+    set('cfgEasyPct', p.easy);
+    set('cfgMediumPct', p.medium);
+    set('cfgHardPct', p.hard);
+    set('cfgConceptDepth', p.depth);
+    set('cfgEduLevel', p.edu);
+    set('cfgRealLife', p.realLife);
+    set('cfgStructure', p.structure);
+    updateSubjectTypeHint();
+    updateDistDisplay();
+}
+
+window.openProfessorModal   = openProfessorModal;
+window.closeProfessorModal  = closeProfessorModal;
+window.updateDistDisplay    = updateDistDisplay;
+window.updateGeneratedPrompt = updateGeneratedPrompt;
+window.updateSubjectTypeHint = updateSubjectTypeHint;
+window.copyGeneratedPrompt  = copyGeneratedPrompt;
+window.goToPasteFromProfessor = goToPasteFromProfessor;
+window.loadPreset           = loadPreset;
+
+// ── SYNC & EVENTS ─────────────────────────────────────────────────────
+window.addEventListener('storage', e => {
+    if (e.key === 'premium' || e.key === 'premium_updated') { updatePremiumUI(); if (e.key === 'premium_updated') localStorage.removeItem('premium_updated'); }
+    if (e.key === 'db_updated') { loadAllFilesFromDB().then(() => { if (currentPage === 'files') refreshFileList(); else if (currentPage === 'home') renderHome(); }); }
+});
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        if (localStorage.getItem('premium_updated')) { updatePremiumUI(); localStorage.removeItem('premium_updated'); }
+        loadAllFilesFromDB().then(() => { if (currentPage === 'files') refreshFileList(); });
+    }
+});
+document.addEventListener('keydown', e => {
+    if (e.code === 'Space' && document.getElementById('practiceModal').style.display === 'flex') {
+        e.preventDefault(); toggleTimerPause();
+    }
+});
+
+// ── EXPOSE GLOBALS ────────────────────────────────────────────────────
+window.setPage = setPage;
+window.startPractice = startPractice;
+window.editFile = editFile;
+window.deleteFile = async id => { if (confirm('Delete?')) { await dbDelete('exams', id); files = files.filter(f => String(f.id) !== String(id)); localStorage.setItem('db_updated', Date.now()); setPage(currentPage); } };
+
+// ── BOOTSTRAP ─────────────────────────────────────────────────────────
+(async () => {
+    updateLoadProgress(15, 'Opening database…');  await openDB();
+    updateLoadProgress(40, 'Migrating data…');     await migrateFromLocalStorage();
+    updateLoadProgress(70, 'Loading exams…');      await updatePremiumUI(); await loadData();
+    setPage('home');
+    updateLoadProgress(100, 'Ready!');
+    bindPasteModalEvents();
+
+    const fsi = document.getElementById('fileSearchInput');
+    if (fsi) fsi.addEventListener('input', refreshFileList);
+
+    document.getElementById('prevBtn')?.addEventListener('click', () => nextPrev(-1));
+    document.getElementById('nextBtn')?.addEventListener('click', () => nextPrev(1));
+    document.getElementById('submitBtn')?.addEventListener('click', () => { if (confirm('Submit exam?')) submitPractice(); });
+    document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.addEventListener('click', () => setPage(b.dataset.page)));
+})();
+
+})();
+</script>
+</body>
+</html>
