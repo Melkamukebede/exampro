@@ -867,7 +867,7 @@
                         Subject Type
                     </label>
                     <select id="cfgSubjectType" class="form-select"
-                        onchange="updateSubjectTypeHint(); updateGeneratedPrompt();" style="padding:8px 12px; font-size:12px;">
+                        onchange="this.dataset.manual='1'; updateSubjectTypeHint(); updateGeneratedPrompt();" style="padding:8px 12px; font-size:12px;">
                         <option value="calculation">📊 Calculation</option>
                         <option value="theory" selected>📚 Theory</option>
                     </select>
@@ -877,7 +877,7 @@
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                         Explanation
                     </label>
-                    <select id="cfgExplanationStyle" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                    <select id="cfgExplanationStyle" class="form-select" onchange="updateSubjectTypeHint(); updateGeneratedPrompt();" style="padding:8px 12px; font-size:12px;">
                         <option value="stepwise">🔢 Step‑by‑Step</option>
                         <option value="conceptual" selected>💡 Conceptual</option>
                         <option value="brief">⚡ Brief</option>
@@ -1261,7 +1261,16 @@ function renderHome() {
 function renderFiles() {
     fileManagerPanel.style.display = 'block';
     refreshFileList();
-    contentArea.innerHTML = `<div class="card"><div style="color:var(--text-lo); font-size:0.85rem;">Select an exam from the panel →</div></div>`;
+contentArea.innerHTML = `
+    <div class="card" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:320px; text-align:center; gap:16px;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-lo)" stroke-width="1.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <div style="color:var(--text-md); font-size:0.95rem; font-family:var(--font-head); font-weight:600;">Select an exam from the panel</div>
+        <div style="color:var(--text-lo); font-size:0.8rem;">or create a new one to get started</div>
+        <button class="btn btn-primary btn-sm" onclick="setPage('create')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Create Exam
+        </button>
+    </div>`;
 }
 
 function refreshFileList() {
@@ -1893,27 +1902,39 @@ function closeProfessorModal() {
 }
 
 function updateSubjectTypeHint() {
-    const subj = (document.getElementById('cfgSubject')?.value || '').toLowerCase();
-    const calcSubjects = ['math','physics','calculus','algebra','chemistry','engineering','statistics'];
-    const isCalc = calcSubjects.some(s => subj.includes(s));
-
-    const icon   = document.getElementById('subjectTypeIcon');
-    const hint   = document.getElementById('hintText');
-    const hIcon  = document.getElementById('hintIcon');
-    const bar    = document.getElementById('subjectHintBar');
+    const subj    = (document.getElementById('cfgSubject')?.value || '').toLowerCase();
     const typeSel = document.getElementById('cfgSubjectType');
+    const calcSubjects = ['math','physics','calculus','algebra','chemistry','engineering','statistics'];
+    const isCalc  = typeSel
+        ? typeSel.value === 'calculation'          // honour manual dropdown pick first
+        : calcSubjects.some(s => subj.includes(s));
 
-    if (icon) icon.textContent = isCalc ? '🔢' : '📚';
-    if (typeSel && !typeSel.dataset.manual) typeSel.value = isCalc ? 'calculation' : 'theory';
+    // Auto-detect only if user hasn't manually changed the dropdown
+    if (typeSel && !typeSel.dataset.manual) {
+        typeSel.value = calcSubjects.some(s => subj.includes(s)) ? 'calculation' : 'theory';
+    }
 
-    if (isCalc) {
+    const icon  = document.getElementById('subjectTypeIcon');
+    const hint  = document.getElementById('hintText');
+    const hIcon = document.getElementById('hintIcon');
+    const bar   = document.getElementById('subjectHintBar');
+
+    const isCalcFinal = typeSel ? typeSel.value === 'calculation' : isCalc;
+
+    if (icon)  icon.textContent = isCalcFinal ? '🔢' : '📚';
+    if (isCalcFinal) {
         if (bar)  { bar.style.background = 'rgba(16,185,129,0.08)'; bar.style.borderColor = 'rgba(16,185,129,0.2)'; }
         if (hIcon) hIcon.textContent = '📐';
-        if (hint)  hint.textContent = 'Step‑by‑step solutions with LaTeX formulas will be generated.';
+        if (hint)  hint.textContent   = 'Step‑by‑step LaTeX solutions will be generated.';
     } else {
+        const expStyle = document.getElementById('cfgExplanationStyle')?.value || 'conceptual';
         if (bar)  { bar.style.background = 'rgba(59,130,246,0.08)'; bar.style.borderColor = 'rgba(59,130,246,0.2)'; }
-        if (hIcon) hIcon.textContent = '📚';
-        if (hint)  hint.textContent = 'Conceptual explanations with examples will be generated.';
+        if (hIcon) hIcon.textContent = expStyle === 'stepwise' ? '🔢' : expStyle === 'brief' ? '⚡' : '💡';
+        if (hint)  hint.textContent  = expStyle === 'stepwise'
+            ? 'Key Point + Why it Matters structure will be used.'
+            : expStyle === 'brief'
+            ? 'Concise 2‑3 sentence explanations will be generated.'
+            : 'Conceptual explanations with examples will be generated.';
     }
 }
 
