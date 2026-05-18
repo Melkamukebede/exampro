@@ -2135,7 +2135,7 @@ Since \\\\( A - \\\\lambda I \\\\) is lower triangular, its determinant is the p
         explanationInstruction += `\n💡 Include **${memoryTricks}** memory trick(s).`;
     }
     
-    let prompt = `You are an expert exam professor creating ${total} questions for ${eduLevel} level ${subject} exam.\n\nConfiguration:\n- Structure: ${structure}\n- Difficulty: ${easy}% Easy, ${medium}% Medium, ${hard}% Hard\n- Concept depth: ${depth}\n- Real‑life questions: ${realLife}\n${topics ? `- Topics: ${topics}\n` : ''}${additional ? `- Additional: ${additional}\n` : ''}\nExplanation Format:\n${explanationInstruction}\n\nReturn ONLY a valid JSON array:\n[{"text": "...", "options": ["...", "...", "...", "..."], "correct": 0, "explanation": "..."}]`;
+    let prompt = `You are an expert exam professor creating ${total} questions for ${eduLevel} level ${subject} exam.\n\nConfiguration:\n- Structure: ${structure}\n- Difficulty: ${easy}% Easy, ${medium}% Medium, ${hard}% Hard\n- Concept depth: ${depth}\n- Real‑life questions: ${realLife}\n${topics ? `- Topics: ${topics}\n` : ''}${additional ? `- Additional: ${additional}\n` : ''}\nExplanation Format:\n${explanationInstruction}\n\nReturn ONLY a valid JSON array:\n[{"text": "...", "options": ["...", "...", "...", "..."], "correct": 0-3, "explanation": "..."}]`;
     prompt += `\n\nCRITICAL: Wrap ALL mathematical expressions in \\\\(...\\\\) for inline math and \\\\[...\\\\] for display math. Never output raw LaTeX commands without these delimiters.Make random correct answers like 3,0, 1..2`;
     document.getElementById('generatedPromptDisplay').value = prompt;
     document.getElementById('tokenCount').textContent = '~' + Math.round(prompt.length / 4);
