@@ -807,21 +807,21 @@
             </div>
 
             <!-- Code editor -->
-            <div style="display:flex; background:var(--darker); border-radius:14px; border:1px solid var(--border); overflow:hidden; flex:1; min-height:0;">
-                <div id="lineNumbers"
-                    style="background:#070e1c; color:var(--gray); font-family:'Fira Code','Courier New',monospace;
-                           font-size:12.5px; padding:14px 10px; text-align:right; user-select:none;
-                           border-right:1px solid var(--border); min-width:46px; line-height:1.65;
-                           overflow:hidden; flex-shrink:0;"></div>
-                <textarea id="pasteJsonInput" wrap="off"
-                    style="flex:1; background:transparent; border:none; color:var(--light);
-                           font-family:'Fira Code','Courier New',monospace; font-size:12.5px;
-                           line-height:1.65; padding:14px; resize:none; outline:none;
-                           white-space:pre; overflow:auto; min-height:320px;"
-                    placeholder='[&#10;  {&#10;    "text": "What is the powerhouse of the cell?",&#10;    "options": ["Nucleus", "Mitochondria", "Ribosome", "Golgi"],&#10;    "correct": 1,&#10;    "explanation": "Mitochondria produce ATP via cellular respiration."&#10;  }&#10;]'
-                    spellcheck="false"></textarea>
-            </div>
-
+          <div style="display:flex; background:var(--darker); border-radius:14px; border:1px solid var(--border); overflow:hidden; flex:1; min-height:0;">
+    <div id="lineNumbers"
+        style="background:#070e1c; color:var(--gray); font-family:'Fira Code','Courier New',monospace;
+               font-size:12.5px; padding:14px 10px 14px 10px; text-align:right; user-select:none;
+               border-right:1px solid var(--border); min-width:46px; line-height:1.65;
+               overflow-y:hidden; overflow-x:hidden; flex-shrink:0;
+               pointer-events:none;"></div>
+    <textarea id="pasteJsonInput" wrap="off"
+        style="flex:1; background:transparent; border:none; color:var(--light);
+               font-family:'Fira Code','Courier New',monospace; font-size:12.5px;
+               line-height:1.65; padding:14px; resize:none; outline:none;
+               white-space:pre; overflow-y:scroll; overflow-x:auto; min-height:320px;"
+        placeholder='[&#10;  {&#10;    "text": "Question?",&#10;    "options": ["A","B","C","D"],&#10;    "correct": 1,&#10;    "explanation": "Optional"&#10;  }&#10;]'
+        spellcheck="false"></textarea>
+</div>
             <!-- Error panel -->
             <div id="pasteErrorPanel" style="display:none;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; flex-wrap:wrap; gap:6px;">
@@ -1960,7 +1960,9 @@ function updatePasteStats() {
 function syncScroll() {
     const ta = document.getElementById('pasteJsonInput');
     const ln = document.getElementById('lineNumbers');
-    if (ta && ln) ln.scrollTop = ta.scrollTop;
+    if (!ta || !ln) return;
+    // Match scrollTop exactly — both use same font/line-height/padding-top
+    ln.scrollTop = ta.scrollTop;
 }
 
 // Deep JSON validation — returns array of human-readable error strings
@@ -2206,14 +2208,14 @@ function bindPasteModalEvents() {
     const ta = document.getElementById('pasteJsonInput');
     if (!ta) return;
     ta.addEventListener('input', onPasteInput);
-    ta.addEventListener('scroll', syncScroll);
-    // Tab key inserts 2 spaces instead of losing focus
+    ta.addEventListener('scroll', syncScroll);   // ← this drives the sync
     ta.addEventListener('keydown', e => {
         if (e.key === 'Tab') {
             e.preventDefault();
             const s = ta.selectionStart, end = ta.selectionEnd;
             ta.value = ta.value.substring(0, s) + '  ' + ta.value.substring(end);
             ta.selectionStart = ta.selectionEnd = s + 2;
+            onPasteInput();
         }
     });
 }
