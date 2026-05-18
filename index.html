@@ -730,62 +730,133 @@
     </div>
 </div>
 
-<!-- ── PASTE JSON MODAL ────────────────────────────────────────────── -->
 <div id="pasteJsonModal" class="modal">
-    <div class="modal-content" style="max-width:760px; max-height:95vh;">
+    <div class="modal-content" style="max-width:800px; max-height:96vh;">
+
+        <!-- Header -->
         <div class="modal-header">
             <h3>
-                <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                 Paste JSON Questions
             </h3>
-            <button class="modal-close" onclick="closePasteModal()">&times;</button>
+            <span class="modal-close" onclick="closePasteModal()">&times;</span>
         </div>
-        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--rim);">
-            <div class="toolbar">
+
+        <!-- Toolbar -->
+        <div class="toolbar-wrapper" style="padding:8px 16px; border-bottom:1px solid var(--border); flex-shrink:0;">
+            <div class="toolbar" style="display:flex; gap:7px; align-items:center; flex-wrap:nowrap;">
                 <button class="btn btn-primary btn-sm" onclick="parseAndAddQuestions()">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                     Parse & Add
                 </button>
                 <button class="btn btn-outline btn-sm" onclick="pasteFromClipboard()">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                     Paste
                 </button>
+                <button class="btn btn-outline btn-sm" onclick="formatPasteJson()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+                    Format
+                </button>
                 <button class="btn btn-outline btn-sm" onclick="clearPasteInput()">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     Clear
                 </button>
                 <button class="btn btn-outline btn-sm" onclick="closePasteModal()">Cancel</button>
-                <span style="flex:1"></span>
-                <span style="font-size:11px; color:var(--text-lo); display:flex; align-items:center; gap:4px;">
-                    <span id="lineCount">0</span> lines
+
+                <span style="flex:1;"></span>
+
+                <!-- Live stats -->
+                <div style="display:flex; gap:10px; font-size:10.5px; color:var(--gray); white-space:nowrap; align-items:center; flex-shrink:0;">
+                    <span id="pasteStatLines" style="display:flex; align-items:center; gap:3px;">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                        <span id="lineCount">0</span> lines
+                    </span>
+                    <span id="pasteStatChars" style="display:flex; align-items:center; gap:3px;">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+                        <span id="charCount">0</span> chars
+                    </span>
+                    <span id="pasteStatQs" style="display:flex; align-items:center; gap:3px; color:var(--primary);">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        <span id="detectedQCount">0</span> Qs detected
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info banner -->
+        <div style="padding:8px 16px; border-bottom:1px solid var(--border); flex-shrink:0;">
+            <div style="display:flex; align-items:flex-start; gap:8px; padding:8px 12px; background:rgba(59,130,246,0.08); border-radius:10px; border-left:3px solid var(--secondary);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" stroke-width="2" style="flex-shrink:0; margin-top:1px;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <span style="font-size:11px; color:var(--light); line-height:1.5;">
+                    Paste a valid JSON array. Required fields per question:
+                    <code style="background:rgba(255,255,255,0.08); padding:1px 5px; border-radius:4px; font-size:10.5px;">text</code>
+                    <code style="background:rgba(255,255,255,0.08); padding:1px 5px; border-radius:4px; font-size:10.5px;">options</code> (4 strings)
+                    <code style="background:rgba(255,255,255,0.08); padding:1px 5px; border-radius:4px; font-size:10.5px;">correct</code> (0–3)
+                    — optional: <code style="background:rgba(255,255,255,0.08); padding:1px 5px; border-radius:4px; font-size:10.5px;">explanation</code>
                 </span>
             </div>
         </div>
-        <div class="modal-body" style="padding:16px; overflow-y:auto;">
-            <div class="info-hint">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                <span>Paste a valid JSON array. Each question needs: <code>text</code>, <code>options</code> (4 strings), <code>correct</code> (0–3), and optional <code>explanation</code>.</span>
+
+        <!-- Body: editor + panels -->
+        <div class="modal-body" style="padding:14px 16px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px;">
+
+            <!-- Live validation status bar -->
+            <div id="pasteStatusBar" style="display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:8px; font-size:11px; background:var(--darker); border:1px solid var(--border); transition:all 0.2s;">
+                <span id="pasteStatusIcon" style="font-size:14px;">⏳</span>
+                <span id="pasteStatusText" style="color:var(--gray);">Waiting for input…</span>
             </div>
-            <div class="code-editor-wrap">
-                <div id="lineNumbers"></div>
-                <textarea id="pasteJsonInput" wrap="off" rows="14"
-                    placeholder='[{"text": "Question", "options": ["A","B","C","D"], "correct": 0, "explanation": "Optional"}]'
-                    style="flex:1; background:transparent; border:none; color:var(--text-hi); font-family:'Fira Code','Courier New',monospace; font-size:12.5px; line-height:1.6; padding:14px; resize:vertical; outline:none; white-space:pre; overflow-x:auto;"></textarea>
+
+            <!-- Code editor -->
+            <div style="display:flex; background:var(--darker); border-radius:14px; border:1px solid var(--border); overflow:hidden; flex:1; min-height:0;">
+                <div id="lineNumbers"
+                    style="background:#070e1c; color:var(--gray); font-family:'Fira Code','Courier New',monospace;
+                           font-size:12.5px; padding:14px 10px; text-align:right; user-select:none;
+                           border-right:1px solid var(--border); min-width:46px; line-height:1.65;
+                           overflow:hidden; flex-shrink:0;"></div>
+                <textarea id="pasteJsonInput" wrap="off"
+                    style="flex:1; background:transparent; border:none; color:var(--light);
+                           font-family:'Fira Code','Courier New',monospace; font-size:12.5px;
+                           line-height:1.65; padding:14px; resize:none; outline:none;
+                           white-space:pre; overflow:auto; min-height:320px;"
+                    placeholder='[&#10;  {&#10;    "text": "What is the powerhouse of the cell?",&#10;    "options": ["Nucleus", "Mitochondria", "Ribosome", "Golgi"],&#10;    "correct": 1,&#10;    "explanation": "Mitochondria produce ATP via cellular respiration."&#10;  }&#10;]'
+                    spellcheck="false"></textarea>
             </div>
-            <div id="pasteErrorPanel" style="margin-top:12px; display:none;">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-                    <span style="display:flex; align-items:center; gap:6px; color:var(--crimson); font-weight:600; font-size:12px;">
+
+            <!-- Error panel -->
+            <div id="pasteErrorPanel" style="display:none;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; flex-wrap:wrap; gap:6px;">
+                    <span style="display:flex; align-items:center; gap:6px; color:var(--danger); font-weight:600; font-size:12px;">
                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        Validation Error
+                        <span id="pasteErrorTitle">Validation Error</span>
                     </span>
-                    <button class="btn btn-sm btn-outline" onclick="copyErrorMessage()">Copy Error</button>
+                    <button class="btn btn-sm btn-outline" onclick="copyErrorMessage()" style="padding:4px 10px; font-size:10px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Copy Error
+                    </button>
                 </div>
-                <div id="pasteError" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-md); padding:12px; font-family:monospace; font-size:12px; color:var(--crimson); white-space:pre-wrap; word-break:break-word;"></div>
+                <div id="pasteError"
+                    style="background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.35);
+                           border-radius:10px; padding:12px; font-family:'Fira Code',monospace;
+                           font-size:11.5px; color:var(--danger); white-space:pre-wrap; word-break:break-word;
+                           max-height:160px; overflow-y:auto; line-height:1.6;"></div>
             </div>
+
+            <!-- Preview panel (shown after successful parse) -->
+            <div id="pastePreviewPanel" style="display:none;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                    <span style="display:flex; align-items:center; gap:6px; color:var(--success); font-weight:600; font-size:12px;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+                        <span id="previewTitle">Preview</span>
+                    </span>
+                    <button class="btn btn-sm btn-outline" onclick="togglePreviewPanel()" style="padding:4px 10px; font-size:10px;" id="previewToggleBtn">Hide</button>
+                </div>
+                <div id="pastePreviewList"
+                    style="display:flex; flex-direction:column; gap:6px; max-height:200px; overflow-y:auto;"></div>
+            </div>
+
         </div>
     </div>
 </div>
-
 <!-- ── PROFESSOR CONFIG MODAL ──────────────────────────────────────── -->
 <div id="professorConfigModal" class="modal">
     <div class="modal-content" style="max-width:900px; max-height:95vh;">
@@ -1822,75 +1893,337 @@ function renderMixedExplanation(raw, subjectType = 'theory') {
 }
 
 // ── PASTE JSON MODAL ──────────────────────────────────────────────────
-let pasteTargetExamId = null;
-
-window.openPasteModal = function(examId) {
-    pasteTargetExamId = examId || null;
+function openPasteModal() {
     document.getElementById('pasteJsonModal').style.display = 'flex';
     document.getElementById('pasteErrorPanel').style.display = 'none';
-    updateLineNumbers();
-};
-window.closePasteModal = function() { document.getElementById('pasteJsonModal').style.display = 'none'; };
-window.clearPasteInput = function() { document.getElementById('pasteJsonInput').value = ''; updateLineNumbers(); };
-window.pasteFromClipboard = async function() {
-    try { document.getElementById('pasteJsonInput').value = await navigator.clipboard.readText(); updateLineNumbers(); }
-    catch(e) { showToast('Clipboard access denied', true); }
-};
-window.copyErrorMessage = function() {
-    const err = document.getElementById('pasteError')?.textContent || '';
-    navigator.clipboard.writeText(err).then(() => showToast('Error copied'));
-};
+    document.getElementById('pastePreviewPanel').style.display = 'none';
+    setStatusBar('idle');
+    updatePasteStats();
+}
+function closePasteModal() {
+    document.getElementById('pasteJsonModal').style.display = 'none';
+}
+function clearPasteInput() {
+    document.getElementById('pasteJsonInput').value = '';
+    document.getElementById('pasteErrorPanel').style.display = 'none';
+    document.getElementById('pastePreviewPanel').style.display = 'none';
+    updatePasteStats();
+    setStatusBar('idle');
+}
 
-function updateLineNumbers() {
+// Status bar helper
+function setStatusBar(state, msg) {
+    const bar  = document.getElementById('pasteStatusBar');
+    const icon = document.getElementById('pasteStatusIcon');
+    const text = document.getElementById('pasteStatusText');
+    if (!bar) return;
+    const themes = {
+        idle:    { bg:'var(--darker)',                  border:'var(--border)',                    icon:'⏳', color:'var(--gray)' },
+        typing:  { bg:'rgba(59,130,246,0.06)',          border:'rgba(59,130,246,0.2)',              icon:'✏️', color:'var(--gray)' },
+        valid:   { bg:'rgba(16,185,129,0.07)',          border:'rgba(16,185,129,0.3)',              icon:'✅', color:'var(--success)' },
+        warning: { bg:'rgba(245,158,11,0.07)',          border:'rgba(245,158,11,0.3)',              icon:'⚠️', color:'var(--warning)' },
+        error:   { bg:'rgba(239,68,68,0.07)',           border:'rgba(239,68,68,0.3)',               icon:'❌', color:'var(--danger)' },
+    };
+    const t = themes[state] || themes.idle;
+    bar.style.background   = t.bg;
+    bar.style.borderColor  = t.border;
+    icon.textContent       = t.icon;
+    text.style.color       = t.color;
+    text.textContent       = msg || { idle:'Waiting for input…', typing:'Analysing…' }[state] || '';
+}
+
+// Live stats + auto-detect question count
+function updatePasteStats() {
+    const ta  = document.getElementById('pasteJsonInput');
+    const val = ta ? ta.value : '';
+    const lines = val ? val.split('\n').length : 0;
+    const chars = val.length;
+
+    const lc = document.getElementById('lineCount');   if (lc) lc.textContent = lines;
+    const cc = document.getElementById('charCount');   if (cc) cc.textContent = chars;
+
+    // Quick regex count of detected question objects (count "text" keys as proxy)
+    const qMatch = val.match(/"text"\s*:/g);
+    const qCount = qMatch ? qMatch.length : 0;
+    const qEl = document.getElementById('detectedQCount'); if (qEl) qEl.textContent = qCount;
+
+    // Sync line numbers
+    const ln = document.getElementById('lineNumbers');
+    if (ln && val) {
+        ln.innerHTML = val.split('\n').map((_, i) => i + 1).join('<br>');
+    } else if (ln) {
+        ln.innerHTML = '1';
+    }
+}
+
+// Sync scroll between line numbers and textarea
+function syncScroll() {
     const ta = document.getElementById('pasteJsonInput');
     const ln = document.getElementById('lineNumbers');
-    if (!ta || !ln) return;
-    const lines = ta.value.split('\n');
-    document.getElementById('lineCount').textContent = lines.length;
-    ln.innerHTML = lines.map((_, i) => i + 1).join('<br>');
+    if (ta && ln) ln.scrollTop = ta.scrollTop;
+}
+
+// Deep JSON validation — returns array of human-readable error strings
+function validatePasteJson(parsed) {
+    const errors = [];
+    if (!Array.isArray(parsed)) {
+        errors.push('Root must be a JSON array [ ... ]');
+        return errors;
+    }
+    if (parsed.length === 0) {
+        errors.push('Array is empty — add at least one question.');
+        return errors;
+    }
+    parsed.forEach((q, i) => {
+        const n = `Q${i + 1}`;
+        if (typeof q !== 'object' || q === null) { errors.push(`${n}: must be an object { ... }`); return; }
+        if (!q.text || typeof q.text !== 'string' || !q.text.trim())
+            errors.push(`${n}: missing or empty "text" field`);
+        if (!Array.isArray(q.options))
+            errors.push(`${n}: "options" must be an array`);
+        else {
+            if (q.options.length !== 4)
+                errors.push(`${n}: "options" must have exactly 4 items (has ${q.options.length})`);
+            q.options.forEach((opt, oi) => {
+                if (typeof opt !== 'string' || !opt.trim())
+                    errors.push(`${n}: option ${oi} is empty or not a string`);
+            });
+        }
+        if (q.correct === undefined || q.correct === null)
+            errors.push(`${n}: missing "correct" field`);
+        else if (typeof q.correct !== 'number' || !Number.isInteger(q.correct))
+            errors.push(`${n}: "correct" must be an integer (got ${typeof q.correct})`);
+        else if (q.correct < 0 || q.correct > 3)
+            errors.push(`${n}: "correct" must be 0–3 (got ${q.correct})`);
+        if (q.explanation !== undefined && typeof q.explanation !== 'string')
+            errors.push(`${n}: "explanation" must be a string if provided`);
+    });
+    return errors;
+}
+
+// Auto-lint on input with debounce
+let _lintTimer = null;
+function onPasteInput() {
+    updatePasteStats();
+    clearTimeout(_lintTimer);
+    const val = document.getElementById('pasteJsonInput')?.value.trim() || '';
+    if (!val) { setStatusBar('idle'); document.getElementById('pasteErrorPanel').style.display = 'none'; document.getElementById('pastePreviewPanel').style.display = 'none'; return; }
+    setStatusBar('typing');
+    _lintTimer = setTimeout(() => lintPasteJson(val), 600);
+}
+
+function lintPasteJson(raw) {
+    const errorPanel   = document.getElementById('pasteErrorPanel');
+    const previewPanel = document.getElementById('pastePreviewPanel');
+
+    // Clean invisible chars
+    const cleaned = raw.replace(/^\uFEFF/, '').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\r\n/g, '\n');
+
+    let parsed;
+    try {
+        parsed = JSON.parse(cleaned);
+    } catch (e) {
+        // Pinpoint location
+        const match = e.message.match(/position (\d+)/);
+        let msg = e.message;
+        if (match) {
+            const pos  = parseInt(match[1]);
+            const pre  = cleaned.substring(0, pos);
+            const line = pre.split('\n').length;
+            const col  = pre.split('\n').pop().length + 1;
+            const ctx  = cleaned.substring(Math.max(0, pos - 35), pos + 35).replace(/\n/g, '↵');
+            msg = `Syntax error at line ${line}, column ${col}\n\n→ …${ctx}…\n\nHint: ${syntaxHint(e.message)}`;
+        }
+        showPasteError(msg, 'JSON Syntax Error');
+        setStatusBar('error', 'Invalid JSON — check the error below');
+        previewPanel.style.display = 'none';
+        return;
+    }
+
+    const errs = validatePasteJson(parsed);
+    if (errs.length) {
+        showPasteError(errs.join('\n'), `Validation Error (${errs.length} issue${errs.length > 1 ? 's' : ''})`);
+        setStatusBar('warning', `${errs.length} validation issue${errs.length > 1 ? 's' : ''} — fix before adding`);
+        renderPreview(parsed, true);
+        return;
+    }
+
+    // All good
+    errorPanel.style.display = 'none';
+    setStatusBar('valid', `✓ ${parsed.length} valid question${parsed.length !== 1 ? 's' : ''} ready to add`);
+    renderPreview(parsed, false);
+}
+
+function syntaxHint(msg) {
+    if (/Unexpected token/.test(msg)) return 'Check for missing commas, quotes, or brackets.';
+    if (/Unexpected end/.test(msg))   return 'JSON is incomplete — likely a missing closing ] or }.';
+    if (/Expected property/.test(msg)) return 'Key names must be in double quotes.';
+    return 'Validate your JSON at jsonlint.com';
+}
+
+function showPasteError(message, title = 'Validation Error') {
+    const panel    = document.getElementById('pasteErrorPanel');
+    const errorDiv = document.getElementById('pasteError');
+    const titleEl  = document.getElementById('pasteErrorTitle');
+    if (panel)    panel.style.display = 'block';
+    if (titleEl)  titleEl.textContent = title;
+    if (errorDiv) errorDiv.textContent = message;
+}
+
+function renderPreview(parsed, hasErrors) {
+    const panel = document.getElementById('pastePreviewPanel');
+    const list  = document.getElementById('pastePreviewList');
+    const title = document.getElementById('previewTitle');
+    if (!panel || !list) return;
+
+    const valid = Array.isArray(parsed) ? parsed.filter(q => q.text && Array.isArray(q.options) && q.options.length === 4 && typeof q.correct === 'number') : [];
+    if (!valid.length) { panel.style.display = 'none'; return; }
+
+    if (title) title.textContent = `Preview — ${valid.length} question${valid.length !== 1 ? 's' : ''}${hasErrors ? ' (some issues)' : ''}`;
+
+    list.innerHTML = valid.slice(0, 10).map((q, i) => {
+        const letter = String.fromCharCode(65 + (q.correct || 0));
+        const correctOpt = Array.isArray(q.options) ? escapeHtml(q.options[q.correct] || '') : '?';
+        return `
+        <div style="background:var(--darker); border-radius:10px; padding:10px 13px; border:1px solid var(--border); font-size:11.5px;">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:5px;">
+                <span style="font-weight:600; color:var(--light); flex:1; line-height:1.4;">${i + 1}. ${escapeHtml(q.text || '')}</span>
+                <span style="background:rgba(16,185,129,0.15); color:var(--success); padding:2px 8px; border-radius:99px; font-size:10px; font-weight:700; white-space:nowrap; flex-shrink:0;">${letter}. ${correctOpt}</span>
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                ${(q.options || []).map((opt, oi) => `
+                    <span style="padding:2px 8px; border-radius:6px; font-size:10.5px;
+                        background:${oi === q.correct ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.04)'};
+                        color:${oi === q.correct ? 'var(--success)' : 'var(--gray)'};
+                        border:1px solid ${oi === q.correct ? 'rgba(16,185,129,0.3)' : 'var(--border)'};
+                        font-weight:${oi === q.correct ? '600' : '400'};">
+                        ${String.fromCharCode(65 + oi)}. ${escapeHtml(opt)}
+                    </span>`).join('')}
+            </div>
+            ${q.explanation ? `<div style="margin-top:6px; color:var(--gray); font-size:10.5px; border-top:1px dashed var(--border); padding-top:5px;">💡 ${escapeHtml(q.explanation.substring(0, 120))}${q.explanation.length > 120 ? '…' : ''}</div>` : ''}
+        </div>`;
+    }).join('');
+
+    if (valid.length > 10) {
+        list.innerHTML += `<div style="text-align:center; color:var(--gray); font-size:11px; padding:8px;">… and ${valid.length - 10} more</div>`;
+    }
+    panel.style.display = 'block';
+}
+
+window.togglePreviewPanel = function() {
+    const list = document.getElementById('pastePreviewList');
+    const btn  = document.getElementById('previewToggleBtn');
+    if (!list) return;
+    const hidden = list.style.display === 'none';
+    list.style.display = hidden ? 'flex' : 'none';
+    if (btn) btn.textContent = hidden ? 'Hide' : 'Show';
+};
+
+async function pasteFromClipboard() {
+    const ta = document.getElementById('pasteJsonInput');
+    try {
+        const text = await navigator.clipboard.readText();
+        ta.value = text;
+        document.getElementById('pasteErrorPanel').style.display = 'none';
+        onPasteInput();
+    } catch (err) {
+        showPasteError('Clipboard access denied — please paste manually with Ctrl+V / Cmd+V.', 'Clipboard Error');
+        setStatusBar('error', 'Clipboard access denied');
+    }
+}
+
+window.formatPasteJson = function() {
+    const ta = document.getElementById('pasteJsonInput');
+    if (!ta || !ta.value.trim()) return;
+    try {
+        const pretty = JSON.stringify(JSON.parse(ta.value), null, 2);
+        ta.value = pretty;
+        onPasteInput();
+        showToast('JSON formatted');
+    } catch(e) {
+        showToast('Cannot format — fix JSON errors first', true);
+    }
+};
+
+function copyErrorMessage() {
+    const txt = document.getElementById('pasteError')?.textContent || '';
+    navigator.clipboard?.writeText(txt).then(() => showToast('Error copied'));
+}
+
+function parseAndAddQuestions() {
+    const raw = document.getElementById('pasteJsonInput')?.value.trim() || '';
+    if (!raw) { showPasteError('Please paste JSON data first.', 'Empty Input'); setStatusBar('error', 'Nothing to parse'); return; }
+
+    const cleaned = raw.replace(/^\uFEFF/, '').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\r\n/g, '\n');
+
+    let parsed;
+    try {
+        parsed = JSON.parse(cleaned);
+    } catch (e) {
+        const match = e.message.match(/position (\d+)/);
+        let msg = e.message;
+        if (match) {
+            const pos  = parseInt(match[1]);
+            const pre  = cleaned.substring(0, pos);
+            const line = pre.split('\n').length;
+            const col  = pre.split('\n').pop().length + 1;
+            const ctx  = cleaned.substring(Math.max(0, pos - 35), pos + 35).replace(/\n/g, '↵');
+            msg = `Syntax error at line ${line}, column ${col}\n\n→ …${ctx}…\n\nHint: ${syntaxHint(e.message)}`;
+        }
+        showPasteError(msg, 'JSON Syntax Error');
+        setStatusBar('error', 'Cannot add — JSON syntax error');
+        return;
+    }
+
+    const errs = validatePasteJson(parsed);
+    if (errs.length) {
+        showPasteError(errs.join('\n'), `Cannot Add — ${errs.length} issue${errs.length > 1 ? 's' : ''}`);
+        setStatusBar('error', 'Fix validation issues before adding');
+        return;
+    }
+
+    const newQuestions = parsed.map(q => ({
+        id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2),
+        text: q.text,
+        options: q.options,
+        correct: q.correct,
+        explanation: q.explanation || ''
+    }));
+
+    if (!window.isPremium && questions.length + newQuestions.length > 5) {
+        showPasteError(`Free tier: max 5 questions per exam.\nYou have ${questions.length}, trying to add ${newQuestions.length}.\nUpgrade or reduce question count.`, 'Limit Exceeded');
+        setStatusBar('warning', 'Free tier limit exceeded');
+        return;
+    }
+
+    questions.push(...newQuestions);
+    renderQuestionsEditor();
+    closePasteModal();
+    showToast(`✅ Added ${newQuestions.length} question${newQuestions.length !== 1 ? 's' : ''}`);
 }
 
 function bindPasteModalEvents() {
     const ta = document.getElementById('pasteJsonInput');
-    if (ta) ta.addEventListener('input', updateLineNumbers);
+    if (!ta) return;
+    ta.addEventListener('input', onPasteInput);
+    ta.addEventListener('scroll', syncScroll);
+    // Tab key inserts 2 spaces instead of losing focus
+    ta.addEventListener('keydown', e => {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            const s = ta.selectionStart, end = ta.selectionEnd;
+            ta.value = ta.value.substring(0, s) + '  ' + ta.value.substring(end);
+            ta.selectionStart = ta.selectionEnd = s + 2;
+        }
+    });
 }
 
-window.parseAndAddQuestions = async function() {
-    const raw = document.getElementById('pasteJsonInput')?.value?.trim();
-    const errPanel = document.getElementById('pasteErrorPanel');
-    const errEl = document.getElementById('pasteError');
-    if (!raw) { errEl.textContent = 'Input is empty.'; errPanel.style.display = 'block'; return; }
-    let parsed;
-    try { parsed = JSON.parse(raw); } catch(e) { errEl.textContent = 'JSON parse error: ' + e.message; errPanel.style.display = 'block'; return; }
-    if (!Array.isArray(parsed)) { errEl.textContent = 'Expected a JSON array.'; errPanel.style.display = 'block'; return; }
-
-    // Validate
-    const errors = [];
-    parsed.forEach((q, i) => {
-        if (!q.text) errors.push(`Q${i+1}: missing "text"`);
-        if (!Array.isArray(q.options) || q.options.length < 2) errors.push(`Q${i+1}: invalid "options"`);
-        if (typeof q.correct !== 'number') errors.push(`Q${i+1}: missing "correct"`);
-    });
-    if (errors.length) { errEl.textContent = errors.join('\n'); errPanel.style.display = 'block'; return; }
-
-    if (currentPage === 'create') {
-        questions.push(...parsed);
-        const c = document.getElementById('questionsContainer');
-        if (c) c.innerHTML = renderQuestionsHTML();
-        closePasteModal();
-        showToast(`${parsed.length} question${parsed.length !== 1 ? 's' : ''} added`);
-    } else {
-        // Save as new exam
-        const exam = { id: String(Date.now()), name: 'Imported Exam ' + new Date().toLocaleDateString(), subject: '', difficulty: 'Medium', timeLimit: 30, questions: parsed };
-        await dbPut('exams', exam);
-        files = await dbGetAll('exams');
-        localStorage.setItem('db_updated', Date.now());
-        closePasteModal();
-        setPage('files');
-        showToast(`Exam imported: ${parsed.length} questions`);
-    }
-    errPanel.style.display = 'none';
-};
+window.openPasteModal        = openPasteModal;
+window.closePasteModal       = closePasteModal;
+window.clearPasteInput       = clearPasteInput;
+window.pasteFromClipboard    = pasteFromClipboard;
+window.copyErrorMessage      = copyErrorMessage;
+window.parseAndAddQuestions  = parseAndAddQuestions;
 
 // ── PROFESSOR MODAL ───────────────────────────────────────────────────
 function openProfessorModal() {
