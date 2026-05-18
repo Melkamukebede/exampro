@@ -1099,7 +1099,9 @@
         </div>
     </div>
 </div>
-
+<script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="marked.min.js"></script>
 <script>
 (() => {
 'use strict';
@@ -1872,26 +1874,72 @@ function renderMath(container) {
     if (!container || typeof renderMathInElement === 'undefined') return;
     try {
         renderMathInElement(container, {
-            delimiters: [{ left: '\\(', right: '\\)', display: false }, { left: '\\[', right: '\\]', display: true }, { left: '$$', right: '$$', display: true }],
-            throwOnError: false
+            delimiters: [
+                { left: '\\(', right: '\\)',  display: false },
+                { left: '\\[', right: '\\]',  display: true  },
+                { left: '$$',  right: '$$',   display: true  }
+            ],
+            throwOnError: false,
+            preProcess: (math) => {
+                const ta = document.createElement('textarea');
+                ta.innerHTML = math;
+                return ta.value;
+            }
         });
-    } catch(e) {}
+    } catch(e) { console.warn('LaTeX error:', e); }
 }
-
 function renderMixedExplanation(raw, subjectType = 'theory') {
     if (!raw) return '';
-    if (typeof marked === 'undefined') return `<pre style="white-space:pre-wrap; word-break:break-word;">${escapeHtml(raw)}</pre>`;
-    const latexBlocks = [], latexInlines = [];
-    let processed = raw
-        .replace(/\\\[([\s\S]*?)\\\]/g, (_, m) => { latexBlocks.push(m); return `{{LB_${latexBlocks.length-1}}}`; })
-        .replace(/\$\$([\s\S]*?)\$\$/g, (_, m) => { latexBlocks.push(m); return `{{LB_${latexBlocks.length-1}}}`; })
-        .replace(/\\\(([\s\S]*?)\\\)/g, (_, m) => { latexInlines.push(m); return `{{LI_${latexInlines.length-1}}}`; });
-    let html = marked.parse(processed);
-    latexBlocks.forEach((m, i) => { html = html.replace(new RegExp(`\\{\\{LB_${i}\\}\\}`, 'g'), `\\[${m}\\]`); });
-    latexInlines.forEach((m, i) => { html = html.replace(new RegExp(`\\{\\{LI_${i}\\}\\}`, 'g'), `\\(${m}\\)`); });
-    return html;
-}
+    if (typeof marked === 'undefined') {
+        return `<pre style="white-space:pre-wrap; word-break:break-word;">${escapeHtml(raw)}</pre>`;
+    }
 
+    const latexBlocks = [], latexInlines = [];
+
+    let processed = raw
+        .replace(/\\\[([\s\S]*?)\\\]/g, (_, math) => {
+            latexBlocks.push(math);
+            return `{{LATEX_BLOCK_${latexBlocks.length - 1}}}`;
+        })
+        .replace(/\$\$([\s\S]*?)\$\$/g, (_, math) => {
+            latexBlocks.push(math);
+            return `{{LATEX_BLOCK_${latexBlocks.length - 1}}}`;
+        });
+
+    processed = processed.replace(/\\\(([\s\S]*?)\\\)/g, (_, math) => {
+        latexInlines.push(math);
+        return `{{LATEX_INLINE_${latexInlines.length - 1}}}`;
+    });
+
+    let html = marked.parse(processed);
+
+    latexBlocks.forEach((math, idx) => {
+        html = html.replace(new RegExp(`\\{\\{LATEX_BLOCK_${idx}\\}\\}`, 'g'), `\\[${math}\\]`);
+    });
+    latexInlines.forEach((math, idx) => {
+        html = html.replace(new RegExp(`\\{\\{LATEX_INLINE_${idx}\\}\\}`, 'g'), `\\(${math}\\)`);
+    });
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+
+    // Fix double-escaped backslashes that Markdown introduces
+    const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+    textNodes.forEach(node => {
+        let content = node.textContent;
+        content = content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+        content = content.replace(/\\\\(?=[a-zA-Z\(\)\[\]])/g, '\\');
+        if (/\\[a-zA-Z]+/.test(content) && !content.includes('\\(') && !content.includes('\\[')) {
+            content = `\\(${content}\\)`;
+        }
+        node.textContent = content;
+    });
+
+    return tempDiv.innerHTML;
+}
 // ── PASTE JSON MODAL ──────────────────────────────────────────────────
 function openPasteModal() {
     document.getElementById('pasteJsonModal').style.display = 'flex';
