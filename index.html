@@ -2306,12 +2306,7 @@ window.formatPasteJson = function() {
     }
 };
 
-function copyErrorMessage() {
-    const txt = document.getElementById('pasteError')?.textContent || '';
-    navigator.clipboard?.writeText(txt).then(() => showToast('Error copied'));
-}
-
-  function parseAndAddQuestions() {
+function parseAndAddQuestions() {
     const input = document.getElementById('pasteJsonInput').value.trim();
     if (!input) { showPasteError('Please paste JSON data.', 'Empty Input'); return; }
 
@@ -2327,18 +2322,17 @@ function copyErrorMessage() {
         const match = e.message.match(/position (\d+)/);
         let errorMsg = e.message;
         if (match) {
-            const pos = parseInt(match[1]);
+            const pos  = parseInt(match[1]);
             const lines = cleaned.substring(0, pos).split('\n');
-            const line = lines.length;
-            const col  = lines[lines.length - 1].length + 1;
-            const ctx  = cleaned.substring(Math.max(0, pos - 40), pos + 40);
+            const line  = lines.length;
+            const col   = lines[lines.length - 1].length + 1;
+            const ctx   = cleaned.substring(Math.max(0, pos - 40), pos + 40);
             errorMsg = `Unexpected token at line ${line}, column ${col}\n\nContext: ...${escapeHtml(ctx)}...`;
         }
         showPasteError(errorMsg, 'JSON Parse Error');
         return;
     }
 
-    // filter-then-map: skips bad items instead of blocking everything
     const newQuestions = (Array.isArray(parsed) ? parsed : [parsed])
         .filter(q => q.text && Array.isArray(q.options) && q.options.length === 4 && q.correct !== undefined)
         .map(q => ({
@@ -2354,15 +2348,44 @@ function copyErrorMessage() {
         return;
     }
 
-    if (!window.isPremium && questions.length + newQuestions.length > 5) {
-        showPasteError(`Free limit: max 5 questions. You have ${questions.length}, adding ${newQuestions.length}.`, 'Limit Exceeded');
-        return;
-    }
+    // ── BRANCH: are we inside the create wizard? ──────────────────────
+    const container = document.getElementById('questionsContainer');
+    if (currentPage === 'create' && container) {
+        // Adding to the in-progress exam being built
+        if (!window.isPremium && questions.length + newQuestions.length > 5) {
+            showPasteError(`Free limit: max 5 questions. You have ${questions.length}, adding ${newQuestions.length}.`, 'Limit Exceeded');
+            return;
+        }
+        questions.push(...newQuestions);
+        renderQuestionsEditor();
+        closePasteModal();
+        showToast(`✅ Added ${newQuestions.length} question(s)`);
 
-    questions.push(...newQuestions);
-    renderQuestionsEditor();   // ← must match exact function name in your file
-    closePasteModal();
-    showToast(`✅ Added ${newQuestions.length} question(s)`);
+    } else {
+        // Called from Home or Files page — save as a brand new exam immediately
+        (async () => {
+            if (!window.isPremium && files.length >= 2) {
+                showPasteError('Free limit: max 2 exams. Upgrade to add more.', 'Limit Exceeded');
+                return;
+            }
+            const exam = {
+                id: 'exam_' + Date.now(),
+                name: 'Imported Exam ' + new Date().toLocaleDateString(),
+                title: 'Imported Exam',
+                subject: '',
+                difficulty: 'Medium',
+                timeLimit: 30,
+                questions: newQuestions,
+                updatedAt: new Date().toISOString()
+            };
+            await dbPut('exams', exam);
+            files = await dbGetAll('exams');
+            localStorage.setItem('db_updated', Date.now());
+            closePasteModal();
+            setPage('files');
+            showToast(`✅ Imported ${newQuestions.length} question(s) as new exam`);
+        })();
+    }
 }
 window.parseAndAddQuestions = parseAndAddQuestions;
 function bindPasteModalEvents() {
