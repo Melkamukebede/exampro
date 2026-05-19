@@ -2050,6 +2050,7 @@ function renderMixedExplanation(raw, subjectType = 'theory') {
 
     return tempDiv.innerHTML;
 }
+  
 // ── PASTE JSON MODAL ──────────────────────────────────────────────────
 function openPasteModal() {
     document.getElementById('pasteJsonModal').style.display = 'flex';
@@ -2310,58 +2311,60 @@ function copyErrorMessage() {
     navigator.clipboard?.writeText(txt).then(() => showToast('Error copied'));
 }
 
-function parseAndAddQuestions() {
-    const raw = document.getElementById('pasteJsonInput')?.value.trim() || '';
-    if (!raw) { showPasteError('Please paste JSON data first.', 'Empty Input'); setStatusBar('error', 'Nothing to parse'); return; }
+  function parseAndAddQuestions() {
+    const input = document.getElementById('pasteJsonInput').value.trim();
+    if (!input) { showPasteError('Please paste JSON data.', 'Empty Input'); return; }
 
-    const cleaned = raw.replace(/^\uFEFF/, '').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\r\n/g, '\n');
+    let cleaned = input
+        .replace(/^\uFEFF/, '')
+        .replace(/\r\n/g, '\n')
+        .replace(/[\u200B-\u200D\uFEFF]/g, '');
 
     let parsed;
     try {
         parsed = JSON.parse(cleaned);
     } catch (e) {
         const match = e.message.match(/position (\d+)/);
-        let msg = e.message;
+        let errorMsg = e.message;
         if (match) {
-            const pos  = parseInt(match[1]);
-            const pre  = cleaned.substring(0, pos);
-            const line = pre.split('\n').length;
-            const col  = pre.split('\n').pop().length + 1;
-            const ctx  = cleaned.substring(Math.max(0, pos - 35), pos + 35).replace(/\n/g, '↵');
-            msg = `Syntax error at line ${line}, column ${col}\n\n→ …${ctx}…\n\nHint: ${syntaxHint(e.message)}`;
+            const pos = parseInt(match[1]);
+            const lines = cleaned.substring(0, pos).split('\n');
+            const line = lines.length;
+            const col  = lines[lines.length - 1].length + 1;
+            const ctx  = cleaned.substring(Math.max(0, pos - 40), pos + 40);
+            errorMsg = `Unexpected token at line ${line}, column ${col}\n\nContext: ...${escapeHtml(ctx)}...`;
         }
-        showPasteError(msg, 'JSON Syntax Error');
-        setStatusBar('error', 'Cannot add — JSON syntax error');
+        showPasteError(errorMsg, 'JSON Parse Error');
         return;
     }
 
-    const errs = validatePasteJson(parsed);
-    if (errs.length) {
-        showPasteError(errs.join('\n'), `Cannot Add — ${errs.length} issue${errs.length > 1 ? 's' : ''}`);
-        setStatusBar('error', 'Fix validation issues before adding');
+    // filter-then-map: skips bad items instead of blocking everything
+    const newQuestions = (Array.isArray(parsed) ? parsed : [parsed])
+        .filter(q => q.text && Array.isArray(q.options) && q.options.length === 4 && q.correct !== undefined)
+        .map(q => ({
+            id: 'q_' + Date.now() + '_' + Math.random().toString(36),
+            text: q.text,
+            options: q.options,
+            correct: q.correct,
+            explanation: q.explanation || ''
+        }));
+
+    if (!newQuestions.length) {
+        showPasteError('No valid questions found. Each needs: text, options (4 strings), correct (0–3).', 'Validation Failed');
         return;
     }
-
-    const newQuestions = parsed.map(q => ({
-        id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2),
-        text: q.text,
-        options: q.options,
-        correct: q.correct,
-        explanation: q.explanation || ''
-    }));
 
     if (!window.isPremium && questions.length + newQuestions.length > 5) {
-        showPasteError(`Free tier: max 5 questions per exam.\nYou have ${questions.length}, trying to add ${newQuestions.length}.\nUpgrade or reduce question count.`, 'Limit Exceeded');
-        setStatusBar('warning', 'Free tier limit exceeded');
+        showPasteError(`Free limit: max 5 questions. You have ${questions.length}, adding ${newQuestions.length}.`, 'Limit Exceeded');
         return;
     }
 
     questions.push(...newQuestions);
-    renderQuestionsEditor();
+    renderQuestionsEditor();   // ← must match exact function name in your file
     closePasteModal();
-    showToast(`✅ Added ${newQuestions.length} question${newQuestions.length !== 1 ? 's' : ''}`);
+    showToast(`✅ Added ${newQuestions.length} question(s)`);
 }
-
+window.parseAndAddQuestions = parseAndAddQuestions;
 function bindPasteModalEvents() {
     const ta = document.getElementById('pasteJsonInput');
     if (!ta) return;
