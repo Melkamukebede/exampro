@@ -1197,7 +1197,56 @@ async function updatePremiumUI() {
     }
     window.isPremium = p.active;
 }
-
+// ---------- WEBVIEW LIMIT vs BROWSER FREE ----------
+(function() {
+    if (typeof window.AndroidCallback !== 'undefined') {
+        // Running inside Android WebView – enforce premium limits
+        console.log('📱 Android WebView detected – premium limits enforced.');
+        
+        // Override the getPremium function to return free tier in WebView
+        const originalGetPremium = getPremium;
+        getPremium = async function() {
+            const premium = await originalGetPremium();
+            // In WebView, only respect premium if explicitly activated
+            if (!premium.active) {
+                window.isPremium = false;
+                return { active: false };
+            }
+            window.isPremium = true;
+            return premium;
+        };
+        
+        // Force re‑check on startup
+        getPremium().then(() => updatePremiumUI());
+        
+        // Ensure free tier limits are active
+        window.isPremium = false;
+        console.log('🔒 WebView free tier limits active. Upgrade to Premium to unlock.');
+    } else {
+        // Running in a regular browser – completely free
+        console.log('🌐 Browser detected – all features unlocked.');
+        window.isPremium = true;
+        
+        // Override getPremium to always return active
+        getPremium = async function() {
+            return { active: true };
+        };
+        
+        // Update the premium banner to show "BROWSER MODE – FREE"
+        const banner = document.getElementById('premiumBanner');
+        if (banner) {
+            banner.innerHTML = '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 4l4 8 6-6 6 6 4-8-6 4-4-6-4 6-6-4z"/><path d="M4 20h16"/></svg> BROWSER MODE – UNLIMITED</span><span class="premium-badge">Free</span>';
+            banner.style.background = 'linear-gradient(135deg, #3b82f6, #2563eb)';
+        }
+        
+        // Also disable the upgrade button
+        const upgradeBtn = document.getElementById('upgradeBtn');
+        if (upgradeBtn) {
+            upgradeBtn.style.display = 'none';
+        }
+    }
+})();
+    
 // ── DATA ──────────────────────────────────────────────────────────────
 async function loadAllFilesFromDB() {
     files = (await dbGetAll('exams')).map(f => ({
