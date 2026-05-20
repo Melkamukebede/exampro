@@ -730,378 +730,149 @@
     </div>
 </div>
 
+<!-- ── PASTE JSON MODAL ────────────────────────────────────────────── -->
 <div id="pasteJsonModal" class="modal">
-    <div class="modal-content" style="max-width:800px; max-height:96vh;">
-
-        <!-- Header -->
+    <div class="modal-content" style="max-width:760px; max-height:95vh;">
         <div class="modal-header">
             <h3>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                 Paste JSON Questions
             </h3>
-            <span class="modal-close" onclick="closePasteModal()">&times;</span>
+            <button class="modal-close" onclick="closePasteModal()">&times;</button>
         </div>
-
-        <!-- Toolbar -->
-        <div class="toolbar-wrapper" style="padding:8px 16px; border-bottom:1px solid var(--border); flex-shrink:0;">
-            <div class="toolbar" style="display:flex; gap:7px; align-items:center; flex-wrap:nowrap;">
+        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--rim);">
+            <div class="toolbar">
                 <button class="btn btn-primary btn-sm" onclick="parseAndAddQuestions()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
                     Parse & Add
                 </button>
                 <button class="btn btn-outline btn-sm" onclick="pasteFromClipboard()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
                     Paste
                 </button>
-                <button class="btn btn-outline btn-sm" onclick="formatPasteJson()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
-                    Format
-                </button>
                 <button class="btn btn-outline btn-sm" onclick="clearPasteInput()">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     Clear
                 </button>
                 <button class="btn btn-outline btn-sm" onclick="closePasteModal()">Cancel</button>
-
-                <span style="flex:1;"></span>
-
-                <!-- Live stats -->
-                <div style="display:flex; gap:10px; font-size:10.5px; color:var(--gray); white-space:nowrap; align-items:center; flex-shrink:0;">
-                    <span id="pasteStatLines" style="display:flex; align-items:center; gap:3px;">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-                        <span id="lineCount">0</span> lines
-                    </span>
-                    <span id="pasteStatChars" style="display:flex; align-items:center; gap:3px;">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-                        <span id="charCount">0</span> chars
-                    </span>
-                    <span id="pasteStatQs" style="display:flex; align-items:center; gap:3px; color:var(--primary);">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                        <span id="detectedQCount">0</span> Qs detected
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Info banner -->
-        <div style="padding:8px 16px; border-bottom:1px solid var(--border); flex-shrink:0;">
-            <div style="display:flex; align-items:flex-start; gap:8px; padding:8px 12px; background:rgba(59,130,246,0.08); border-radius:10px; border-left:3px solid var(--secondary);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" stroke-width="2" style="flex-shrink:0; margin-top:1px;"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                <span style="font-size:11px; color:var(--light); line-height:1.5;">
-                    Paste a valid JSON array. Required fields per question:
-                    <code style="background:rgba(255,255,255,0.08); padding:1px 5px; border-radius:4px; font-size:10.5px;">text</code>
-                    <code style="background:rgba(255,255,255,0.08); padding:1px 5px; border-radius:4px; font-size:10.5px;">options</code> (4 strings)
-                    <code style="background:rgba(255,255,255,0.08); padding:1px 5px; border-radius:4px; font-size:10.5px;">correct</code> (0–3)
-                    — optional: <code style="background:rgba(255,255,255,0.08); padding:1px 5px; border-radius:4px; font-size:10.5px;">explanation</code>
+                <span style="flex:1"></span>
+                <span style="font-size:11px; color:var(--text-lo); display:flex; align-items:center; gap:4px;">
+                    <span id="lineCount">0</span> lines
                 </span>
             </div>
         </div>
-
-        <!-- Body: editor + panels -->
-        <div class="modal-body" style="padding:14px 16px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:12px;">
-
-            <!-- Live validation status bar -->
-            <div id="pasteStatusBar" style="display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:8px; font-size:11px; background:var(--darker); border:1px solid var(--border); transition:all 0.2s;">
-                <span id="pasteStatusIcon" style="font-size:14px;">⏳</span>
-                <span id="pasteStatusText" style="color:var(--gray);">Waiting for input…</span>
+        <div class="modal-body" style="padding:16px; overflow-y:auto;">
+            <div class="info-hint">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <span>Paste a valid JSON array. Each question needs: <code>text</code>, <code>options</code> (4 strings), <code>correct</code> (0–3), and optional <code>explanation</code>.</span>
             </div>
-
-            <!-- Code editor -->
-          <div style="display:flex; background:var(--darker); border-radius:14px; border:1px solid var(--border); overflow:hidden; flex:1; min-height:0;">
-    <div id="lineNumbers"
-        style="background:#070e1c; color:var(--gray); font-family:'Fira Code','Courier New',monospace;
-               font-size:12.5px; padding:14px 10px 14px 10px; text-align:right; user-select:none;
-               border-right:1px solid var(--border); min-width:46px; line-height:1.65;
-               overflow-y:hidden; overflow-x:hidden; flex-shrink:0;
-               pointer-events:none;"></div>
-    <textarea id="pasteJsonInput" wrap="off"
-        style="flex:1; background:transparent; border:none; color:var(--light);
-               font-family:'Fira Code','Courier New',monospace; font-size:12.5px;
-               line-height:1.65; padding:14px; resize:none; outline:none;
-               white-space:pre; overflow-y:scroll; overflow-x:auto; min-height:320px;"
-        placeholder='[&#10;  {&#10;    "text": "Question?",&#10;    "options": ["A","B","C","D"],&#10;    "correct": 1,&#10;    "explanation": "Optional"&#10;  }&#10;]'
-        spellcheck="false"></textarea>
-</div>
-            <!-- Error panel -->
-            <div id="pasteErrorPanel" style="display:none;">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; flex-wrap:wrap; gap:6px;">
-                    <span style="display:flex; align-items:center; gap:6px; color:var(--danger); font-weight:600; font-size:12px;">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                        <span id="pasteErrorTitle">Validation Error</span>
-                    </span>
-                    <button class="btn btn-sm btn-outline" onclick="copyErrorMessage()" style="padding:4px 10px; font-size:10px;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        Copy Error
-                    </button>
-                </div>
-                <div id="pasteError"
-                    style="background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.35);
-                           border-radius:10px; padding:12px; font-family:'Fira Code',monospace;
-                           font-size:11.5px; color:var(--danger); white-space:pre-wrap; word-break:break-word;
-                           max-height:160px; overflow-y:auto; line-height:1.6;"></div>
+            <div class="code-editor-wrap">
+                <div id="lineNumbers"></div>
+                <textarea id="pasteJsonInput" wrap="off" rows="14"
+                    placeholder='[{"text": "Question", "options": ["A","B","C","D"], "correct": 0, "explanation": "Optional"}]'
+                    style="flex:1; background:transparent; border:none; color:var(--text-hi); font-family:'Fira Code','Courier New',monospace; font-size:12.5px; line-height:1.6; padding:14px; resize:vertical; outline:none; white-space:pre; overflow-x:auto;"></textarea>
             </div>
-
-            <!-- Preview panel (shown after successful parse) -->
-            <div id="pastePreviewPanel" style="display:none;">
+            <div id="pasteErrorPanel" style="margin-top:12px; display:none;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-                    <span style="display:flex; align-items:center; gap:6px; color:var(--success); font-weight:600; font-size:12px;">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
-                        <span id="previewTitle">Preview</span>
+                    <span style="display:flex; align-items:center; gap:6px; color:var(--crimson); font-weight:600; font-size:12px;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        Validation Error
                     </span>
-                    <button class="btn btn-sm btn-outline" onclick="togglePreviewPanel()" style="padding:4px 10px; font-size:10px;" id="previewToggleBtn">Hide</button>
+                    <button class="btn btn-sm btn-outline" onclick="copyErrorMessage()">Copy Error</button>
                 </div>
-                <div id="pastePreviewList"
-                    style="display:flex; flex-direction:column; gap:6px; max-height:200px; overflow-y:auto;"></div>
+                <div id="pasteError" style="background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:var(--radius-md); padding:12px; font-family:monospace; font-size:12px; color:var(--crimson); white-space:pre-wrap; word-break:break-word;"></div>
             </div>
-
         </div>
     </div>
 </div>
+
 <!-- ── PROFESSOR CONFIG MODAL ──────────────────────────────────────── -->
 <div id="professorConfigModal" class="modal">
     <div class="modal-content" style="max-width:900px; max-height:95vh;">
-
         <div class="modal-header">
             <h3>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 Exam Professor
             </h3>
-            <span class="modal-close" onclick="closeProfessorModal()">&times;</span>
+            <button class="modal-close" onclick="closeProfessorModal()">&times;</button>
         </div>
-
-        <!-- ROW 1: Total Q · Subject -->
-        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--border);">
-            <div class="toolbar" style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--rim);">
+            <div class="toolbar" style="display:flex; gap:10px;">
                 <div style="min-width:100px;">
-                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                        Total Q
-                    </label>
-                    <input type="number" id="cfgTotalQuestions" class="form-input" min="1" max="50" value="10"
-                        oninput="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px; width:100px;">
+                    <div class="form-label">Total Q</div>
+                    <input type="number" id="cfgTotalQuestions" class="form-input" min="1" max="50" value="10" oninput="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px; width:100px;">
                 </div>
                 <div style="min-width:180px;">
-                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h6M8 16h4"/></svg>
-                        Subject
-                    </label>
+                    <div class="form-label">Subject</div>
                     <div style="position:relative;">
-                        <input type="text" id="cfgSubject" class="form-input" value="Mathematics"
-                            oninput="updateSubjectTypeHint(); updateGeneratedPrompt();"
-                            style="padding:8px 12px; font-size:13px; padding-right:32px;" placeholder="Subject">
-                        <span id="subjectTypeIcon" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:14px; pointer-events:none;">🔢</span>
+                        <input type="text" id="cfgSubject" class="form-input" value="Mathematics" oninput="updateSubjectTypeHint(); updateGeneratedPrompt();" style="padding:8px 12px;" placeholder="Subject">
+                        <span id="subjectTypeIcon" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); pointer-events:none;"></span>
                     </div>
-                </div>
-                <!-- Preset selector -->
-                <div>
-                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-6 4.5 2.5 7.5L12 17l-6.5 4 2.5-7.5L2 9h7z"/></svg>
-                        Preset
-                    </label>
-                    <select class="form-select" onchange="loadPreset(this.value); this.value='';"
-                        style="padding:8px 12px; font-size:12px; min-width:160px;">
-                        <option value="">— Load Preset —</option>
-                        <option value="hs_math">📐 HS Mathematics</option>
-                        <option value="uni_physics">⚛️ University Physics</option>
-                        <option value="bio_easy">🌿 Biology (Easy)</option>
-                    </select>
                 </div>
             </div>
         </div>
-
-        <!-- ROW 2: Topics · Structure · Subject Type -->
-        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--border);">
-            <div class="toolbar" style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--rim);">
+            <div class="toolbar" style="display:flex; gap:10px; align-items:flex-end;">
                 <div style="min-width:200px;">
-                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                        Topics
-                    </label>
-                    <input type="text" id="cfgTopics" class="form-input" placeholder="algebra, geometry"
-                        oninput="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
+                    <div class="form-label">Topics</div>
+                    <input type="text" id="cfgTopics" class="form-input" placeholder="algebra, geometry" oninput="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
                 </div>
                 <div style="min-width:140px;">
-                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
-                        Structure
-                    </label>
+                    <div class="form-label">Structure</div>
                     <select id="cfgStructure" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
                         <option value="Multiple Choice">Multiple Choice</option>
                         <option value="True/False">True/False</option>
                     </select>
                 </div>
                 <div style="min-width:160px;">
-                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                        Subject Type
-                    </label>
-                    <select id="cfgSubjectType" class="form-select"
-                        onchange="this.dataset.manual='1'; updateSubjectTypeHint(); updateGeneratedPrompt();" style="padding:8px 12px; font-size:12px;">
+                    <div class="form-label">Subject Type</div>
+                    <select id="cfgSubjectType" class="form-select" onchange="updateSubjectTypeHint(); updateGeneratedPrompt();" style="padding:8px 12px; font-size:12px;">
                         <option value="calculation">📊 Calculation</option>
                         <option value="theory" selected>📚 Theory</option>
                     </select>
                 </div>
-                <div style="min-width:160px;">
-                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                        Explanation
-                    </label>
-                    <select id="cfgExplanationStyle" class="form-select" onchange="updateSubjectTypeHint(); updateGeneratedPrompt();" style="padding:8px 12px; font-size:12px;">
-                        <option value="stepwise">🔢 Step‑by‑Step</option>
-                        <option value="conceptual" selected>💡 Conceptual</option>
-                        <option value="brief">⚡ Brief</option>
-                    </select>
-                </div>
             </div>
         </div>
-
-        <!-- ROW 3: Memory Tricks · Real‑Life · Source -->
-        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--border);">
-            <div class="toolbar" style="display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap;">
+        <div class="toolbar-wrapper" style="padding:10px 18px; border-bottom:1px solid var(--rim);">
+            <div class="toolbar" style="display:flex; gap:10px; align-items:flex-end;">
                 <div style="min-width:130px;">
-                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L15 9H22L16 14L19 22L12 17L5 22L8 14L2 9H9L12 2Z"/></svg>
-                        Memory Tricks
-                    </label>
+                    <div class="form-label">Memory Tricks</div>
                     <select id="cfgMemoryTricks" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
                         <option value="none">None</option>
                         <option value="few" selected>Few</option>
                         <option value="many">Many</option>
                     </select>
                 </div>
-                <div>
-                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                        Real‑Life Qs
-                    </label>
-                    <input type="number" id="cfgRealLife" class="form-input" min="0" max="50" value="3"
-                        oninput="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px; width:90px;">
+                <div style="min-width:120px;">
+                    <div class="form-label">Real‑Life Q</div>
+                    <input type="number" id="cfgRealLife" class="form-input" min="0" max="50" value="3" oninput="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px; width:110px;">
                 </div>
-                <div style="min-width:180px;">
-                    <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                        Source
-                    </label>
-                    <select id="cfgSource" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
-                        <option value="Only from provided source">Only from provided</option>
-                        <option value="Include additional examples">Include examples</option>
-                    </select>
-                </div>
+                <div id="distSliderArea" style="min-width:220px;"></div>
             </div>
         </div>
-
-        <!-- ROW 4: Difficulty sliders · Concept Depth · Education · Subject hint bar -->
-        <div style="padding:12px 18px; border-bottom:1px solid var(--border); display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
-            <!-- Vertical sliders -->
-            <div>
-                <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:8px;">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
-                    Difficulty Distribution (%)
-                </label>
-                <div style="display:flex; gap:18px; align-items:flex-end;">
-                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-                        <span id="easyVal" style="font-size:12px; font-weight:700; color:var(--success);">20%</span>
-                        <input type="range" id="cfgEasyPct" min="0" max="100" value="20" step="5"
-                            oninput="updateDistDisplay();" class="vertical-slider" style="writing-mode:vertical-lr; direction:rtl; width:28px; height:80px; accent-color:var(--success);">
-                        <span style="font-size:10px; color:var(--gray);">Easy</span>
-                    </div>
-                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-                        <span id="mediumVal" style="font-size:12px; font-weight:700; color:var(--warning);">60%</span>
-                        <input type="range" id="cfgMediumPct" min="0" max="100" value="60" step="5"
-                            oninput="updateDistDisplay();" class="vertical-slider" style="writing-mode:vertical-lr; direction:rtl; width:28px; height:80px; accent-color:var(--warning);">
-                        <span style="font-size:10px; color:var(--gray);">Medium</span>
-                    </div>
-                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-                        <span id="hardVal" style="font-size:12px; font-weight:700; color:var(--danger);">20%</span>
-                        <input type="range" id="cfgHardPct" min="0" max="100" value="20" step="5"
-                            oninput="updateDistDisplay();" class="vertical-slider" style="writing-mode:vertical-lr; direction:rtl; width:28px; height:80px; accent-color:var(--danger);">
-                        <span style="font-size:10px; color:var(--gray);">Hard</span>
-                    </div>
-                </div>
-                <div id="distWarning" style="color:var(--danger); font-size:10px; margin-top:6px; min-height:14px;"></div>
-            </div>
-
-            <!-- Right-side selects + hint bar -->
-            <div style="display:flex; flex-direction:column; gap:10px; flex:1; min-width:280px;">
-                <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                    <div style="min-width:140px;">
-                        <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                            Concept Depth
-                        </label>
-                        <select id="cfgConceptDepth" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
-                            <option value="Basic">Basic</option>
-                            <option value="Intermediate" selected>Intermediate</option>
-                            <option value="Advanced">Advanced</option>
-                        </select>
-                    </div>
-                    <div style="min-width:140px;">
-                        <label style="display:flex; align-items:center; gap:4px; font-size:10px; color:var(--gray); margin-bottom:4px;">
-                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-7 10 7-10 7z"/></svg>
-                            Education
-                        </label>
-                        <select id="cfgEduLevel" class="form-select" onchange="updateGeneratedPrompt()" style="padding:8px 12px; font-size:12px;">
-                            <option value="Elementary">Elementary</option>
-                            <option value="High School" selected>High School</option>
-                            <option value="University">University</option>
-                        </select>
-                    </div>
-                </div>
-                <!-- Subject hint bar -->
-                <div id="subjectHintBar" style="display:flex; align-items:center; gap:8px; padding:8px 12px; background:rgba(16,185,129,0.08); border-radius:10px; border:1px solid rgba(16,185,129,0.2); font-size:11px;">
-                    <span id="hintIcon" style="font-size:16px;">📐</span>
-                    <span id="hintText" style="color:var(--gray);">Step‑by‑step solutions with formulas will be generated.</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- BODY: Additional instructions + generated prompt -->
-        <div class="modal-body" style="padding:18px; overflow-y:auto; flex:1; display:flex; flex-direction:column; gap:14px;">
-
-            <div class="form-group" style="margin-bottom:0;">
-                <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:var(--gray); margin-bottom:6px;">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    Additional Instructions (optional)
-                </label>
-                <textarea id="cfgAdditional" class="form-textarea" rows="2"
-                    placeholder="e.g., focus on integration by parts, avoid trigonometry…"
-                    oninput="updateGeneratedPrompt()"></textarea>
-            </div>
-
-            <div>
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-wrap:wrap; gap:8px;">
-                    <span style="display:flex; align-items:center; gap:7px; color:var(--primary); font-weight:600; font-size:13px;">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        Generated Prompt
-                    </span>
-                    <span style="font-size:11px; color:var(--gray);">~<span id="tokenCount">0</span> tokens</span>
-                    <button class="btn btn-primary btn-sm" onclick="copyGeneratedPrompt()">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        Copy Prompt
-                    </button>
-                </div>
-                <textarea id="generatedPromptDisplay" rows="8" readonly
-                    style="background:var(--darker); border-radius:14px; padding:14px; width:100%; font-family:monospace; font-size:12px; line-height:1.55; resize:vertical; border:1px solid var(--border); color:var(--light); outline:none;"></textarea>
-            </div>
-
-            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-                <button class="btn btn-primary" onclick="goToPasteFromProfessor()">
-                    Next: Paste JSON
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <div class="modal-body" style="padding:16px; overflow-y:auto; flex:1;">
+            <div style="display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+                <button class="btn btn-primary btn-sm" onclick="copyGeneratedPrompt()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    Copy Prompt
                 </button>
-                <p style="font-size:10px; color:var(--gray); display:flex; align-items:center; gap:5px; margin:0;">
-                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                    Copy the prompt → run in any AI → paste the JSON back
-                </p>
+                <button class="btn btn-outline btn-sm" onclick="goToPasteFromProfessor()">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                    Go to Paste
+                </button>
+                <select id="professorPreset" class="form-select btn-sm" onchange="loadPreset(this.value)" style="max-width:180px; padding:6px 12px; font-size:11px;">
+                    <option value="">— Load Preset —</option>
+                    <option value="math">📐 Math</option>
+                    <option value="science">🔬 Science</option>
+                    <option value="history">📜 History</option>
+                    <option value="language">📖 Language</option>
+                </select>
             </div>
+            <textarea id="generatedPromptDisplay" rows="18" readonly style="font-size:12.5px; line-height:1.6;"></textarea>
         </div>
     </div>
 </div>
-<script src="lib/katex/katex.min.js"></script>
-<script src="lib/katex/contrib/auto-render.min.js"></script>
-<script src="marked.min.js"></script>
+
 <script>
 (() => {
 'use strict';
@@ -1334,16 +1105,7 @@ function renderHome() {
 function renderFiles() {
     fileManagerPanel.style.display = 'block';
     refreshFileList();
-contentArea.innerHTML = `
-    <div class="card" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:320px; text-align:center; gap:16px;">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-lo)" stroke-width="1.2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-        <div style="color:var(--text-md); font-size:0.95rem; font-family:var(--font-head); font-weight:600;">Select an exam from the panel</div>
-        <div style="color:var(--text-lo); font-size:0.8rem;">or create a new one to get started</div>
-        <button class="btn btn-primary btn-sm" onclick="setPage('create')">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Create Exam
-        </button>
-    </div>`;
+    contentArea.innerHTML = `<div class="card"><div style="color:var(--text-lo); font-size:0.85rem;">Select an exam from the panel →</div></div>`;
 }
 
 function refreshFileList() {
@@ -1498,327 +1260,217 @@ window.deleteResult = async function(idx) {
 };
 
 // ── CREATE PAGE ───────────────────────────────────────────────────────
+let currentStep = 1;
+
 function renderCreatePage(examToEdit = null) {
     fileManagerPanel.style.display = 'none';
-    editingExamId = examToEdit ? String(examToEdit.id) : null;
-    questions = examToEdit ? (examToEdit.questions || []).map(q => ({ ...q })) : [];
+    if (examToEdit) {
+        editingExamId = examToEdit.id;
+        questions = examToEdit.questions ? examToEdit.questions.map(q => ({ ...q })) : [];
+    } else {
+        editingExamId = null;
+        questions = [];
+    }
+    currentStep = 1;
 
-    const ex = examToEdit || {};
-
-    // All 3 panels rendered ONCE — goToStep only toggles visibility
     contentArea.innerHTML = `
     <div class="step-wizard">
         <div class="step-indicator">
-            <div class="step-item active" onclick="goToStep(1)">
-                <div class="step-number">1</div><div class="step-label">Details</div>
-            </div>
-            <div class="step-item" onclick="goToStep(2)">
-                <div class="step-number">2</div><div class="step-label">Questions</div>
-            </div>
-            <div class="step-item" onclick="goToStep(3)">
-                <div class="step-number">3</div><div class="step-label">Settings</div>
-            </div>
-            <div class="step-item" onclick="goToStep(4)">
-                <div class="step-number">4</div><div class="step-label">Review</div>
-            </div>
+            ${[['1','Details'],['2','Questions'],['3','Settings'],['4','Review']].map(([n,l]) => `
+            <div class="step-item ${+n === currentStep ? 'active' : +n < currentStep ? 'completed' : ''}" onclick="goToStep(${n})">
+                <div class="step-number">${n}</div>
+                <div class="step-label">${l}</div>
+            </div>`).join('')}
         </div>
-
-        <div class="step-content">
-
-            <!-- STEP 1: Details -->
-            <div class="step-panel active" id="step1">
-                <div class="create-card">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <div class="form-label">Exam Title *</div>
-                            <input type="text" id="exam-title" class="form-input"
-                                placeholder="e.g. Biology Chapter 3"
-                                value="${escapeHtml(ex.name || '')}">
-                        </div>
-                        <div class="form-group">
-                            <div class="form-label">Subject</div>
-                            <input type="text" id="exam-subject" class="form-input"
-                                placeholder="Biology"
-                                value="${escapeHtml(ex.subject || '')}">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <div class="form-label">Difficulty</div>
-                            <select id="exam-difficulty" class="form-select">
-                                ${['Easy','Medium','Hard'].map(d =>
-                                    `<option ${(ex.difficulty||'Medium')===d?'selected':''}>${d}</option>`
-                                ).join('')}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <div class="form-label">Time Limit (min)</div>
-                            <input type="number" id="exam-time" class="form-input"
-                                min="1" max="300" value="${ex.timeLimit || 30}">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="form-label">Description (optional)</div>
-                        <textarea id="exam-desc" class="form-input" rows="2"
-                            placeholder="What is this exam about?">${escapeHtml(ex.description || '')}</textarea>
-                    </div>
-                    <div style="display:flex; justify-content:flex-end;">
-                        <button class="btn btn-primary" onclick="goToStep(2)">Next →</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STEP 2: Questions -->
-            <div class="step-panel" id="step2">
-                <div class="create-card">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-                        <div style="font-family:var(--font-head); font-weight:700; color:var(--text-hi);" id="qCountLabel">${questions.length} Question${questions.length!==1?'s':''}</div>
-                        <div style="display:flex; gap:7px; flex-wrap:wrap;">
-                            <button class="btn btn-outline btn-sm" onclick="openProfessorModal()">🧑‍🏫 Professor</button>
-                            <button class="btn btn-outline btn-sm" onclick="openPasteModal()">📋 Paste JSON</button>
-                            <button class="btn btn-primary btn-sm" id="addQuestionBtn">➕ Add Question</button>
-                        </div>
-                    </div>
-                    <div id="questionsContainer" style="max-height:420px; overflow-y:auto; padding-right:4px;"></div>
-                    <div id="limitWarning" style="color:var(--crimson); font-size:12px; display:none; margin-top:8px;"></div>
-                    <div style="display:flex; justify-content:space-between; margin-top:12px;">
-                        <button class="btn btn-outline btn-sm" onclick="goToStep(1)">← Back</button>
-                        <button class="btn btn-primary" onclick="goToStep(3)">Next →</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STEP 3: Settings -->
-            <div class="step-panel" id="step3">
-                <div class="create-card">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <div class="form-label">Passing Score (%)</div>
-                            <input type="number" id="exam-pass" class="form-input"
-                                min="0" max="100" value="${ex.passingScore || 70}">
-                        </div>
-                        <div class="form-group">
-                            <div class="form-label">Subject Type</div>
-                            <select id="exam-subjecttype" class="form-select">
-                                <option value="theory"      ${(ex.subjectType||'theory')==='theory'?'selected':''}>📚 Theory</option>
-                                <option value="calculation" ${ex.subjectType==='calculation'?'selected':''}>📊 Calculation</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-top:8px;">
-                        <button class="btn btn-outline btn-sm" onclick="goToStep(2)">← Back</button>
-                        <button class="btn btn-primary" onclick="goToStep(4)">Next →</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- STEP 4: Review & Save -->
-            <div class="step-panel" id="step4">
-                <div class="create-card">
-                    <div id="reviewSummary" style="margin-bottom:16px;"></div>
-                    <div id="limitWarning2" style="color:var(--crimson); font-size:12px; display:none; margin-bottom:10px;"></div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                        <button class="btn btn-outline btn-sm" onclick="goToStep(3)">← Back</button>
-                        <div style="display:flex; gap:8px;">
-                            <button class="btn btn-outline btn-sm" onclick="setPage('files')">Cancel</button>
-                            <button class="btn btn-primary" id="saveExamBtn">
-                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                                Save Exam
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+        <div class="step-content" id="stepContent"></div>
     </div>`;
 
-    renderQuestionsEditor();
-    document.getElementById('addQuestionBtn').addEventListener('click', addQuestion);
-    document.getElementById('saveExamBtn').addEventListener('click', saveExam);
-    updateReviewSummary();
+    renderStep(1, examToEdit);
 }
 
-// goToStep only shows/hides — never rebuilds HTML
-window.goToStep = function(step) {
+function renderStep(step, examData = null) {
+    currentStep = step;
+    // Update indicator
     document.querySelectorAll('.step-item').forEach((el, i) => {
-        el.classList.remove('active', 'completed');
-        if (i + 1 < step)      el.classList.add('completed');
-        else if (i + 1 === step) el.classList.add('active');
+        el.className = 'step-item' + (i + 1 === step ? ' active' : i + 1 < step ? ' completed' : '');
     });
-    document.querySelectorAll('.step-panel').forEach((el, i) => {
-        el.classList.toggle('active', i + 1 === step);
-    });
-    if (step === 4) updateReviewSummary();
-};
+    const content = document.getElementById('stepContent');
+    if (!content) return;
 
-function renderQuestionsEditor() {
-    const container = document.getElementById('questionsContainer');
-    if (!container) return;
-    const label = document.getElementById('qCountLabel');
-    if (label) label.textContent = `${questions.length} Question${questions.length !== 1 ? 's' : ''}`;
-
-    if (!questions.length) {
-        container.innerHTML = '<div style="text-align:center; padding:24px; color:var(--text-lo); font-size:0.85rem;">No questions yet — click ➕ Add Question or use Paste JSON.</div>';
-        return;
-    }
-
-    container.innerHTML = questions.map((q, idx) => `
-        <div class="question-card-compact" id="q-${idx}">
-            <div class="question-header" onclick="toggleQuestion(${idx})">
-                <div class="question-header-left">
-                    <span class="question-number">${idx + 1}</span>
-                    <span class="question-preview" id="qpreview-${idx}">${escapeHtml(q.text || 'New question…')}</span>
+    if (step === 1) {
+        const d = examData || {};
+        content.innerHTML = `<div class="create-card">
+            <div class="form-group">
+                <div class="form-label">Exam Name *</div>
+                <input id="examName" class="form-input" placeholder="e.g. Biology Chapter 3" value="${escapeHtml(d.name || '')}">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <div class="form-label">Subject</div>
+                    <input id="examSubject" class="form-input" placeholder="Biology" value="${escapeHtml(d.subject || '')}">
                 </div>
-                <div style="display:flex; align-items:center; gap:4px;">
-                    <button class="delete-question-btn" onclick="event.stopPropagation(); removeQuestion(${idx})">🗑️</button>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="arrow-${idx}" style="transition:transform 0.2s; color:var(--text-lo);"><polyline points="6 9 12 15 18 9"/></svg>
+                <div class="form-group">
+                    <div class="form-label">Difficulty</div>
+                    <select id="examDifficulty" class="form-select">
+                        ${['Easy','Medium','Hard'].map(v => `<option ${(d.difficulty || 'Medium') === v ? 'selected' : ''}>${v}</option>`).join('')}
+                    </select>
                 </div>
             </div>
-            <div class="question-body collapsed" id="body-${idx}">
+            <div class="form-group">
+                <div class="form-label">Description (optional)</div>
+                <textarea id="examDesc" class="form-input form-textarea" rows="3" placeholder="What is this exam about?">${escapeHtml(d.description || '')}</textarea>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
+                <button class="btn btn-primary" onclick="goToStep(2)">Next → Questions</button>
+            </div>
+        </div>`;
+    } else if (step === 2) {
+        content.innerHTML = `<div class="create-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
+                <div style="font-family:var(--font-head); font-weight:700; color:var(--text-hi);">${questions.length} Question${questions.length !== 1 ? 's' : ''}</div>
+                <div style="display:flex; gap:7px; flex-wrap:wrap;">
+                    <button class="btn btn-outline btn-sm" onclick="addQuestion()">+ Add Question</button>
+                    <button class="btn btn-outline btn-sm" onclick="openPasteModal()">Paste JSON</button>
+                </div>
+            </div>
+            <div id="questionsContainer">${renderQuestionsHTML()}</div>
+            <div style="display:flex; justify-content:space-between; margin-top:12px;">
+                <button class="btn btn-outline btn-sm" onclick="goToStep(1)">← Back</button>
+                <button class="btn btn-primary" onclick="goToStep(3)">Next → Settings</button>
+            </div>
+        </div>`;
+    } else if (step === 3) {
+        const d = examData || {};
+        content.innerHTML = `<div class="create-card">
+            <div class="form-row">
+                <div class="form-group">
+                    <div class="form-label">Time Limit (minutes)</div>
+                    <input id="examTime" type="number" class="form-input" min="1" max="300" value="${d.timeLimit || 30}">
+                </div>
+                <div class="form-group">
+                    <div class="form-label">Passing Score (%)</div>
+                    <input id="examPass" type="number" class="form-input" min="0" max="100" value="${d.passingScore || 70}">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-label">Subject Type</div>
+                <select id="examSubjectType" class="form-select">
+                    <option value="theory" ${(d.subjectType || 'theory') === 'theory' ? 'selected' : ''}>📚 Theory</option>
+                    <option value="calculation" ${d.subjectType === 'calculation' ? 'selected' : ''}>📊 Calculation</option>
+                </select>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:8px;">
+                <button class="btn btn-outline btn-sm" onclick="goToStep(2)">← Back</button>
+                <button class="btn btn-primary" onclick="goToStep(4)">Next → Review</button>
+            </div>
+        </div>`;
+    } else if (step === 4) {
+        const name = document.getElementById('examName')?.value || 'Untitled';
+        const qCount = questions.length;
+        content.innerHTML = `<div class="create-card">
+            <div style="text-align:center; padding:20px 0;">
+                <div style="font-family:var(--font-head); font-size:1.4rem; font-weight:800; color:var(--emerald); margin-bottom:8px;">${escapeHtml(name)}</div>
+                <div style="color:var(--text-md); font-size:0.9rem; margin-bottom:24px;">${qCount} question${qCount !== 1 ? 's' : ''} ready</div>
+                ${qCount === 0 ? `<div style="color:var(--amber); font-size:0.85rem; margin-bottom:16px;">⚠ Add at least one question before saving.</div>` : ''}
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                    <button class="btn btn-outline" onclick="goToStep(3)">← Back</button>
+                    <button class="btn btn-primary" onclick="saveExam()" ${qCount === 0 ? 'disabled' : ''}>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                        Save Exam
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }
+}
+
+window.goToStep = function(step) { renderStep(step); };
+
+function renderQuestionsHTML() {
+    if (!questions.length) return '<div style="color:var(--text-lo); font-size:0.85rem; text-align:center; padding:20px;">No questions yet — click Add Question.</div>';
+    return questions.map((q, i) => `
+        <div class="question-card-compact" id="qcard-${i}">
+            <div class="question-header" onclick="toggleQuestionBody(${i})">
+                <div class="question-header-left">
+                    <div class="question-number">${i + 1}</div>
+                    <div class="question-preview">${escapeHtml(q.text || 'New question…')}</div>
+                </div>
+                <button class="delete-question-btn" onclick="event.stopPropagation(); deleteQuestion(${i})">✕</button>
+            </div>
+            <div class="question-body" id="qbody-${i}">
                 <div class="form-group">
                     <div class="form-label">Question Text</div>
-                    <input type="text" class="form-input q-text" data-index="${idx}"
-                        placeholder="Question text…" value="${escapeHtml(q.text || '')}">
+                    <textarea class="form-input" rows="2" onchange="updateQuestionText(${i}, this.value)">${escapeHtml(q.text || '')}</textarea>
                 </div>
                 <div class="options-grid-compact">
-                    ${q.options.map((opt, oi) => `
+                    ${['A','B','C','D'].map((letter, oi) => `
                     <div class="option-input-compact">
-                        <input type="radio" name="correct-${idx}" value="${oi}" ${q.correct === oi ? 'checked' : ''}>
-                        <input type="text" class="q-option" data-qidx="${idx}" data-oidx="${oi}"
-                            placeholder="${String.fromCharCode(65 + oi)}" value="${escapeHtml(opt)}">
+                        <input type="radio" name="correct-${i}" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateCorrect(${i}, ${oi})">
+                        <input type="text" placeholder="${letter}" value="${escapeHtml(q.options?.[oi] || '')}" onchange="updateOption(${i}, ${oi}, this.value)">
                     </div>`).join('')}
                 </div>
                 <div class="form-group" style="margin-top:8px; margin-bottom:0;">
                     <div class="form-label">Explanation (optional)</div>
-                    <input type="text" class="form-input q-explanation" data-index="${idx}"
-                        placeholder="Explanation…" value="${escapeHtml(q.explanation || '')}">
+                    <textarea class="form-input" rows="2" onchange="updateExplanation(${i}, this.value)">${escapeHtml(q.explanation || '')}</textarea>
                 </div>
             </div>
         </div>
     `).join('');
-
-    container.querySelectorAll('.q-text, .q-explanation').forEach(el => el.addEventListener('input', updateQuestion));
-    container.querySelectorAll('.q-option').forEach(el => el.addEventListener('input', updateQuestion));
-    container.querySelectorAll('input[type="radio"]').forEach(el => el.addEventListener('change', updateQuestion));
 }
 
-window.toggleQuestion = function(idx) {
-    const body  = document.getElementById(`body-${idx}`);
-    const arrow = document.getElementById(`arrow-${idx}`);
-    if (!body) return;
-    body.classList.toggle('collapsed');
-    if (arrow) arrow.style.transform = body.classList.contains('collapsed') ? 'rotate(-90deg)' : 'rotate(0deg)';
+window.toggleQuestionBody = i => {
+    const b = document.getElementById('qbody-' + i);
+    if (b) b.classList.toggle('collapsed');
 };
-
-function updateQuestion(e) {
-    const el  = e.target;
-    const idx = el.dataset.index;
-    if (idx === undefined) {
-        // radio button
-        if (el.checked) {
-            const qIdx = el.name.split('-')[1];
-            questions[qIdx].correct = parseInt(el.value);
-        }
-        return;
-    }
-    if (el.classList.contains('q-text')) {
-        questions[idx].text = el.value;
-        const prev = document.getElementById(`qpreview-${idx}`);
-        if (prev) prev.textContent = el.value || 'New question…';
-    } else if (el.classList.contains('q-explanation')) {
-        questions[idx].explanation = el.value;
-    } else if (el.classList.contains('q-option')) {
-        questions[el.dataset.qidx].options[el.dataset.oidx] = el.value;
-    }
-    updateReviewSummary();
-}
-
-function addQuestion() {
-    questions.push({ id: 'q_' + Date.now(), text: '', options: ['','','',''], correct: 0, explanation: '' });
-    renderQuestionsEditor();
-    updateReviewSummary();
-    // Auto-expand the new question
-    const idx = questions.length - 1;
-    setTimeout(() => {
-        const body  = document.getElementById(`body-${idx}`);
-        const arrow = document.getElementById(`arrow-${idx}`);
-        if (body)  body.classList.remove('collapsed');
-        if (arrow) arrow.style.transform = 'rotate(0deg)';
-        body?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }, 50);
-}
-
-window.removeQuestion = function(idx) {
-    questions.splice(idx, 1);
-    renderQuestionsEditor();
-    updateReviewSummary();
+window.addQuestion = () => {
+    questions.push({ text: '', options: ['', '', '', ''], correct: 0, explanation: '' });
+    const c = document.getElementById('questionsContainer');
+    if (c) c.innerHTML = renderQuestionsHTML();
 };
+window.deleteQuestion = i => { questions.splice(i, 1); const c = document.getElementById('questionsContainer'); if (c) c.innerHTML = renderQuestionsHTML(); };
+window.updateQuestionText = (i, v) => { questions[i].text = v; };
+window.updateOption = (i, oi, v) => { if (!questions[i].options) questions[i].options = ['','','','']; questions[i].options[oi] = v; };
+window.updateCorrect = (i, oi) => { questions[i].correct = oi; };
+window.updateExplanation = (i, v) => { questions[i].explanation = v; };
 
-function updateReviewSummary() {
-    const container = document.getElementById('reviewSummary');
-    if (!container) return;
-    const title   = document.getElementById('exam-title')?.value   || '(No title)';
-    const subject = document.getElementById('exam-subject')?.value || '(No subject)';
-    const time    = document.getElementById('exam-time')?.value    || 30;
-    const diff    = document.getElementById('exam-difficulty')?.value || 'Medium';
-    const pass    = document.getElementById('exam-pass')?.value    || 70;
-
-    container.innerHTML = `
-        <div style="display:flex; flex-direction:column; gap:10px;">
-            <div style="background:var(--surface-2); border-radius:var(--radius-md); padding:14px; border:1px solid var(--rim);">
-                <div style="font-family:var(--font-head); font-size:1rem; font-weight:700; color:var(--text-hi); margin-bottom:4px;">${escapeHtml(title)}</div>
-                <div style="font-size:12px; color:var(--text-lo);">${escapeHtml(subject)} · ${diff} · ${time} min · Pass: ${pass}%</div>
-            </div>
-            <div style="font-size:12px; color:var(--text-md); font-weight:600; margin-bottom:4px;">${questions.length} Question${questions.length!==1?'s':''}</div>
-            ${questions.map((q, i) => `
-                <div style="background:var(--surface-2); border-radius:var(--radius-sm); padding:10px 12px; border:1px solid var(--rim); font-size:12px;">
-                    <div style="color:var(--text-hi); margin-bottom:4px; font-weight:500;">Q${i+1}: ${escapeHtml(q.text || '(No text)')}</div>
-                    <div style="color:var(--emerald); font-size:11px;">✓ ${String.fromCharCode(65 + q.correct)}. ${escapeHtml(q.options[q.correct] || '')}</div>
-                </div>
-            `).join('')}
-            ${questions.length === 0 ? '<div style="color:var(--amber); font-size:12px;">⚠ Add at least one question before saving.</div>' : ''}
-        </div>`;
+async function checkLimits() {
+    if (window.isPremium) return { allowed: true };
+    const totalQ = files.reduce((s, e) => s + (e.questions?.length || 0), 0);
+    if (!editingExamId && files.length >= 2) return { allowed: false, reason: 'Free tier: max 2 exams.' };
+    if (questions.length > 5) return { allowed: false, reason: 'Max 5 questions per exam.' };
+    let existing = totalQ;
+    if (editingExamId) { const old = files.find(e => e.id === editingExamId); if (old) existing -= old.questions?.length || 0; }
+    if (existing + questions.length > 10) return { allowed: false, reason: 'Total questions cannot exceed 10.' };
+    return { allowed: true };
 }
 
-async function saveExam() {
-    const title   = document.getElementById('exam-title')?.value.trim();
-    const subject = document.getElementById('exam-subject')?.value.trim();
-    if (!title || !subject) { showToast('Title and subject required', true); goToStep(1); return; }
-    if (!questions.length)  { showToast('Add at least one question', true); goToStep(2); return; }
-
+window.saveExam = async function() {
+    const name = document.getElementById('examName')?.value?.trim();
+    if (!name) { showToast('Please enter an exam name', true); goToStep(1); return; }
+    if (!questions.length) { showToast('Add at least one question', true); return; }
     const limit = await checkLimits();
-    if (!limit.allowed) {
-        const w = document.getElementById('limitWarning2');
-        if (w) { w.textContent = limit.reason; w.style.display = 'block'; }
-        showToast(limit.reason, true);
-        return;
-    }
-
+    if (!limit.allowed) { showToast(limit.reason, true); return; }
     const exam = {
-        id:          editingExamId || 'exam_' + Date.now(),
-        name:        title,
-        title,
-        subject,
-        difficulty:  document.getElementById('exam-difficulty')?.value  || 'Medium',
-        timeLimit:   parseInt(document.getElementById('exam-time')?.value)  || 30,
-        passingScore:parseInt(document.getElementById('exam-pass')?.value)  || 70,
-        subjectType: document.getElementById('exam-subjecttype')?.value || 'theory',
-        description: document.getElementById('exam-desc')?.value?.trim() || '',
+        id: editingExamId || String(Date.now()),
+        name,
+        subject: document.getElementById('examSubject')?.value?.trim() || '',
+        difficulty: document.getElementById('examDifficulty')?.value || 'Medium',
+        description: document.getElementById('examDesc')?.value?.trim() || '',
+        timeLimit: parseInt(document.getElementById('examTime')?.value) || 30,
+        passingScore: parseInt(document.getElementById('examPass')?.value) || 70,
+        subjectType: document.getElementById('examSubjectType')?.value || 'theory',
         questions,
-        updatedAt:   new Date().toISOString()
+        updatedAt: new Date().toISOString()
     };
-
-    if (editingExamId) files = files.map(e => e.id === editingExamId ? exam : e);
-    else files.push(exam);
-
-    for (const e of files) await dbPut('exams', e);
+    await dbPut('exams', exam);
+    files = await dbGetAll('exams');
     localStorage.setItem('db_updated', Date.now());
     editingExamId = null;
     questions = [];
-    showToast('Exam saved!');
     setPage('files');
-}
+    showToast(editingExamId ? 'Exam updated!' : 'Exam saved!');
+};
+
 // ── PRACTICE ──────────────────────────────────────────────────────────
 function startPractice(id) {
     currentFile = files.find(f => String(f.id) === String(id));
@@ -1984,330 +1636,66 @@ function renderMath(container) {
     if (!container || typeof renderMathInElement === 'undefined') return;
     try {
         renderMathInElement(container, {
-            delimiters: [
-                { left: '\\(', right: '\\)',  display: false },
-                { left: '\\[', right: '\\]',  display: true  },
-                { left: '$$',  right: '$$',   display: true  }
-            ],
-            throwOnError: false,
-            preProcess: (math) => {
-                const ta = document.createElement('textarea');
-                ta.innerHTML = math;
-                return ta.value;
-            }
+            delimiters: [{ left: '\\(', right: '\\)', display: false }, { left: '\\[', right: '\\]', display: true }, { left: '$$', right: '$$', display: true }],
+            throwOnError: false
         });
-    } catch(e) { console.warn('LaTeX error:', e); }
+    } catch(e) {}
 }
+
 function renderMixedExplanation(raw, subjectType = 'theory') {
     if (!raw) return '';
-    if (typeof marked === 'undefined') {
-        return `<pre style="white-space:pre-wrap; word-break:break-word;">${escapeHtml(raw)}</pre>`;
-    }
-
+    if (typeof marked === 'undefined') return `<pre style="white-space:pre-wrap; word-break:break-word;">${escapeHtml(raw)}</pre>`;
     const latexBlocks = [], latexInlines = [];
-
     let processed = raw
-        .replace(/\\\[([\s\S]*?)\\\]/g, (_, math) => {
-            latexBlocks.push(math);
-            return `{{LATEX_BLOCK_${latexBlocks.length - 1}}}`;
-        })
-        .replace(/\$\$([\s\S]*?)\$\$/g, (_, math) => {
-            latexBlocks.push(math);
-            return `{{LATEX_BLOCK_${latexBlocks.length - 1}}}`;
-        });
-
-    processed = processed.replace(/\\\(([\s\S]*?)\\\)/g, (_, math) => {
-        latexInlines.push(math);
-        return `{{LATEX_INLINE_${latexInlines.length - 1}}}`;
-    });
-
+        .replace(/\\\[([\s\S]*?)\\\]/g, (_, m) => { latexBlocks.push(m); return `{{LB_${latexBlocks.length-1}}}`; })
+        .replace(/\$\$([\s\S]*?)\$\$/g, (_, m) => { latexBlocks.push(m); return `{{LB_${latexBlocks.length-1}}}`; })
+        .replace(/\\\(([\s\S]*?)\\\)/g, (_, m) => { latexInlines.push(m); return `{{LI_${latexInlines.length-1}}}`; });
     let html = marked.parse(processed);
-
-    latexBlocks.forEach((math, idx) => {
-        html = html.replace(new RegExp(`\\{\\{LATEX_BLOCK_${idx}\\}\\}`, 'g'), `\\[${math}\\]`);
-    });
-    latexInlines.forEach((math, idx) => {
-        html = html.replace(new RegExp(`\\{\\{LATEX_INLINE_${idx}\\}\\}`, 'g'), `\\(${math}\\)`);
-    });
-
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = html;
-
-    // Fix double-escaped backslashes that Markdown introduces
-    const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
-    const textNodes = [];
-    while (walker.nextNode()) textNodes.push(walker.currentNode);
-
-    textNodes.forEach(node => {
-        let content = node.textContent;
-        content = content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-        content = content.replace(/\\\\(?=[a-zA-Z\(\)\[\]])/g, '\\');
-        if (/\\[a-zA-Z]+/.test(content) && !content.includes('\\(') && !content.includes('\\[')) {
-            content = `\\(${content}\\)`;
-        }
-        node.textContent = content;
-    });
-
-    return tempDiv.innerHTML;
+    latexBlocks.forEach((m, i) => { html = html.replace(new RegExp(`\\{\\{LB_${i}\\}\\}`, 'g'), `\\[${m}\\]`); });
+    latexInlines.forEach((m, i) => { html = html.replace(new RegExp(`\\{\\{LI_${i}\\}\\}`, 'g'), `\\(${m}\\)`); });
+    return html;
 }
-  
+
 // ── PASTE JSON MODAL ──────────────────────────────────────────────────
-function openPasteModal() {
+let pasteTargetExamId = null;
+
+window.openPasteModal = function(examId) {
+    pasteTargetExamId = examId || null;
     document.getElementById('pasteJsonModal').style.display = 'flex';
     document.getElementById('pasteErrorPanel').style.display = 'none';
-    document.getElementById('pastePreviewPanel').style.display = 'none';
-    setStatusBar('idle');
-    updatePasteStats();
-}
-function closePasteModal() {
-    document.getElementById('pasteJsonModal').style.display = 'none';
-}
-function clearPasteInput() {
-    document.getElementById('pasteJsonInput').value = '';
-    document.getElementById('pasteErrorPanel').style.display = 'none';
-    document.getElementById('pastePreviewPanel').style.display = 'none';
-    updatePasteStats();
-    setStatusBar('idle');
-}
+    updateLineNumbers();
+};
+window.closePasteModal = function() { document.getElementById('pasteJsonModal').style.display = 'none'; };
+window.clearPasteInput = function() { document.getElementById('pasteJsonInput').value = ''; updateLineNumbers(); };
+window.pasteFromClipboard = async function() {
+    try { document.getElementById('pasteJsonInput').value = await navigator.clipboard.readText(); updateLineNumbers(); }
+    catch(e) { showToast('Clipboard access denied', true); }
+};
 
-// Status bar helper
-function setStatusBar(state, msg) {
-    const bar  = document.getElementById('pasteStatusBar');
-    const icon = document.getElementById('pasteStatusIcon');
-    const text = document.getElementById('pasteStatusText');
-    if (!bar) return;
-    const themes = {
-        idle:    { bg:'var(--darker)',                  border:'var(--border)',                    icon:'⏳', color:'var(--gray)' },
-        typing:  { bg:'rgba(59,130,246,0.06)',          border:'rgba(59,130,246,0.2)',              icon:'✏️', color:'var(--gray)' },
-        valid:   { bg:'rgba(16,185,129,0.07)',          border:'rgba(16,185,129,0.3)',              icon:'✅', color:'var(--success)' },
-        warning: { bg:'rgba(245,158,11,0.07)',          border:'rgba(245,158,11,0.3)',              icon:'⚠️', color:'var(--warning)' },
-        error:   { bg:'rgba(239,68,68,0.07)',           border:'rgba(239,68,68,0.3)',               icon:'❌', color:'var(--danger)' },
-    };
-    const t = themes[state] || themes.idle;
-    bar.style.background   = t.bg;
-    bar.style.borderColor  = t.border;
-    icon.textContent       = t.icon;
-    text.style.color       = t.color;
-    text.textContent       = msg || { idle:'Waiting for input…', typing:'Analysing…' }[state] || '';
-}
 
-// Live stats + auto-detect question count
-function updatePasteStats() {
-    const ta  = document.getElementById('pasteJsonInput');
-    const val = ta ? ta.value : '';
-    const lines = val ? val.split('\n').length : 0;
-    const chars = val.length;
-
-    const lc = document.getElementById('lineCount');   if (lc) lc.textContent = lines;
-    const cc = document.getElementById('charCount');   if (cc) cc.textContent = chars;
-
-    // Quick regex count of detected question objects (count "text" keys as proxy)
-    const qMatch = val.match(/"text"\s*:/g);
-    const qCount = qMatch ? qMatch.length : 0;
-    const qEl = document.getElementById('detectedQCount'); if (qEl) qEl.textContent = qCount;
-
-    // Sync line numbers
-    const ln = document.getElementById('lineNumbers');
-    if (ln && val) {
-        ln.innerHTML = val.split('\n').map((_, i) => i + 1).join('<br>');
-    } else if (ln) {
-        ln.innerHTML = '1';
-    }
-}
-
-// Sync scroll between line numbers and textarea
-function syncScroll() {
+function updateLineNumbers() {
     const ta = document.getElementById('pasteJsonInput');
     const ln = document.getElementById('lineNumbers');
     if (!ta || !ln) return;
-    // Match scrollTop exactly — both use same font/line-height/padding-top
-    ln.scrollTop = ta.scrollTop;
+    const lines = ta.value.split('\n');
+    document.getElementById('lineCount').textContent = lines.length;
+    ln.innerHTML = lines.map((_, i) => i + 1).join('<br>');
 }
 
-// Deep JSON validation — returns array of human-readable error strings
-function validatePasteJson(parsed) {
-    const errors = [];
-    if (!Array.isArray(parsed)) {
-        errors.push('Root must be a JSON array [ ... ]');
-        return errors;
-    }
-    if (parsed.length === 0) {
-        errors.push('Array is empty — add at least one question.');
-        return errors;
-    }
-    parsed.forEach((q, i) => {
-        const n = `Q${i + 1}`;
-        if (typeof q !== 'object' || q === null) { errors.push(`${n}: must be an object { ... }`); return; }
-        if (!q.text || typeof q.text !== 'string' || !q.text.trim())
-            errors.push(`${n}: missing or empty "text" field`);
-        if (!Array.isArray(q.options))
-            errors.push(`${n}: "options" must be an array`);
-        else {
-            if (q.options.length !== 4)
-                errors.push(`${n}: "options" must have exactly 4 items (has ${q.options.length})`);
-            q.options.forEach((opt, oi) => {
-                if (typeof opt !== 'string' || !opt.trim())
-                    errors.push(`${n}: option ${oi} is empty or not a string`);
-            });
-        }
-        if (q.correct === undefined || q.correct === null)
-            errors.push(`${n}: missing "correct" field`);
-        else if (typeof q.correct !== 'number' || !Number.isInteger(q.correct))
-            errors.push(`${n}: "correct" must be an integer (got ${typeof q.correct})`);
-        else if (q.correct < 0 || q.correct > 3)
-            errors.push(`${n}: "correct" must be 0–3 (got ${q.correct})`);
-        if (q.explanation !== undefined && typeof q.explanation !== 'string')
-            errors.push(`${n}: "explanation" must be a string if provided`);
-    });
-    return errors;
-}
-
-// Auto-lint on input with debounce
-let _lintTimer = null;
-function onPasteInput() {
-    updatePasteStats();
-    clearTimeout(_lintTimer);
-    const val = document.getElementById('pasteJsonInput')?.value.trim() || '';
-    if (!val) { setStatusBar('idle'); document.getElementById('pasteErrorPanel').style.display = 'none'; document.getElementById('pastePreviewPanel').style.display = 'none'; return; }
-    setStatusBar('typing');
-    _lintTimer = setTimeout(() => lintPasteJson(val), 600);
-}
-
-function lintPasteJson(raw) {
-    const errorPanel   = document.getElementById('pasteErrorPanel');
-    const previewPanel = document.getElementById('pastePreviewPanel');
-
-    // Clean invisible chars
-    const cleaned = raw.replace(/^\uFEFF/, '').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\r\n/g, '\n');
-
-    let parsed;
-    try {
-        parsed = JSON.parse(cleaned);
-    } catch (e) {
-        // Pinpoint location
-        const match = e.message.match(/position (\d+)/);
-        let msg = e.message;
-        if (match) {
-            const pos  = parseInt(match[1]);
-            const pre  = cleaned.substring(0, pos);
-            const line = pre.split('\n').length;
-            const col  = pre.split('\n').pop().length + 1;
-            const ctx  = cleaned.substring(Math.max(0, pos - 35), pos + 35).replace(/\n/g, '↵');
-            msg = `Syntax error at line ${line}, column ${col}\n\n→ …${ctx}…\n\nHint: ${syntaxHint(e.message)}`;
-        }
-        showPasteError(msg, 'JSON Syntax Error');
-        setStatusBar('error', 'Invalid JSON — check the error below');
-        previewPanel.style.display = 'none';
-        return;
-    }
-
-    const errs = validatePasteJson(parsed);
-    if (errs.length) {
-        showPasteError(errs.join('\n'), `Validation Error (${errs.length} issue${errs.length > 1 ? 's' : ''})`);
-        setStatusBar('warning', `${errs.length} validation issue${errs.length > 1 ? 's' : ''} — fix before adding`);
-        renderPreview(parsed, true);
-        return;
-    }
-
-    // All good
-    errorPanel.style.display = 'none';
-    setStatusBar('valid', `✓ ${parsed.length} valid question${parsed.length !== 1 ? 's' : ''} ready to add`);
-    renderPreview(parsed, false);
-}
-
-function syntaxHint(msg) {
-    if (/Unexpected token/.test(msg)) return 'Check for missing commas, quotes, or brackets.';
-    if (/Unexpected end/.test(msg))   return 'JSON is incomplete — likely a missing closing ] or }.';
-    if (/Expected property/.test(msg)) return 'Key names must be in double quotes.';
-    return 'Validate your JSON at jsonlint.com';
+function bindPasteModalEvents() {
+    const ta = document.getElementById('pasteJsonInput');
+    if (ta) ta.addEventListener('input', updateLineNumbers);
 }
 
 function showPasteError(message, title = 'Validation Error') {
     const panel    = document.getElementById('pasteErrorPanel');
     const errorDiv = document.getElementById('pasteError');
-    const titleEl  = document.getElementById('pasteErrorTitle');
     if (panel)    panel.style.display = 'block';
-    if (titleEl)  titleEl.textContent = title;
-    if (errorDiv) errorDiv.textContent = message;
+    if (errorDiv) errorDiv.innerHTML = `<strong>${escapeHtml(title)}</strong>\n${escapeHtml(message)}`;
 }
 
-function renderPreview(parsed, hasErrors) {
-    const panel = document.getElementById('pastePreviewPanel');
-    const list  = document.getElementById('pastePreviewList');
-    const title = document.getElementById('previewTitle');
-    if (!panel || !list) return;
-
-    const valid = Array.isArray(parsed) ? parsed.filter(q => q.text && Array.isArray(q.options) && q.options.length === 4 && typeof q.correct === 'number') : [];
-    if (!valid.length) { panel.style.display = 'none'; return; }
-
-    if (title) title.textContent = `Preview — ${valid.length} question${valid.length !== 1 ? 's' : ''}${hasErrors ? ' (some issues)' : ''}`;
-
-    list.innerHTML = valid.slice(0, 10).map((q, i) => {
-        const letter = String.fromCharCode(65 + (q.correct || 0));
-        const correctOpt = Array.isArray(q.options) ? escapeHtml(q.options[q.correct] || '') : '?';
-        return `
-        <div style="background:var(--darker); border-radius:10px; padding:10px 13px; border:1px solid var(--border); font-size:11.5px;">
-            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:5px;">
-                <span style="font-weight:600; color:var(--light); flex:1; line-height:1.4;">${i + 1}. ${escapeHtml(q.text || '')}</span>
-                <span style="background:rgba(16,185,129,0.15); color:var(--success); padding:2px 8px; border-radius:99px; font-size:10px; font-weight:700; white-space:nowrap; flex-shrink:0;">${letter}. ${correctOpt}</span>
-            </div>
-            <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                ${(q.options || []).map((opt, oi) => `
-                    <span style="padding:2px 8px; border-radius:6px; font-size:10.5px;
-                        background:${oi === q.correct ? 'rgba(16,185,129,0.12)' : 'rgba(255,255,255,0.04)'};
-                        color:${oi === q.correct ? 'var(--success)' : 'var(--gray)'};
-                        border:1px solid ${oi === q.correct ? 'rgba(16,185,129,0.3)' : 'var(--border)'};
-                        font-weight:${oi === q.correct ? '600' : '400'};">
-                        ${String.fromCharCode(65 + oi)}. ${escapeHtml(opt)}
-                    </span>`).join('')}
-            </div>
-            ${q.explanation ? `<div style="margin-top:6px; color:var(--gray); font-size:10.5px; border-top:1px dashed var(--border); padding-top:5px;">💡 ${escapeHtml(q.explanation.substring(0, 120))}${q.explanation.length > 120 ? '…' : ''}</div>` : ''}
-        </div>`;
-    }).join('');
-
-    if (valid.length > 10) {
-        list.innerHTML += `<div style="text-align:center; color:var(--gray); font-size:11px; padding:8px;">… and ${valid.length - 10} more</div>`;
-    }
-    panel.style.display = 'block';
-}
-
-window.togglePreviewPanel = function() {
-    const list = document.getElementById('pastePreviewList');
-    const btn  = document.getElementById('previewToggleBtn');
-    if (!list) return;
-    const hidden = list.style.display === 'none';
-    list.style.display = hidden ? 'flex' : 'none';
-    if (btn) btn.textContent = hidden ? 'Hide' : 'Show';
-};
-
-async function pasteFromClipboard() {
-    const ta = document.getElementById('pasteJsonInput');
-    try {
-        const text = await navigator.clipboard.readText();
-        ta.value = text;
-        document.getElementById('pasteErrorPanel').style.display = 'none';
-        onPasteInput();
-    } catch (err) {
-        showPasteError('Clipboard access denied — please paste manually with Ctrl+V / Cmd+V.', 'Clipboard Error');
-        setStatusBar('error', 'Clipboard access denied');
-    }
-}
-
-window.formatPasteJson = function() {
-    const ta = document.getElementById('pasteJsonInput');
-    if (!ta || !ta.value.trim()) return;
-    try {
-        const pretty = JSON.stringify(JSON.parse(ta.value), null, 2);
-        ta.value = pretty;
-        onPasteInput();
-        showToast('JSON formatted');
-    } catch(e) {
-        showToast('Cannot format — fix JSON errors first', true);
-    }
-};
-
-function parseAndAddQuestions() {
-    const input = document.getElementById('pasteJsonInput').value.trim();
+async function parseAndAddQuestions() {
+    const input = document.getElementById('pasteJsonInput')?.value?.trim();
     if (!input) { showPasteError('Please paste JSON data.', 'Empty Input'); return; }
 
     let cleaned = input
@@ -2322,18 +1710,18 @@ function parseAndAddQuestions() {
         const match = e.message.match(/position (\d+)/);
         let errorMsg = e.message;
         if (match) {
-            const pos = parseInt(match[1]);
+            const pos   = parseInt(match[1]);
             const lines = cleaned.substring(0, pos).split('\n');
-            const line = lines.length;
-            const col  = lines[lines.length - 1].length + 1;
-            const ctx  = cleaned.substring(Math.max(0, pos - 40), pos + 40);
+            const line  = lines.length;
+            const col   = lines[lines.length - 1].length + 1;
+            const ctx   = cleaned.substring(Math.max(0, pos - 40), pos + 40);
             errorMsg = `Unexpected token at line ${line}, column ${col}\n\nContext: ...${escapeHtml(ctx)}...`;
         }
         showPasteError(errorMsg, 'JSON Parse Error');
         return;
     }
 
-    // filter-then-map: skips bad items instead of blocking everything
+    // filter-then-map: silently skips malformed items instead of blocking all
     const newQuestions = (Array.isArray(parsed) ? parsed : [parsed])
         .filter(q => q.text && Array.isArray(q.options) && q.options.length === 4 && q.correct !== undefined)
         .map(q => ({
@@ -2349,233 +1737,121 @@ function parseAndAddQuestions() {
         return;
     }
 
-    if (!window.isPremium && questions.length + newQuestions.length > 5) {
-        showPasteError(`Free limit: max 5 questions. You have ${questions.length}, adding ${newQuestions.length}.`, 'Limit Exceeded');
-        return;
+    // branch: inside create wizard vs anywhere else
+    const container = document.getElementById('questionsContainer');
+    if (currentPage === 'create' && container) {
+        if (!window.isPremium && questions.length + newQuestions.length > 5) {
+            showPasteError(`Free limit: max 5 questions. You have ${questions.length}, adding ${newQuestions.length}.`, 'Limit Exceeded');
+            return;
+        }
+        questions.push(...newQuestions);
+        renderQuestionsEditor();
+        closePasteModal();
+        showToast(`✅ Added ${newQuestions.length} question(s)`);
+    } else {
+        if (!window.isPremium && files.length >= 2) {
+            showPasteError('Free limit: max 2 exams. Upgrade to add more.', 'Limit Exceeded');
+            return;
+        }
+        const exam = {
+            id: String(Date.now()),
+            name: 'Imported Exam ' + new Date().toLocaleDateString(),
+            title: 'Imported Exam',
+            subject: '', difficulty: 'Medium', timeLimit: 30,
+            questions: newQuestions,
+            updatedAt: new Date().toISOString()
+        };
+        await dbPut('exams', exam);
+        files = await dbGetAll('exams');
+        localStorage.setItem('db_updated', Date.now());
+        closePasteModal();
+        setPage('files');
+        showToast(`Exam imported: ${newQuestions.length} questions`);
     }
-
-    questions.push(...newQuestions);
-    renderQuestionsEditor();   // ← must match exact function name in your file
-    closePasteModal();
-    showToast(`✅ Added ${newQuestions.length} question(s)`);
 }
 window.parseAndAddQuestions = parseAndAddQuestions;
-function bindPasteModalEvents() {
-    const ta = document.getElementById('pasteJsonInput');
-    if (!ta) return;
-    ta.addEventListener('input', onPasteInput);
-    ta.addEventListener('scroll', syncScroll);   // ← this drives the sync
-    ta.addEventListener('keydown', e => {
-        if (e.key === 'Tab') {
-            e.preventDefault();
-            const s = ta.selectionStart, end = ta.selectionEnd;
-            ta.value = ta.value.substring(0, s) + '  ' + ta.value.substring(end);
-            ta.selectionStart = ta.selectionEnd = s + 2;
-            onPasteInput();
-        }
-    });
-}
-
-window.openPasteModal        = openPasteModal;
-window.closePasteModal       = closePasteModal;
-window.clearPasteInput       = clearPasteInput;
-window.pasteFromClipboard    = pasteFromClipboard;
-window.copyErrorMessage      = copyErrorMessage;
-window.parseAndAddQuestions  = parseAndAddQuestions;
+window.copyErrorMessage = function() {
+    const err = document.getElementById('pasteError')?.innerText || '';
+    navigator.clipboard?.writeText(err).then(() => showToast('Error copied'));
+};
 
 // ── PROFESSOR MODAL ───────────────────────────────────────────────────
-function openProfessorModal() {
-    updateGeneratedPrompt();
+window.openProfessorModal = function() {
     document.getElementById('professorConfigModal').style.display = 'flex';
-}
-function closeProfessorModal() {
-    document.getElementById('professorConfigModal').style.display = 'none';
-}
-
-function updateSubjectTypeHint() {
-    const subj    = (document.getElementById('cfgSubject')?.value || '').toLowerCase();
-    const typeSel = document.getElementById('cfgSubjectType');
-    const calcSubjects = ['math','physics','calculus','algebra','chemistry','engineering','statistics'];
-    const isCalc  = typeSel
-        ? typeSel.value === 'calculation'          // honour manual dropdown pick first
-        : calcSubjects.some(s => subj.includes(s));
-
-    // Auto-detect only if user hasn't manually changed the dropdown
-    if (typeSel && !typeSel.dataset.manual) {
-        typeSel.value = calcSubjects.some(s => subj.includes(s)) ? 'calculation' : 'theory';
-    }
-
-    const icon  = document.getElementById('subjectTypeIcon');
-    const hint  = document.getElementById('hintText');
-    const hIcon = document.getElementById('hintIcon');
-    const bar   = document.getElementById('subjectHintBar');
-
-    const isCalcFinal = typeSel ? typeSel.value === 'calculation' : isCalc;
-
-    if (icon)  icon.textContent = isCalcFinal ? '🔢' : '📚';
-    if (isCalcFinal) {
-        if (bar)  { bar.style.background = 'rgba(16,185,129,0.08)'; bar.style.borderColor = 'rgba(16,185,129,0.2)'; }
-        if (hIcon) hIcon.textContent = '📐';
-        if (hint)  hint.textContent   = 'Step‑by‑step LaTeX solutions will be generated.';
-    } else {
-        const expStyle = document.getElementById('cfgExplanationStyle')?.value || 'conceptual';
-        if (bar)  { bar.style.background = 'rgba(59,130,246,0.08)'; bar.style.borderColor = 'rgba(59,130,246,0.2)'; }
-        if (hIcon) hIcon.textContent = expStyle === 'stepwise' ? '🔢' : expStyle === 'brief' ? '⚡' : '💡';
-        if (hint)  hint.textContent  = expStyle === 'stepwise'
-            ? 'Key Point + Why it Matters structure will be used.'
-            : expStyle === 'brief'
-            ? 'Concise 2‑3 sentence explanations will be generated.'
-            : 'Conceptual explanations with examples will be generated.';
-    }
-}
-
-function updateDistDisplay() {
-    const e = parseInt(document.getElementById('cfgEasyPct')?.value) || 0;
-    const m = parseInt(document.getElementById('cfgMediumPct')?.value) || 0;
-    const h = parseInt(document.getElementById('cfgHardPct')?.value) || 0;
-    const warn = document.getElementById('distWarning');
-    document.getElementById('easyVal').textContent   = e + '%';
-    document.getElementById('mediumVal').textContent = m + '%';
-    document.getElementById('hardVal').textContent   = h + '%';
-    if (warn) warn.textContent = (e + m + h) !== 100 ? `⚠️ Must total 100% (currently ${e+m+h}%)` : '';
     updateGeneratedPrompt();
-}
+};
+window.closeProfessorModal = function() { document.getElementById('professorConfigModal').style.display = 'none'; };
 
-function updateGeneratedPrompt() {
-    const subject     = document.getElementById('cfgSubject')?.value.trim() || 'General';
-    const topics      = document.getElementById('cfgTopics')?.value.trim() || '';
-    const total       = document.getElementById('cfgTotalQuestions')?.value || 10;
-    const structure   = document.getElementById('cfgStructure')?.value || 'Multiple Choice';
-    const easy        = document.getElementById('cfgEasyPct')?.value || 20;
-    const medium      = document.getElementById('cfgMediumPct')?.value || 60;
-    const hard        = document.getElementById('cfgHardPct')?.value || 20;
-    const depth       = document.getElementById('cfgConceptDepth')?.value || 'Intermediate';
-    const realLife    = document.getElementById('cfgRealLife')?.value || 3;
-    const eduLevel    = document.getElementById('cfgEduLevel')?.value || 'High School';
-    const additional  = document.getElementById('cfgAdditional')?.value.trim() || '';
-    const subjectType = document.getElementById('cfgSubjectType')?.value || 'theory';
-    const expStyle    = document.getElementById('cfgExplanationStyle')?.value || 'conceptual';
-    const memory      = document.getElementById('cfgMemoryTricks')?.value || 'few';
-    const source      = document.getElementById('cfgSource')?.value || 'Include additional examples';
+window.updateSubjectTypeHint = function() {
+    const subj = (document.getElementById('cfgSubject')?.value || '').toLowerCase();
+    const icon = document.getElementById('subjectTypeIcon');
+    if (!icon) return;
+    const calcSubjects = ['math','physics','chemistry','engineering','statistics','calculus'];
+    const isCalc = calcSubjects.some(s => subj.includes(s));
+    icon.textContent = isCalc ? '📊' : '📚';
+    const st = document.getElementById('cfgSubjectType');
+    if (st && !st.dataset.manuallySet) st.value = isCalc ? 'calculation' : 'theory';
+};
 
-    // Build explanation instruction
-    let expInstruction = '';
-    if (subjectType === 'calculation') {
-        expInstruction = `Provide the explanation using **Markdown** and **LaTeX**:
-- Numbered steps with bold titles: \`1. **Step Title**\`
-- Use \`\\\\[ ... \\\\]\` for display equations, \`\\\\( ... \\\\)\` for inline math.
-- End with \`**Answer:**\` followed by the final result.
-Example:
-\`\`\`
-1. **Write the equation**
-\\\\[ f(x) = ax^2 + bx + c \\\\]
-2. **Solve**
-\\\\[ x = \\\\frac{-b \\\\pm \\\\sqrt{b^2 - 4ac}}{2a} \\\\]
-**Answer:** \\\\( x = ... \\\\)
-\`\`\``;
-    } else {
-        expInstruction = `Provide explanation in **Markdown**. Use **bold**, *italic*, bullet lists, and \\\\(...\\\\) for inline math.`;
-        if (expStyle === 'stepwise') {
-            expInstruction += `\nStructure: **Key Point:** [summary] → **Why it matters:** [context]`;
-        } else if (expStyle === 'brief') {
-            expInstruction += `\nKeep it concise — 2‑3 sentences max.`;
-        } else {
-            expInstruction += `\nStructure: **Main Idea:** [core concept] — *Details:* [supporting info]`;
-        }
-    }
+window.updateGeneratedPrompt = function() {
+    const el = document.getElementById('generatedPromptDisplay');
+    if (!el) return;
+    const total    = document.getElementById('cfgTotalQuestions')?.value || 10;
+    const subject  = document.getElementById('cfgSubject')?.value || 'Mathematics';
+    const topics   = document.getElementById('cfgTopics')?.value || '';
+    const struct   = document.getElementById('cfgStructure')?.value || 'Multiple Choice';
+    const subjType = document.getElementById('cfgSubjectType')?.value || 'theory';
+    const memory   = document.getElementById('cfgMemoryTricks')?.value || 'few';
+    const realLife = document.getElementById('cfgRealLife')?.value || 3;
+    const topicStr = topics ? `, focusing on: ${topics}` : '';
+    const memStr   = memory !== 'none' ? `\n- Include ${memory} memory tricks or mnemonics.` : '';
+    const rlStr    = +realLife > 0 ? `\n- Include ${realLife} real-life application question(s).` : '';
+    const typeStr  = subjType === 'calculation' ? '\n- Show full step-by-step workings in explanations.' : '\n- Use clear theoretical explanations with examples.';
 
-    if (memory !== 'none') expInstruction += `\n💡 Include **${memory}** memory trick(s) or mnemonic(s).`;
+    el.value = `Generate ${total} ${struct} questions for ${subject}${topicStr}.
 
-    const prompt =
-`You are an expert exam professor creating ${total} questions for a ${eduLevel} level ${subject} exam.
+Requirements:
+- Each question must have exactly 4 options (A, B, C, D).
+- Mark the correct answer index (0=A, 1=B, 2=C, 3=D).
+- Provide a detailed explanation for each answer.${typeStr}${memStr}${rlStr}
 
-Configuration:
-- Structure: ${structure}
-- Difficulty: ${easy}% Easy · ${medium}% Medium · ${hard}% Hard
-- Concept depth: ${depth}
-- Real‑life questions: ${realLife}
-- Source: ${source}${topics ? `\n- Topics: ${topics}` : ''}${additional ? `\n- Additional: ${additional}` : ''}
-
-Explanation Format:
-${expInstruction}
-
-Return ONLY a valid JSON array — no extra text, no markdown fences:
+Return ONLY a valid JSON array in this exact format:
 [
   {
-    "text": "Question text?",
+    "text": "Question text here?",
     "options": ["Option A", "Option B", "Option C", "Option D"],
     "correct": 0,
     "explanation": "Detailed explanation here."
   }
 ]
 
-CRITICAL:
-- Wrap ALL math in \\\\(...\\\\) inline or \\\\[...\\\\] display. Never output raw LaTeX without delimiters.
-- Randomise correct answer positions (not always 0).`;
+Do not include any text outside the JSON array.`;
+};
 
-    const el = document.getElementById('generatedPromptDisplay');
-    if (el) el.value = prompt;
-    const tc = document.getElementById('tokenCount');
-    if (tc) tc.textContent = Math.round(prompt.length / 4);
-}
+window.copyGeneratedPrompt = function() {
+    const txt = document.getElementById('generatedPromptDisplay')?.value || '';
+    navigator.clipboard.writeText(txt).then(() => showToast('Prompt copied!')).catch(() => showToast('Copy failed', true));
+};
 
-function copyGeneratedPrompt() {
-    const ta = document.getElementById('generatedPromptDisplay');
-    if (!ta) return;
-    ta.select();
-    navigator.clipboard?.writeText(ta.value)
-        .then(() => showToast('✅ Prompt copied to clipboard'))
-        .catch(() => { document.execCommand('copy'); showToast('✅ Prompt copied'); });
-}
-
-function goToPasteFromProfessor() {
+window.goToPasteFromProfessor = function() {
     closeProfessorModal();
     openPasteModal();
-}
+};
 
-function loadPreset(preset) {
+window.loadPreset = function(preset) {
     const presets = {
-        hs_math: {
-            subject:'Mathematics', topics:'algebra, geometry, trigonometry',
-            total:10, easy:20, medium:60, hard:20,
-            depth:'Intermediate', edu:'High School', realLife:2, structure:'Multiple Choice'
-        },
-        uni_physics: {
-            subject:'Physics', topics:'mechanics, electromagnetism',
-            total:8, easy:10, medium:40, hard:50,
-            depth:'Advanced', edu:'University', realLife:5, structure:'Multiple Choice'
-        },
-        bio_easy: {
-            subject:'Biology', topics:'cells, plants, animals',
-            total:5, easy:80, medium:20, hard:0,
-            depth:'Basic', edu:'Elementary', realLife:1, structure:'Multiple Choice'
-        }
+        math:     { subject: 'Mathematics', topics: 'algebra, geometry, calculus', subjectType: 'calculation' },
+        science:  { subject: 'Science', topics: 'biology, chemistry, physics', subjectType: 'theory' },
+        history:  { subject: 'History', topics: 'world history, key events', subjectType: 'theory' },
+        language: { subject: 'English Language', topics: 'grammar, vocabulary, comprehension', subjectType: 'theory' }
     };
     const p = presets[preset];
     if (!p) return;
-    const set = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
-    set('cfgSubject', p.subject);
-    set('cfgTopics', p.topics);
-    set('cfgTotalQuestions', p.total);
-    set('cfgEasyPct', p.easy);
-    set('cfgMediumPct', p.medium);
-    set('cfgHardPct', p.hard);
-    set('cfgConceptDepth', p.depth);
-    set('cfgEduLevel', p.edu);
-    set('cfgRealLife', p.realLife);
-    set('cfgStructure', p.structure);
-    updateSubjectTypeHint();
-    updateDistDisplay();
-}
-
-window.openProfessorModal   = openProfessorModal;
-window.closeProfessorModal  = closeProfessorModal;
-window.updateDistDisplay    = updateDistDisplay;
-window.updateGeneratedPrompt = updateGeneratedPrompt;
-window.updateSubjectTypeHint = updateSubjectTypeHint;
-window.copyGeneratedPrompt  = copyGeneratedPrompt;
-window.goToPasteFromProfessor = goToPasteFromProfessor;
-window.loadPreset           = loadPreset;
+    const subj = document.getElementById('cfgSubject'); if (subj) subj.value = p.subject;
+    const tops = document.getElementById('cfgTopics'); if (tops) tops.value = p.topics;
+    const st   = document.getElementById('cfgSubjectType'); if (st) { st.value = p.subjectType; st.dataset.manuallySet = '1'; }
+    updateGeneratedPrompt();
+};
 
 // ── SYNC & EVENTS ─────────────────────────────────────────────────────
 window.addEventListener('storage', e => {
