@@ -807,21 +807,21 @@
             </div>
 
             <!-- Code editor -->
-            <div style="display:flex; background:var(--darker); border-radius:14px; border:1px solid var(--border); overflow:hidden; flex:1; min-height:0;">
-                <div id="lineNumbers"
-                    style="background:#070e1c; color:var(--gray); font-family:'Fira Code','Courier New',monospace;
-                           font-size:12.5px; padding:14px 10px; text-align:right; user-select:none;
-                           border-right:1px solid var(--border); min-width:46px; line-height:1.65;
-                           overflow:hidden; flex-shrink:0;"></div>
-                <textarea id="pasteJsonInput" wrap="off"
-                    style="flex:1; background:transparent; border:none; color:var(--light);
-                           font-family:'Fira Code','Courier New',monospace; font-size:12.5px;
-                           line-height:1.65; padding:14px; resize:none; outline:none;
-                           white-space:pre; overflow:auto; min-height:320px;"
-                    placeholder='[&#10;  {&#10;    "text": "What is the powerhouse of the cell?",&#10;    "options": ["Nucleus", "Mitochondria", "Ribosome", "Golgi"],&#10;    "correct": 1,&#10;    "explanation": "Mitochondria produce ATP via cellular respiration."&#10;  }&#10;]'
-                    spellcheck="false"></textarea>
-            </div>
-
+          <div style="display:flex; background:var(--darker); border-radius:14px; border:1px solid var(--border); overflow:hidden; flex:1; min-height:0;">
+    <div id="lineNumbers"
+        style="background:#070e1c; color:var(--gray); font-family:'Fira Code','Courier New',monospace;
+               font-size:12.5px; padding:14px 10px 14px 10px; text-align:right; user-select:none;
+               border-right:1px solid var(--border); min-width:46px; line-height:1.65;
+               overflow-y:hidden; overflow-x:hidden; flex-shrink:0;
+               pointer-events:none;"></div>
+    <textarea id="pasteJsonInput" wrap="off"
+        style="flex:1; background:transparent; border:none; color:var(--light);
+               font-family:'Fira Code','Courier New',monospace; font-size:12.5px;
+               line-height:1.65; padding:14px; resize:none; outline:none;
+               white-space:pre; overflow-y:scroll; overflow-x:auto; min-height:320px;"
+        placeholder='[&#10;  {&#10;    "text": "Question?",&#10;    "options": ["A","B","C","D"],&#10;    "correct": 1,&#10;    "explanation": "Optional"&#10;  }&#10;]'
+        spellcheck="false"></textarea>
+</div>
             <!-- Error panel -->
             <div id="pasteErrorPanel" style="display:none;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:7px; flex-wrap:wrap; gap:6px;">
@@ -1098,6 +1098,9 @@ onchange="this.dataset.manual='1'; updateSubjectTypeHint(); updateGeneratedPromp
         </div>
     </div>
 </div>
+    <script src="lib/katex/katex.min.js"></script>
+<script src="lib/katex/contrib/auto-render.min.js"></script>
+<script src="marked.min.js"></script>
 <script>
 (() => {
 'use strict';
@@ -1485,217 +1488,327 @@ window.deleteResult = async function(idx) {
 };
 
 // ── CREATE PAGE ───────────────────────────────────────────────────────
-let currentStep = 1;
-
 function renderCreatePage(examToEdit = null) {
     fileManagerPanel.style.display = 'none';
-    if (examToEdit) {
-        editingExamId = examToEdit.id;
-        questions = examToEdit.questions ? examToEdit.questions.map(q => ({ ...q })) : [];
-    } else {
-        editingExamId = null;
-        questions = [];
-    }
-    currentStep = 1;
+    editingExamId = examToEdit ? String(examToEdit.id) : null;
+    questions = examToEdit ? (examToEdit.questions || []).map(q => ({ ...q })) : [];
 
+    const ex = examToEdit || {};
+
+    // All 3 panels rendered ONCE — goToStep only toggles visibility
     contentArea.innerHTML = `
     <div class="step-wizard">
         <div class="step-indicator">
-            ${[['1','Details'],['2','Questions'],['3','Settings'],['4','Review']].map(([n,l]) => `
-            <div class="step-item ${+n === currentStep ? 'active' : +n < currentStep ? 'completed' : ''}" onclick="goToStep(${n})">
-                <div class="step-number">${n}</div>
-                <div class="step-label">${l}</div>
-            </div>`).join('')}
+            <div class="step-item active" onclick="goToStep(1)">
+                <div class="step-number">1</div><div class="step-label">Details</div>
+            </div>
+            <div class="step-item" onclick="goToStep(2)">
+                <div class="step-number">2</div><div class="step-label">Questions</div>
+            </div>
+            <div class="step-item" onclick="goToStep(3)">
+                <div class="step-number">3</div><div class="step-label">Settings</div>
+            </div>
+            <div class="step-item" onclick="goToStep(4)">
+                <div class="step-number">4</div><div class="step-label">Review</div>
+            </div>
         </div>
-        <div class="step-content" id="stepContent"></div>
+
+        <div class="step-content">
+
+            <!-- STEP 1: Details -->
+            <div class="step-panel active" id="step1">
+                <div class="create-card">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-label">Exam Title *</div>
+                            <input type="text" id="exam-title" class="form-input"
+                                placeholder="e.g. Biology Chapter 3"
+                                value="${escapeHtml(ex.name || '')}">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label">Subject</div>
+                            <input type="text" id="exam-subject" class="form-input"
+                                placeholder="Biology"
+                                value="${escapeHtml(ex.subject || '')}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-label">Difficulty</div>
+                            <select id="exam-difficulty" class="form-select">
+                                ${['Easy','Medium','Hard'].map(d =>
+                                    `<option ${(ex.difficulty||'Medium')===d?'selected':''}>${d}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label">Time Limit (min)</div>
+                            <input type="number" id="exam-time" class="form-input"
+                                min="1" max="300" value="${ex.timeLimit || 30}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-label">Description (optional)</div>
+                        <textarea id="exam-desc" class="form-input" rows="2"
+                            placeholder="What is this exam about?">${escapeHtml(ex.description || '')}</textarea>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end;">
+                        <button class="btn btn-primary" onclick="goToStep(2)">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Questions -->
+            <div class="step-panel" id="step2">
+                <div class="create-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                        <div style="font-family:var(--font-head); font-weight:700; color:var(--text-hi);" id="qCountLabel">${questions.length} Question${questions.length!==1?'s':''}</div>
+                        <div style="display:flex; gap:7px; flex-wrap:wrap;">
+                            <button class="btn btn-outline btn-sm" onclick="openProfessorModal()">🧑‍🏫 Professor</button>
+                            <button class="btn btn-outline btn-sm" onclick="openPasteModal()">📋 Paste JSON</button>
+                            <button class="btn btn-primary btn-sm" id="addQuestionBtn">➕ Add Question</button>
+                        </div>
+                    </div>
+                    <div id="questionsContainer" style="max-height:420px; overflow-y:auto; padding-right:4px;"></div>
+                    <div id="limitWarning" style="color:var(--crimson); font-size:12px; display:none; margin-top:8px;"></div>
+                    <div style="display:flex; justify-content:space-between; margin-top:12px;">
+                        <button class="btn btn-outline btn-sm" onclick="goToStep(1)">← Back</button>
+                        <button class="btn btn-primary" onclick="goToStep(3)">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: Settings -->
+            <div class="step-panel" id="step3">
+                <div class="create-card">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <div class="form-label">Passing Score (%)</div>
+                            <input type="number" id="exam-pass" class="form-input"
+                                min="0" max="100" value="${ex.passingScore || 70}">
+                        </div>
+                        <div class="form-group">
+                            <div class="form-label">Subject Type</div>
+                            <select id="exam-subjecttype" class="form-select">
+                                <option value="theory"      ${(ex.subjectType||'theory')==='theory'?'selected':''}>📚 Theory</option>
+                                <option value="calculation" ${ex.subjectType==='calculation'?'selected':''}>📊 Calculation</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; margin-top:8px;">
+                        <button class="btn btn-outline btn-sm" onclick="goToStep(2)">← Back</button>
+                        <button class="btn btn-primary" onclick="goToStep(4)">Next →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: Review & Save -->
+            <div class="step-panel" id="step4">
+                <div class="create-card">
+                    <div id="reviewSummary" style="margin-bottom:16px;"></div>
+                    <div id="limitWarning2" style="color:var(--crimson); font-size:12px; display:none; margin-bottom:10px;"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <button class="btn btn-outline btn-sm" onclick="goToStep(3)">← Back</button>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn btn-outline btn-sm" onclick="setPage('files')">Cancel</button>
+                            <button class="btn btn-primary" id="saveExamBtn">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                                Save Exam
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>`;
 
-    renderStep(1, examToEdit);
+    renderQuestionsEditor();
+    document.getElementById('addQuestionBtn').addEventListener('click', addQuestion);
+    document.getElementById('saveExamBtn').addEventListener('click', saveExam);
+    updateReviewSummary();
 }
 
-function renderStep(step, examData = null) {
-    currentStep = step;
-    // Update indicator
+// goToStep only shows/hides — never rebuilds HTML
+window.goToStep = function(step) {
     document.querySelectorAll('.step-item').forEach((el, i) => {
-        el.className = 'step-item' + (i + 1 === step ? ' active' : i + 1 < step ? ' completed' : '');
+        el.classList.remove('active', 'completed');
+        if (i + 1 < step)      el.classList.add('completed');
+        else if (i + 1 === step) el.classList.add('active');
     });
-    const content = document.getElementById('stepContent');
-    if (!content) return;
+    document.querySelectorAll('.step-panel').forEach((el, i) => {
+        el.classList.toggle('active', i + 1 === step);
+    });
+    if (step === 4) updateReviewSummary();
+};
 
-    if (step === 1) {
-        const d = examData || {};
-        content.innerHTML = `<div class="create-card">
-            <div class="form-group">
-                <div class="form-label">Exam Name *</div>
-                <input id="examName" class="form-input" placeholder="e.g. Biology Chapter 3" value="${escapeHtml(d.name || '')}">
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <div class="form-label">Subject</div>
-                    <input id="examSubject" class="form-input" placeholder="Biology" value="${escapeHtml(d.subject || '')}">
-                </div>
-                <div class="form-group">
-                    <div class="form-label">Difficulty</div>
-                    <select id="examDifficulty" class="form-select">
-                        ${['Easy','Medium','Hard'].map(v => `<option ${(d.difficulty || 'Medium') === v ? 'selected' : ''}>${v}</option>`).join('')}
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="form-label">Description (optional)</div>
-                <textarea id="examDesc" class="form-input form-textarea" rows="3" placeholder="What is this exam about?">${escapeHtml(d.description || '')}</textarea>
-            </div>
-            <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
-                <button class="btn btn-primary" onclick="goToStep(2)">Next → Questions</button>
-            </div>
-        </div>`;
-    } else if (step === 2) {
-        content.innerHTML = `<div class="create-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px;">
-                <div style="font-family:var(--font-head); font-weight:700; color:var(--text-hi);">${questions.length} Question${questions.length !== 1 ? 's' : ''}</div>
-                <div style="display:flex; gap:7px; flex-wrap:wrap;">
-                    <button class="btn btn-outline btn-sm" onclick="addQuestion()">+ Add Question</button>
-                    <button class="btn btn-outline btn-sm" onclick="openPasteModal()">Paste JSON</button>
-                </div>
-            </div>
-            <div id="questionsContainer">${renderQuestionsHTML()}</div>
-            <div style="display:flex; justify-content:space-between; margin-top:12px;">
-                <button class="btn btn-outline btn-sm" onclick="goToStep(1)">← Back</button>
-                <button class="btn btn-primary" onclick="goToStep(3)">Next → Settings</button>
-            </div>
-        </div>`;
-    } else if (step === 3) {
-        const d = examData || {};
-        content.innerHTML = `<div class="create-card">
-            <div class="form-row">
-                <div class="form-group">
-                    <div class="form-label">Time Limit (minutes)</div>
-                    <input id="examTime" type="number" class="form-input" min="1" max="300" value="${d.timeLimit || 30}">
-                </div>
-                <div class="form-group">
-                    <div class="form-label">Passing Score (%)</div>
-                    <input id="examPass" type="number" class="form-input" min="0" max="100" value="${d.passingScore || 70}">
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="form-label">Subject Type</div>
-                <select id="examSubjectType" class="form-select">
-                    <option value="theory" ${(d.subjectType || 'theory') === 'theory' ? 'selected' : ''}>📚 Theory</option>
-                    <option value="calculation" ${d.subjectType === 'calculation' ? 'selected' : ''}>📊 Calculation</option>
-                </select>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-top:8px;">
-                <button class="btn btn-outline btn-sm" onclick="goToStep(2)">← Back</button>
-                <button class="btn btn-primary" onclick="goToStep(4)">Next → Review</button>
-            </div>
-        </div>`;
-    } else if (step === 4) {
-        const name = document.getElementById('examName')?.value || 'Untitled';
-        const qCount = questions.length;
-        content.innerHTML = `<div class="create-card">
-            <div style="text-align:center; padding:20px 0;">
-                <div style="font-family:var(--font-head); font-size:1.4rem; font-weight:800; color:var(--emerald); margin-bottom:8px;">${escapeHtml(name)}</div>
-                <div style="color:var(--text-md); font-size:0.9rem; margin-bottom:24px;">${qCount} question${qCount !== 1 ? 's' : ''} ready</div>
-                ${qCount === 0 ? `<div style="color:var(--amber); font-size:0.85rem; margin-bottom:16px;">⚠ Add at least one question before saving.</div>` : ''}
-                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                    <button class="btn btn-outline" onclick="goToStep(3)">← Back</button>
-                    <button class="btn btn-primary" onclick="saveExam()" ${qCount === 0 ? 'disabled' : ''}>
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-                        Save Exam
-                    </button>
-                </div>
-            </div>
-        </div>`;
+function renderQuestionsEditor() {
+    const container = document.getElementById('questionsContainer');
+    if (!container) return;
+    const label = document.getElementById('qCountLabel');
+    if (label) label.textContent = `${questions.length} Question${questions.length !== 1 ? 's' : ''}`;
+
+    if (!questions.length) {
+        container.innerHTML = '<div style="text-align:center; padding:24px; color:var(--text-lo); font-size:0.85rem;">No questions yet — click ➕ Add Question or use Paste JSON.</div>';
+        return;
     }
-}
 
-window.goToStep = function(step) { renderStep(step); };
-
-function renderQuestionsHTML() {
-    if (!questions.length) return '<div style="color:var(--text-lo); font-size:0.85rem; text-align:center; padding:20px;">No questions yet — click Add Question.</div>';
-    return questions.map((q, i) => `
-        <div class="question-card-compact" id="qcard-${i}">
-            <div class="question-header" onclick="toggleQuestionBody(${i})">
+    container.innerHTML = questions.map((q, idx) => `
+        <div class="question-card-compact" id="q-${idx}">
+            <div class="question-header" onclick="toggleQuestion(${idx})">
                 <div class="question-header-left">
-                    <div class="question-number">${i + 1}</div>
-                    <div class="question-preview">${escapeHtml(q.text || 'New question…')}</div>
+                    <span class="question-number">${idx + 1}</span>
+                    <span class="question-preview" id="qpreview-${idx}">${escapeHtml(q.text || 'New question…')}</span>
                 </div>
-                <button class="delete-question-btn" onclick="event.stopPropagation(); deleteQuestion(${i})">✕</button>
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <button class="delete-question-btn" onclick="event.stopPropagation(); removeQuestion(${idx})">🗑️</button>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="arrow-${idx}" style="transition:transform 0.2s; color:var(--text-lo);"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
             </div>
-            <div class="question-body" id="qbody-${i}">
+            <div class="question-body collapsed" id="body-${idx}">
                 <div class="form-group">
                     <div class="form-label">Question Text</div>
-                    <textarea class="form-input" rows="2" onchange="updateQuestionText(${i}, this.value)">${escapeHtml(q.text || '')}</textarea>
+                    <input type="text" class="form-input q-text" data-index="${idx}"
+                        placeholder="Question text…" value="${escapeHtml(q.text || '')}">
                 </div>
                 <div class="options-grid-compact">
-                    ${['A','B','C','D'].map((letter, oi) => `
+                    ${q.options.map((opt, oi) => `
                     <div class="option-input-compact">
-                        <input type="radio" name="correct-${i}" value="${oi}" ${q.correct === oi ? 'checked' : ''} onchange="updateCorrect(${i}, ${oi})">
-                        <input type="text" placeholder="${letter}" value="${escapeHtml(q.options?.[oi] || '')}" onchange="updateOption(${i}, ${oi}, this.value)">
+                        <input type="radio" name="correct-${idx}" value="${oi}" ${q.correct === oi ? 'checked' : ''}>
+                        <input type="text" class="q-option" data-qidx="${idx}" data-oidx="${oi}"
+                            placeholder="${String.fromCharCode(65 + oi)}" value="${escapeHtml(opt)}">
                     </div>`).join('')}
                 </div>
                 <div class="form-group" style="margin-top:8px; margin-bottom:0;">
                     <div class="form-label">Explanation (optional)</div>
-                    <textarea class="form-input" rows="2" onchange="updateExplanation(${i}, this.value)">${escapeHtml(q.explanation || '')}</textarea>
+                    <input type="text" class="form-input q-explanation" data-index="${idx}"
+                        placeholder="Explanation…" value="${escapeHtml(q.explanation || '')}">
                 </div>
             </div>
         </div>
     `).join('');
+
+    container.querySelectorAll('.q-text, .q-explanation').forEach(el => el.addEventListener('input', updateQuestion));
+    container.querySelectorAll('.q-option').forEach(el => el.addEventListener('input', updateQuestion));
+    container.querySelectorAll('input[type="radio"]').forEach(el => el.addEventListener('change', updateQuestion));
 }
 
-window.toggleQuestionBody = i => {
-    const b = document.getElementById('qbody-' + i);
-    if (b) b.classList.toggle('collapsed');
+window.toggleQuestion = function(idx) {
+    const body  = document.getElementById(`body-${idx}`);
+    const arrow = document.getElementById(`arrow-${idx}`);
+    if (!body) return;
+    body.classList.toggle('collapsed');
+    if (arrow) arrow.style.transform = body.classList.contains('collapsed') ? 'rotate(-90deg)' : 'rotate(0deg)';
 };
-window.addQuestion = () => {
-    questions.push({ text: '', options: ['', '', '', ''], correct: 0, explanation: '' });
-    const c = document.getElementById('questionsContainer');
-    if (c) c.innerHTML = renderQuestionsHTML();
-};
-window.deleteQuestion = i => { questions.splice(i, 1); const c = document.getElementById('questionsContainer'); if (c) c.innerHTML = renderQuestionsHTML(); };
-window.updateQuestionText = (i, v) => { questions[i].text = v; };
-window.updateOption = (i, oi, v) => { if (!questions[i].options) questions[i].options = ['','','','']; questions[i].options[oi] = v; };
-window.updateCorrect = (i, oi) => { questions[i].correct = oi; };
-window.updateExplanation = (i, v) => { questions[i].explanation = v; };
 
-async function checkLimits() {
-    if (window.isPremium) return { allowed: true };
-    const totalQ = files.reduce((s, e) => s + (e.questions?.length || 0), 0);
-    if (!editingExamId && files.length >= 2) return { allowed: false, reason: 'Free tier: max 2 exams.' };
-    if (questions.length > 5) return { allowed: false, reason: 'Max 5 questions per exam.' };
-    let existing = totalQ;
-    if (editingExamId) { const old = files.find(e => e.id === editingExamId); if (old) existing -= old.questions?.length || 0; }
-    if (existing + questions.length > 10) return { allowed: false, reason: 'Total questions cannot exceed 10.' };
-    return { allowed: true };
+function updateQuestion(e) {
+    const el  = e.target;
+    const idx = el.dataset.index;
+    if (idx === undefined) {
+        // radio button
+        if (el.checked) {
+            const qIdx = el.name.split('-')[1];
+            questions[qIdx].correct = parseInt(el.value);
+        }
+        return;
+    }
+    if (el.classList.contains('q-text')) {
+        questions[idx].text = el.value;
+        const prev = document.getElementById(`qpreview-${idx}`);
+        if (prev) prev.textContent = el.value || 'New question…';
+    } else if (el.classList.contains('q-explanation')) {
+        questions[idx].explanation = el.value;
+    } else if (el.classList.contains('q-option')) {
+        questions[el.dataset.qidx].options[el.dataset.oidx] = el.value;
+    }
+    updateReviewSummary();
 }
 
-window.saveExam = async function() {
-    const name = document.getElementById('examName')?.value?.trim();
-    if (!name) { showToast('Please enter an exam name', true); goToStep(1); return; }
-    if (!questions.length) { showToast('Add at least one question', true); return; }
+function addQuestion() {
+    questions.push({ id: 'q_' + Date.now(), text: '', options: ['','','',''], correct: 0, explanation: '' });
+    renderQuestionsEditor();
+    updateReviewSummary();
+    // Auto-expand the new question
+    const idx = questions.length - 1;
+    setTimeout(() => {
+        const body  = document.getElementById(`body-${idx}`);
+        const arrow = document.getElementById(`arrow-${idx}`);
+        if (body)  body.classList.remove('collapsed');
+        if (arrow) arrow.style.transform = 'rotate(0deg)';
+        body?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 50);
+}
+
+window.removeQuestion = function(idx) {
+    questions.splice(idx, 1);
+    renderQuestionsEditor();
+    updateReviewSummary();
+};
+
+function updateReviewSummary() {
+    const container = document.getElementById('reviewSummary');
+    if (!container) return;
+    const title   = document.getElementById('exam-title')?.value   || '(No title)';
+    const subject = document.getElementById('exam-subject')?.value || '(No subject)';
+    const time    = document.getElementById('exam-time')?.value    || 30;
+    const diff    = document.getElementById('exam-difficulty')?.value || 'Medium';
+    const pass    = document.getElementById('exam-pass')?.value    || 70;
+
+    container.innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="background:var(--surface-2); border-radius:var(--radius-md); padding:14px; border:1px solid var(--rim);">
+                <div style="font-family:var(--font-head); font-size:1rem; font-weight:700; color:var(--text-hi); margin-bottom:4px;">${escapeHtml(title)}</div>
+                <div style="font-size:12px; color:var(--text-lo);">${escapeHtml(subject)} · ${diff} · ${time} min · Pass: ${pass}%</div>
+            </div>
+            <div style="font-size:12px; color:var(--text-md); font-weight:600; margin-bottom:4px;">${questions.length} Question${questions.length!==1?'s':''}</div>
+            ${questions.map((q, i) => `
+                <div style="background:var(--surface-2); border-radius:var(--radius-sm); padding:10px 12px; border:1px solid var(--rim); font-size:12px;">
+                    <div style="color:var(--text-hi); margin-bottom:4px; font-weight:500;">Q${i+1}: ${escapeHtml(q.text || '(No text)')}</div>
+                    <div style="color:var(--emerald); font-size:11px;">✓ ${String.fromCharCode(65 + q.correct)}. ${escapeHtml(q.options[q.correct] || '')}</div>
+                </div>
+            `).join('')}
+            ${questions.length === 0 ? '<div style="color:var(--amber); font-size:12px;">⚠ Add at least one question before saving.</div>' : ''}
+        </div>`;
+}
+
+async function saveExam() {
+    const title   = document.getElementById('exam-title')?.value.trim();
+    const subject = document.getElementById('exam-subject')?.value.trim();
+    if (!title || !subject) { showToast('Title and subject required', true); goToStep(1); return; }
+    if (!questions.length)  { showToast('Add at least one question', true); goToStep(2); return; }
+
     const limit = await checkLimits();
-    if (!limit.allowed) { showToast(limit.reason, true); return; }
+    if (!limit.allowed) {
+        const w = document.getElementById('limitWarning2');
+        if (w) { w.textContent = limit.reason; w.style.display = 'block'; }
+        showToast(limit.reason, true);
+        return;
+    }
+
     const exam = {
-        id: editingExamId || String(Date.now()),
-        name,
-        subject: document.getElementById('examSubject')?.value?.trim() || '',
-        difficulty: document.getElementById('examDifficulty')?.value || 'Medium',
-        description: document.getElementById('examDesc')?.value?.trim() || '',
-        timeLimit: parseInt(document.getElementById('examTime')?.value) || 30,
-        passingScore: parseInt(document.getElementById('examPass')?.value) || 70,
-        subjectType: document.getElementById('examSubjectType')?.value || 'theory',
+        id:          editingExamId || 'exam_' + Date.now(),
+        name:        title,
+        title,
+        subject,
+        difficulty:  document.getElementById('exam-difficulty')?.value  || 'Medium',
+        timeLimit:   parseInt(document.getElementById('exam-time')?.value)  || 30,
+        passingScore:parseInt(document.getElementById('exam-pass')?.value)  || 70,
+        subjectType: document.getElementById('exam-subjecttype')?.value || 'theory',
+        description: document.getElementById('exam-desc')?.value?.trim() || '',
         questions,
-        updatedAt: new Date().toISOString()
+        updatedAt:   new Date().toISOString()
     };
-    await dbPut('exams', exam);
-    files = await dbGetAll('exams');
+
+    if (editingExamId) files = files.map(e => e.id === editingExamId ? exam : e);
+    else files.push(exam);
+
+    for (const e of files) await dbPut('exams', e);
     localStorage.setItem('db_updated', Date.now());
     editingExamId = null;
     questions = [];
+    showToast('Exam saved!');
     setPage('files');
-    showToast(editingExamId ? 'Exam updated!' : 'Exam saved!');
-};
-
+}
 // ── PRACTICE ──────────────────────────────────────────────────────────
 function startPractice(id) {
     currentFile = files.find(f => String(f.id) === String(id));
@@ -1861,24 +1974,72 @@ function renderMath(container) {
     if (!container || typeof renderMathInElement === 'undefined') return;
     try {
         renderMathInElement(container, {
-            delimiters: [{ left: '\\(', right: '\\)', display: false }, { left: '\\[', right: '\\]', display: true }, { left: '$$', right: '$$', display: true }],
-            throwOnError: false
+            delimiters: [
+                { left: '\\(', right: '\\)',  display: false },
+                { left: '\\[', right: '\\]',  display: true  },
+                { left: '$$',  right: '$$',   display: true  }
+            ],
+            throwOnError: false,
+            preProcess: (math) => {
+                const ta = document.createElement('textarea');
+                ta.innerHTML = math;
+                return ta.value;
+            }
         });
-    } catch(e) {}
+    } catch(e) { console.warn('LaTeX error:', e); }
 }
 
 function renderMixedExplanation(raw, subjectType = 'theory') {
     if (!raw) return '';
-    if (typeof marked === 'undefined') return `<pre style="white-space:pre-wrap; word-break:break-word;">${escapeHtml(raw)}</pre>`;
+    if (typeof marked === 'undefined') {
+        return `<pre style="white-space:pre-wrap; word-break:break-word;">${escapeHtml(raw)}</pre>`;
+    }
+
     const latexBlocks = [], latexInlines = [];
+
     let processed = raw
-        .replace(/\\\[([\s\S]*?)\\\]/g, (_, m) => { latexBlocks.push(m); return `{{LB_${latexBlocks.length-1}}}`; })
-        .replace(/\$\$([\s\S]*?)\$\$/g, (_, m) => { latexBlocks.push(m); return `{{LB_${latexBlocks.length-1}}}`; })
-        .replace(/\\\(([\s\S]*?)\\\)/g, (_, m) => { latexInlines.push(m); return `{{LI_${latexInlines.length-1}}}`; });
+        .replace(/\\\[([\s\S]*?)\\\]/g, (_, math) => {
+            latexBlocks.push(math);
+            return `{{LATEX_BLOCK_${latexBlocks.length - 1}}}`;
+        })
+        .replace(/\$\$([\s\S]*?)\$\$/g, (_, math) => {
+            latexBlocks.push(math);
+            return `{{LATEX_BLOCK_${latexBlocks.length - 1}}}`;
+        });
+
+    processed = processed.replace(/\\\(([\s\S]*?)\\\)/g, (_, math) => {
+        latexInlines.push(math);
+        return `{{LATEX_INLINE_${latexInlines.length - 1}}}`;
+    });
+
     let html = marked.parse(processed);
-    latexBlocks.forEach((m, i) => { html = html.replace(new RegExp(`\\{\\{LB_${i}\\}\\}`, 'g'), `\\[${m}\\]`); });
-    latexInlines.forEach((m, i) => { html = html.replace(new RegExp(`\\{\\{LI_${i}\\}\\}`, 'g'), `\\(${m}\\)`); });
-    return html;
+
+    latexBlocks.forEach((math, idx) => {
+        html = html.replace(new RegExp(`\\{\\{LATEX_BLOCK_${idx}\\}\\}`, 'g'), `\\[${math}\\]`);
+    });
+    latexInlines.forEach((math, idx) => {
+        html = html.replace(new RegExp(`\\{\\{LATEX_INLINE_${idx}\\}\\}`, 'g'), `\\(${math}\\)`);
+    });
+
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+
+    // Fix double-escaped backslashes that Markdown introduces
+    const walker = document.createTreeWalker(tempDiv, NodeFilter.SHOW_TEXT, null, false);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+    textNodes.forEach(node => {
+        let content = node.textContent;
+        content = content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+        content = content.replace(/\\\\(?=[a-zA-Z\(\)\[\]])/g, '\\');
+        if (/\\[a-zA-Z]+/.test(content) && !content.includes('\\(') && !content.includes('\\[')) {
+            content = `\\(${content}\\)`;
+        }
+        node.textContent = content;
+    });
+
+    return tempDiv.innerHTML;
 }
 // ── PASTE JSON MODAL ──────────────────────────────────────────────────
 function openPasteModal() {
@@ -1948,7 +2109,9 @@ function updatePasteStats() {
 function syncScroll() {
     const ta = document.getElementById('pasteJsonInput');
     const ln = document.getElementById('lineNumbers');
-    if (ta && ln) ln.scrollTop = ta.scrollTop;
+    if (!ta || !ln) return;
+    // Match scrollTop exactly — both use same font/line-height/padding-top
+    ln.scrollTop = ta.scrollTop;
 }
 
 // Deep JSON validation — returns array of human-readable error strings
@@ -2139,73 +2302,102 @@ function copyErrorMessage() {
 }
 
 function parseAndAddQuestions() {
-    const raw = document.getElementById('pasteJsonInput')?.value.trim() || '';
-    if (!raw) { showPasteError('Please paste JSON data first.', 'Empty Input'); setStatusBar('error', 'Nothing to parse'); return; }
+    const input = document.getElementById('pasteJsonInput').value.trim();
+    if (!input) { showPasteError('Please paste JSON data.', 'Empty Input'); return; }
 
-    const cleaned = raw.replace(/^\uFEFF/, '').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/\r\n/g, '\n');
+    let cleaned = input
+        .replace(/^\uFEFF/, '')
+        .replace(/\r\n/g, '\n')
+        .replace(/[\u200B-\u200D\uFEFF]/g, '');
 
     let parsed;
     try {
         parsed = JSON.parse(cleaned);
     } catch (e) {
         const match = e.message.match(/position (\d+)/);
-        let msg = e.message;
+        let errorMsg = e.message;
         if (match) {
             const pos  = parseInt(match[1]);
-            const pre  = cleaned.substring(0, pos);
-            const line = pre.split('\n').length;
-            const col  = pre.split('\n').pop().length + 1;
-            const ctx  = cleaned.substring(Math.max(0, pos - 35), pos + 35).replace(/\n/g, '↵');
-            msg = `Syntax error at line ${line}, column ${col}\n\n→ …${ctx}…\n\nHint: ${syntaxHint(e.message)}`;
+            const lines = cleaned.substring(0, pos).split('\n');
+            const line  = lines.length;
+            const col   = lines[lines.length - 1].length + 1;
+            const ctx   = cleaned.substring(Math.max(0, pos - 40), pos + 40);
+            errorMsg = `Unexpected token at line ${line}, column ${col}\n\nContext: ...${escapeHtml(ctx)}...`;
         }
-        showPasteError(msg, 'JSON Syntax Error');
-        setStatusBar('error', 'Cannot add — JSON syntax error');
+        showPasteError(errorMsg, 'JSON Parse Error');
         return;
     }
 
-    const errs = validatePasteJson(parsed);
-    if (errs.length) {
-        showPasteError(errs.join('\n'), `Cannot Add — ${errs.length} issue${errs.length > 1 ? 's' : ''}`);
-        setStatusBar('error', 'Fix validation issues before adding');
+    const newQuestions = (Array.isArray(parsed) ? parsed : [parsed])
+        .filter(q => q.text && Array.isArray(q.options) && q.options.length === 4 && q.correct !== undefined)
+        .map(q => ({
+            id: 'q_' + Date.now() + '_' + Math.random().toString(36),
+            text: q.text,
+            options: q.options,
+            correct: q.correct,
+            explanation: q.explanation || ''
+        }));
+
+    if (!newQuestions.length) {
+        showPasteError('No valid questions found. Each needs: text, options (4 strings), correct (0–3).', 'Validation Failed');
         return;
     }
 
-    const newQuestions = parsed.map(q => ({
-        id: 'q_' + Date.now() + '_' + Math.random().toString(36).slice(2),
-        text: q.text,
-        options: q.options,
-        correct: q.correct,
-        explanation: q.explanation || ''
-    }));
+    // ── BRANCH: are we inside the create wizard? ──────────────────────
+    const container = document.getElementById('questionsContainer');
+    if (currentPage === 'create' && container) {
+        // Adding to the in-progress exam being built
+        if (!window.isPremium && questions.length + newQuestions.length > 5) {
+            showPasteError(`Free limit: max 5 questions. You have ${questions.length}, adding ${newQuestions.length}.`, 'Limit Exceeded');
+            return;
+        }
+        questions.push(...newQuestions);
+        renderQuestionsEditor();
+        closePasteModal();
+        showToast(`✅ Added ${newQuestions.length} question(s)`);
 
-    if (!window.isPremium && questions.length + newQuestions.length > 5) {
-        showPasteError(`Free tier: max 5 questions per exam.\nYou have ${questions.length}, trying to add ${newQuestions.length}.\nUpgrade or reduce question count.`, 'Limit Exceeded');
-        setStatusBar('warning', 'Free tier limit exceeded');
-        return;
+    } else {
+        // Called from Home or Files page — save as a brand new exam immediately
+        (async () => {
+            if (!window.isPremium && files.length >= 2) {
+                showPasteError('Free limit: max 2 exams. Upgrade to add more.', 'Limit Exceeded');
+                return;
+            }
+            const exam = {
+                id: 'exam_' + Date.now(),
+                name: 'Imported Exam ' + new Date().toLocaleDateString(),
+                title: 'Imported Exam',
+                subject: '',
+                difficulty: 'Medium',
+                timeLimit: 30,
+                questions: newQuestions,
+                updatedAt: new Date().toISOString()
+            };
+            await dbPut('exams', exam);
+            files = await dbGetAll('exams');
+            localStorage.setItem('db_updated', Date.now());
+            closePasteModal();
+            setPage('files');
+            showToast(`✅ Imported ${newQuestions.length} question(s) as new exam`);
+        })();
     }
-
-    questions.push(...newQuestions);
-    renderQuestionsEditor();
-    closePasteModal();
-    showToast(`✅ Added ${newQuestions.length} question${newQuestions.length !== 1 ? 's' : ''}`);
 }
-
+window.parseAndAddQuestions = parseAndAddQuestions;
 function bindPasteModalEvents() {
     const ta = document.getElementById('pasteJsonInput');
     if (!ta) return;
     ta.addEventListener('input', onPasteInput);
-    ta.addEventListener('scroll', syncScroll);
-    // Tab key inserts 2 spaces instead of losing focus
+    ta.addEventListener('scroll', syncScroll);   // ← this drives the sync
     ta.addEventListener('keydown', e => {
         if (e.key === 'Tab') {
             e.preventDefault();
             const s = ta.selectionStart, end = ta.selectionEnd;
             ta.value = ta.value.substring(0, s) + '  ' + ta.value.substring(end);
             ta.selectionStart = ta.selectionEnd = s + 2;
+            onPasteInput();
         }
     });
 }
-
 window.openPasteModal        = openPasteModal;
 window.closePasteModal       = closePasteModal;
 window.clearPasteInput       = clearPasteInput;
