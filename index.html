@@ -1478,9 +1478,11 @@ ${a.explanation ? `<div class="answer-row">...<span>${escapeHtml(a.explanation)}
         </div>`;
     });
 // render LaTeX in all explanation divs
-document.querySelectorAll('.explanation-content').forEach(el => renderMath(el));
+//document.querySelectorAll('.explanation-content').forEach(el => renderMath(el));
     contentArea.innerHTML = html;
-
+requestAnimationFrame(() => {
+    document.querySelectorAll('.explanation-content').forEach(el => renderMath(el));
+});
     document.getElementById('clear-results-btn')?.addEventListener('click', async () => {
         if (!confirm('Clear all results?')) return;
         await dbClear('results');
