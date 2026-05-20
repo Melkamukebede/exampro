@@ -410,7 +410,9 @@
         .explanation p { margin: 0.7em 0; }
         .explanation strong { color: var(--emerald); }
         .explanation .katex-display { margin: 1em 0; overflow-x: auto; }
-
+.explanation-content { color: var(--text-md); font-size: 0.88rem; line-height: 1.65; }
+.explanation-content p { margin: 0.4em 0; }
+.explanation-content .katex-display { margin: 0.6em 0; overflow-x: auto; }
         /* ── RESULTS PAGE ────────────────────────────────── */
         .result-card {
             background: var(--surface-1); border-radius: var(--radius-xl);
@@ -1503,14 +1505,30 @@ function renderResults() {
                             <div class="answer-row"><span class="answer-label">Your answer:</span><span class="answer-value ${a.isCorrect ? 'correct-answer' : ''}">${escapeHtml(a.userAnswer)}</span></div>
                             ${!a.isCorrect ? `<div class="answer-row"><span class="answer-label">Correct:</span><span class="answer-value correct-answer">${escapeHtml(a.correctAnswer)}</span></div>` : ''}
 // BROKEN — escapeHtml kills all LaTeX backslashes:
-${a.explanation ? `<div class="answer-row">...<span>${escapeHtml(a.explanation)}</span></div>` : ''}                  </div>
+${(r.answers || []).map((a, ai) => {
+    const explanationHtml = a.explanation
+        ? renderMixedExplanation(a.explanation, r.subjectType || 'theory')
+        : '';
+    return `
+    <div class="review-question-item">
+        <div class="review-question-header" onclick="this.nextElementSibling.classList.toggle('show')">
+            <div class="review-status-icon ${a.isCorrect ? 'correct' : 'incorrect'}">${a.isCorrect ? '✓' : '✗'}</div>
+            <div class="review-question-text">${escapeHtml(a.text)}</div>
+        </div>
+        <div class="review-question-details">
+            <div class="answer-row"><span class="answer-label">Your answer:</span><span class="answer-value ${a.isCorrect ? 'correct-answer' : ''}">${escapeHtml(a.userAnswer)}</span></div>
+            ${!a.isCorrect ? `<div class="answer-row"><span class="answer-label">Correct:</span><span class="answer-value correct-answer">${escapeHtml(a.correctAnswer)}</span></div>` : ''}
+            ${explanationHtml ? `<div class="answer-row" style="margin-top:8px;"><span class="answer-label">Explanation:</span><div class="explanation-content">${explanationHtml}</div></div>` : ''}
+        </div>
+    </div>`;
+}).join('')}              </div>
                     </div>
                 `).join('')}
             </div>
         </div>`;
     });
 // render LaTeX in all explanation divs
-//document.querySelectorAll('.explanation-content').forEach(el => renderMath(el));
+//document.querySelectorAll('.explanation-content').forEach(el => renderMath(el))
     contentArea.innerHTML = html;
 requestAnimationFrame(() => {
     document.querySelectorAll('.explanation-content').forEach(el => renderMath(el));
