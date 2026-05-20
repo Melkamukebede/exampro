@@ -1454,12 +1454,6 @@ function renderResults() {
                         <div class="review-question-details">
                             <div class="answer-row"><span class="answer-label">Your answer:</span><span class="answer-value ${a.isCorrect ? 'correct-answer' : ''}">${escapeHtml(a.userAnswer)}</span></div>
                             ${!a.isCorrect ? `<div class="answer-row"><span class="answer-label">Correct:</span><span class="answer-value correct-answer">${escapeHtml(a.correctAnswer)}</span></div>` : ''}
-// inside your results.forEach / answers.map:
-const explanationHtml = a.explanation
-    ? renderMixedExplanation(a.explanation, r.subjectType || 'theory')
-    : '';
-
-// then in the HTML string:
 ${explanationHtml ? `
 <div class="answer-row" style="margin-top:8px;">
     <span class="answer-label">Explanation:</span>
