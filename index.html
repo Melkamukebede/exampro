@@ -1454,14 +1454,24 @@ function renderResults() {
                         <div class="review-question-details">
                             <div class="answer-row"><span class="answer-label">Your answer:</span><span class="answer-value ${a.isCorrect ? 'correct-answer' : ''}">${escapeHtml(a.userAnswer)}</span></div>
                             ${!a.isCorrect ? `<div class="answer-row"><span class="answer-label">Correct:</span><span class="answer-value correct-answer">${escapeHtml(a.correctAnswer)}</span></div>` : ''}
-                            ${a.explanation ? `<div class="answer-row"><span class="answer-label">Explanation:</span><span class="answer-value">${escapeHtml(a.explanation)}</span></div>` : ''}
-                        </div>
+// inside your results.forEach / answers.map:
+const explanationHtml = a.explanation
+    ? renderMixedExplanation(a.explanation, r.subjectType || 'theory')
+    : '';
+
+// then in the HTML string:
+${explanationHtml ? `
+<div class="answer-row" style="margin-top:8px;">
+    <span class="answer-label">Explanation:</span>
+    <div class="explanation-content">${explanationHtml}</div>
+</div>` : ''}                        </div>
                     </div>
                 `).join('')}
             </div>
         </div>`;
     });
-
+// render LaTeX in all explanation divs
+document.querySelectorAll('.explanation-content').forEach(el => renderMath(el));
     contentArea.innerHTML = html;
 
     document.getElementById('clear-results-btn')?.addEventListener('click', async () => {
@@ -1486,7 +1496,29 @@ window.deleteResult = async function(idx) {
     renderResults();
     showToast('Result deleted');
 };
-
+function renderExplanation(htmlString) {
+    if (!htmlString) return '';
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlString;
+    if (typeof renderMathInElement !== 'undefined') {
+        try {
+            renderMathInElement(tempDiv, {
+                delimiters: [
+                    { left: '\\(', right: '\\)', display: false },
+                    { left: '\\[', right: '\\]', display: true  },
+                    { left: '$$',  right: '$$',  display: true  }
+                ],
+                throwOnError: false,
+                preProcess: (math) => {
+                    const ta = document.createElement('textarea');
+                    ta.innerHTML = math;
+                    return ta.value;
+                }
+            });
+        } catch(e) { console.warn('LaTeX error:', e); }
+    }
+    return tempDiv.innerHTML;
+}
 // ── CREATE PAGE ───────────────────────────────────────────────────────
 function renderCreatePage(examToEdit = null) {
     fileManagerPanel.style.display = 'none';
