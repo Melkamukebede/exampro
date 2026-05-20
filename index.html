@@ -1445,7 +1445,7 @@ function renderResults() {
                 </button>
             </div>
             <div class="review-details" id="review-${idx}">
-                ${(r.answers || [])${(r.answers || []).map((a, ai) => {
+                ${(r.answers || []).map((a, ai) => {
     const explanationHtml = a.explanation
         ? renderMixedExplanation(a.explanation, r.subjectType || 'theory')
         : '';
