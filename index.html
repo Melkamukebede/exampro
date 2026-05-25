@@ -1106,32 +1106,6 @@ onchange="this.dataset.manual='1'; updateSubjectTypeHint(); updateGeneratedPromp
 <script src="lib/katex/contrib/auto-render.min.js"></script>
 <script src="marked.min.js"></script>
 <script>
-(function(){
-    // ---------- TELEGRAM MINI APP INITIALIZATION ----------
-    const isTelegram = typeof window.Telegram !== 'undefined' && window.Telegram && window.Telegram.WebApp;
-    let tg = null;
-    
-    if (isTelegram) {
-        tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-        
-        // Apply Telegram theme colors
-        if (tg.themeParams) {
-            document.documentElement.style.setProperty('--tg-bg', tg.themeParams.bg_color || '#0f172a');
-            document.documentElement.style.setProperty('--tg-text', tg.themeParams.text_color || '#e2e8f0');
-            document.documentElement.style.setProperty('--tg-button', tg.themeParams.button_color || '#10b981');
-        }
-        
-        // Enable closing confirmation
-        tg.enableClosingConfirmation();
-        
-        console.log('📱 Running in Telegram Mini App');
-    }
-    
-    // ---------- LOADING ----------
-    const overlay = document.getElementById('loadingOverlay');
-    // ... (rest of your existing loading code)
 (() => {
 'use strict';
 
