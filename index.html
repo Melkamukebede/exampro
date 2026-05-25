@@ -1108,7 +1108,42 @@ onchange="this.dataset.manual='1'; updateSubjectTypeHint(); updateGeneratedPromp
 <script>
 (() => {
 'use strict';
+// Initialize Telegram Mini App
+const tg = window.Telegram.WebApp;
 
+// Tell Telegram the app is ready
+tg.ready();
+
+// Expand to full screen
+tg.expand();
+
+// Use Telegram's theme colors
+document.documentElement.style.setProperty('--tg-theme-bg-color', tg.themeParams.bg_color || '#0f172a');
+document.documentElement.style.setProperty('--tg-theme-text-color', tg.themeParams.text_color || '#e2e8f0');
+document.documentElement.style.setProperty('--tg-theme-button-color', tg.themeParams.button_color || '#10b981');
+document.documentElement.style.setProperty('--tg-theme-button-text-color', tg.themeParams.button_text_color || '#ffffff');
+
+// Get user info
+const user = tg.initDataUnsafe?.user;
+if (user) {
+    console.log('Telegram User:', user.first_name, user.last_name, user.username);
+    // Auto-fill user name in premium activation
+    if (document.getElementById('userName')) {
+        document.getElementById('userName').value = user.first_name + ' ' + (user.last_name || '');
+    }
+}
+
+// Enable closing confirmation
+tg.enableClosingConfirmation();
+
+// Handle back button
+tg.BackButton.onClick(() => {
+    if (webView && webView.canGoBack) {
+        webView.goBack();
+    } else {
+        history.back();
+    }
+});
 // ── DB ────────────────────────────────────────────────────────────────
 const DB_NAME = 'ExamMasterDB', DB_VERSION = 2;
 let db;
