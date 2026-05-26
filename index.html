@@ -2435,7 +2435,7 @@ function validatePasteJson(parsed) {
 function fixLatexBackslashes(raw) {
     return raw.split('\n').map(line => {
         return line.replace(/"((?:[^"\\]|\\.)*)"/g, (match, inner) => {
-            const fixed = inner.replace(/(?<!\\)\\(?!\\)([a-zA-Z\(\)\[\]\{\}|_ ^])/g, '\\\\$1');
+           const fixed = inner.replace(/(?<!\\)\\(?!\\)([a-mo-zA-Z\(\)\[\]\{\}|_ ^])/g, '\\\\$1');
             return `"${fixed}"`;
         });
     }).join('\n');
