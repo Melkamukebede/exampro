@@ -1106,7 +1106,39 @@ onchange="this.dataset.manual='1'; updateSubjectTypeHint(); updateGeneratedPromp
         </div>
     </div>
 </div>
-   
+                  <!-- Custom Confirm Dialog -->
+<div id="customDialog" style="
+    display:none; position:fixed; inset:0; z-index:99999;
+    background:rgba(0,0,0,0.7); backdrop-filter:blur(8px);
+    align-items:center; justify-content:center;">
+    <div style="
+        background:var(--surface-1); border:1px solid var(--rim);
+        border-radius:24px; padding:28px 24px; width:92%; max-width:380px;
+        box-shadow:0 0 60px rgba(0,0,0,0.6); animation:fadeUp 0.2s ease;
+        display:flex; flex-direction:column; gap:16px;">
+        <div style="display:flex; align-items:flex-start; gap:12px;">
+            <div id="dialogIcon" style="font-size:22px; flex-shrink:0; margin-top:1px;"></div>
+            <div>
+                <div id="dialogTitle" style="
+                    font-family:var(--font-head); font-size:1rem; font-weight:700;
+                    color:var(--text-hi); margin-bottom:5px;"></div>
+                <div id="dialogMessage" style="
+                    font-size:0.85rem; color:var(--text-md); line-height:1.55;"></div>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+            <button id="dialogCancel" style="
+                padding:9px 20px; border-radius:99px; border:1px solid var(--rim);
+                background:transparent; color:var(--text-md); cursor:pointer;
+                font-size:0.82rem; font-weight:600; font-family:var(--font-body);
+                transition:all 0.15s;">Cancel</button>
+            <button id="dialogConfirm" style="
+                padding:9px 20px; border-radius:99px; border:none;
+                cursor:pointer; font-size:0.82rem; font-weight:700;
+                font-family:var(--font-head); transition:all 0.15s;"></button>
+        </div>
+    </div>
+</div>
     <script src="lib/katex/katex.min.js"></script>
 <script src="lib/katex/contrib/auto-render.min.js"></script>
 <script src="marked.min.js"></script>
@@ -1343,7 +1375,38 @@ async function loadFromJSONProcessor() {
         } catch(e) {}
     }
 }
+// ── CUSTOM DIALOG ─────────────────────────────────────────────────────
+function showDialog({ title, message, icon = '❓', confirmText = 'Confirm',
+                      confirmColor = 'var(--emerald)', confirmTextColor = '#030d0a',
+                      onConfirm, onCancel } = {}) {
+    const overlay  = document.getElementById('customDialog');
+    const titleEl  = document.getElementById('dialogTitle');
+    const msgEl    = document.getElementById('dialogMessage');
+    const iconEl   = document.getElementById('dialogIcon');
+    const confirmBtn = document.getElementById('dialogConfirm');
+    const cancelBtn  = document.getElementById('dialogCancel');
 
+    titleEl.textContent   = title || '';
+    msgEl.textContent     = message || '';
+    iconEl.textContent    = icon;
+    confirmBtn.textContent = confirmText;
+    confirmBtn.style.background = confirmColor;
+    confirmBtn.style.color      = confirmTextColor;
+
+    overlay.style.display = 'flex';
+
+    // hover effects
+    confirmBtn.onmouseenter = () => { confirmBtn.style.opacity = '0.88'; confirmBtn.style.transform = 'scale(1.03)'; };
+    confirmBtn.onmouseleave = () => { confirmBtn.style.opacity = '1';    confirmBtn.style.transform = 'scale(1)'; };
+    cancelBtn.onmouseenter  = () => { cancelBtn.style.color = 'var(--text-hi)'; cancelBtn.style.borderColor = 'rgba(255,255,255,0.2)'; };
+    cancelBtn.onmouseleave  = () => { cancelBtn.style.color = 'var(--text-md)'; cancelBtn.style.borderColor = 'var(--rim)'; };
+
+    const close = () => { overlay.style.display = 'none'; };
+
+    confirmBtn.onclick = () => { close(); onConfirm?.(); };
+    cancelBtn.onclick  = () => { close(); onCancel?.(); };
+    overlay.onclick    = e => { if (e.target === overlay) { close(); onCancel?.(); } };
+}
 // ── TOAST ─────────────────────────────────────────────────────────────
 function showToast(msg, error = false) {
     const t = document.createElement('div');
@@ -2165,7 +2228,20 @@ window.selectPracticeOption = function(idx) {
 
 function nextPrev(delta) {
     if (delta === 1 && currentPracticeIndex === currentFile.questions.length - 1) {
-        if (confirm('Submit exam?')) submitPractice();
+     // 5. Submit btn event listener (in bootstrap)
+// BEFORE:
+document.getElementById('submitBtn')?.addEventListener('click', () => { if (confirm('Submit exam?')) submitPractice(); });
+// AFTER:
+document.getElementById('submitBtn')?.addEventListener('click', () => {
+    showDialog({
+        title: 'Submit Exam',
+        message: `You have answered ${userAnswers.filter(a => a !== null).length} of ${currentFile.questions.length} questions. Submit now?`,
+        icon: '📝',
+        confirmText: 'Submit',
+        confirmColor: 'var(--emerald)',
+        onConfirm: () => submitPractice()
+    });
+});  submitPractice();
         return;
     }
     currentPracticeIndex = Math.min(Math.max(currentPracticeIndex + delta, 0), currentFile.questions.length - 1);
