@@ -2432,16 +2432,38 @@ function validatePasteJson(parsed) {
     });
     return errors;
 }
-
+function fixLatexBackslashes(raw) {
+    return raw.split('\n').map(line => {
+        return line.replace(/"((?:[^"\\]|\\.)*)"/g, (match, inner) => {
+            const fixed = inner.replace(/(?<!\\)\\(?!\\)([a-zA-Z\(\)\[\]\{\}|_ ^])/g, '\\\\$1');
+            return `"${fixed}"`;
+        });
+    }).join('\n');
+}
 // Auto-lint on input with debounce
 let _lintTimer = null;
 function onPasteInput() {
     updatePasteStats();
     clearTimeout(_lintTimer);
     const val = document.getElementById('pasteJsonInput')?.value.trim() || '';
-    if (!val) { setStatusBar('idle'); document.getElementById('pasteErrorPanel').style.display = 'none'; document.getElementById('pastePreviewPanel').style.display = 'none'; return; }
+    if (!val) {
+        setStatusBar('idle');
+        document.getElementById('pasteErrorPanel').style.display = 'none';
+        document.getElementById('pastePreviewPanel').style.display = 'none';
+        return;
+    }
     setStatusBar('typing');
-    _lintTimer = setTimeout(() => lintPasteJson(val), 600);
+    _lintTimer = setTimeout(() => {
+        const fixed = fixLatexBackslashes(val);
+        if (fixed !== val) {
+            const ta = document.getElementById('pasteJsonInput');
+            const pos = ta.selectionStart;
+            ta.value = fixed;
+            ta.selectionStart = ta.selectionEnd = pos;
+            updatePasteStats();
+        }
+        lintPasteJson(fixed);
+    }, 600);
 }
 
 function lintPasteJson(raw) {
