@@ -2734,36 +2734,31 @@ function parseAndAddQuestions() {
         renderQuestionsEditor();
         closePasteModal();
         showToast(`✅ Added ${newQuestions.length} question(s)`);
-
-   } else {
-    if (!window.isPremium && files.length >= 2) {
-        showPasteError('Free limit: max 2 exams. Upgrade to add more.', 'Limit Exceeded');
-        return;
+ } else {
+        // Called from Home or Files page — save as a brand new exam immediately
+        (async () => {
+            if (!window.isPremium && files.length >= 2) {
+                showPasteError('Free limit: max 2 exams. Upgrade to add more.', 'Limit Exceeded');
+                return;
+            }
+            const exam = {
+                id: 'exam_' + Date.now(),
+                name: 'Imported Exam ' + new Date().toLocaleDateString(),
+                title: 'Imported Exam',
+                subject: '',
+                difficulty: 'Medium',
+                timeLimit: 30,
+                questions: newQuestions,
+                updatedAt: new Date().toISOString()
+            };
+            await dbPut('exams', exam);
+            files = await dbGetAll('exams');
+            localStorage.setItem('db_updated', Date.now());
+            closePasteModal();
+            setPage('files');
+            showToast(`✅ Imported ${newQuestions.length} question(s) as new exam`);
+        })();
     }
-    // save as draft then open create wizard to fill in details
-    const draftId = 'exam_' + Date.now();
-    const exam = {
-        id: draftId,
-        name: '',
-        title: '',
-        subject: '',
-        difficulty: 'Medium',
-        timeLimit: 30,
-        questions: newQuestions,
-        updatedAt: new Date().toISOString()
-    };
-    await dbPut('exams', exam);
-    files = await dbGetAll('exams');
-    localStorage.setItem('db_updated', Date.now());
-    closePasteModal();
-    showToast(`${newQuestions.length} question(s) imported — fill in exam details`);
-    // open create wizard pre-loaded with the draft so user fills title/subject/time
-    renderCreatePage(exam);
-    setPage('create');
-    // auto-jump to step 1 (Details) so title field is focused
-    goToStep(1);
-    setTimeout(() => document.getElementById('exam-title')?.focus(), 100);
-
 }
 window.parseAndAddQuestions = parseAndAddQuestions;
 function bindPasteModalEvents() {
