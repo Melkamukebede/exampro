@@ -2680,8 +2680,8 @@ function copyErrorMessage() {
     navigator.clipboard?.writeText(txt).then(() => showToast('Error copied'));
 }
 
-function parseAndAddQuestions() {
-    const input = document.getElementById('pasteJsonInput').value.trim();
+async function parseAndAddQuestions() {
+    const input = document.getElementById('pasteJsonInput')?.value?.trim();
     if (!input) { showPasteError('Please paste JSON data.', 'Empty Input'); return; }
 
     let cleaned = input
@@ -2696,7 +2696,7 @@ function parseAndAddQuestions() {
         const match = e.message.match(/position (\d+)/);
         let errorMsg = e.message;
         if (match) {
-            const pos  = parseInt(match[1]);
+            const pos   = parseInt(match[1]);
             const lines = cleaned.substring(0, pos).split('\n');
             const line  = lines.length;
             const col   = lines[lines.length - 1].length + 1;
@@ -2722,10 +2722,9 @@ function parseAndAddQuestions() {
         return;
     }
 
-    // ── BRANCH: are we inside the create wizard? ──────────────────────
     const container = document.getElementById('questionsContainer');
+
     if (currentPage === 'create' && container) {
-        // Adding to the in-progress exam being built
         if (!window.isPremium && questions.length + newQuestions.length > 5) {
             showPasteError(`Free limit: max 5 questions. You have ${questions.length}, adding ${newQuestions.length}.`, 'Limit Exceeded');
             return;
@@ -2734,50 +2733,28 @@ function parseAndAddQuestions() {
         renderQuestionsEditor();
         closePasteModal();
         showToast(`✅ Added ${newQuestions.length} question(s)`);
-} else {
-    if (!window.isPremium && files.length >= 2) {
-        showPasteError('Free limit: max 2 exams. Upgrade to add more.', 'Limit Exceeded');
-        return;
-    }
-    // save as draft then open create wizard to fill in details
-    const draftId = 'exam_' + Date.now();
-    const exam = {
-        id: draftId,
-        name: '',
-        title: '',
-        subject: '',
-        difficulty: 'Medium',
-        timeLimit: 30,
-        questions: newQuestions,
-        updatedAt: new Date().toISOString()
-    };
-  } else {
-        // Called from Home or Files page — save as a brand new exam immediately
-        (async () => {
-            if (!window.isPremium && files.length >= 2) {
-                showPasteError('Free limit: max 2 exams. Upgrade to add more.', 'Limit Exceeded');
-                return;
-            }
-            const exam = {
-                id: 'exam_' + Date.now(),
-                name: 'Imported Exam ' + new Date().toLocaleDateString(),
-                title: 'Imported Exam',
-                subject: '',
-                difficulty: 'Medium',
-                timeLimit: 30,
-                questions: newQuestions,
-                updatedAt: new Date().toISOString()
-            };
-            await dbPut('exams', exam);
-            files = await dbGetAll('exams');
-            localStorage.setItem('db_updated', Date.now());
-            closePasteModal();
-            setPage('files');
-            showToast(`✅ Imported ${newQuestions.length} question(s) as new exam`);
-        })();
+    } else {
+        if (!window.isPremium && files.length >= 2) {
+            showPasteError('Free limit: max 2 exams. Upgrade to add more.', 'Limit Exceeded');
+            return;
+        }
+        const draft = {
+            id:         'exam_' + Date.now(),
+            name:       '', title: '', subject: '',
+            difficulty: 'Medium', timeLimit: 30,
+            questions:  newQuestions,
+            updatedAt:  new Date().toISOString()
+        };
+        await dbPut('exams', draft);
+        files = await dbGetAll('exams');
+        localStorage.setItem('db_updated', Date.now());
+        closePasteModal();
+        showToast(`${newQuestions.length} question(s) imported — fill in exam details`);
+        renderCreatePage(draft);
+        goToStep(1);
+        setTimeout(() => document.getElementById('exam-title')?.focus(), 120);
     }
 }
-//window.parseAndAddQuestions = parseAndAddQuestions;
 window.parseAndAddQuestions = parseAndAddQuestions;
 function bindPasteModalEvents() {
     const ta = document.getElementById('pasteJsonInput');
