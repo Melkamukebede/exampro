@@ -11,93 +11,30 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
       :root {
-    /* ============================
-       PRIMARY PALETTE (Center-Weighted)
-       Balanced saturation with equal visual weight
-    ============================ */
-    --accent-primary:      #34d399;
-    --accent-primary-hover:#2dd4bf;
-    --accent-primary-glow: rgba(52, 211, 153, 0.15);
-    
-    /* ============================
-       FUNCTIONAL COLORS
-       Equal saturation, matched luminance
-    ============================ */
-    --functional-safe:     #22c55e;
-    --functional-info:     #60a5fa;
-    --functional-warning:  #fbbf24;
-    --functional-danger:   #f87171;
-    
-    /* ============================
-       NEUTRAL SURFACES
-       True center-weight depth progression
-    ============================ */
-    --surface-0:           #0a0f1a;
-    --surface-1:           #0f1729;
-    --surface-2:           #162032;
-    --surface-3:           #1d2a3f;
-    --surface-4:           #25344d;
-    
-    /* ============================
-       INTERACTIVE ELEMENTS
-       Hover/Active states with balanced weight
-    ============================ */
-    --interactive-hover:   rgba(255, 255, 255, 0.04);
-    --interactive-active:  rgba(255, 255, 255, 0.02);
-    --interactive-border:  rgba(255, 255, 255, 0.08);
-    --interactive-focus:   rgba(96, 165, 250, 0.2);
-    
-    /* ============================
-       TYPOGRAPHY COLORS
-       Balanced contrast ratios
-    ============================ */
-    --text-primary:        #f1f5f9;
-    --text-secondary:      #94a3b8;
-    --text-tertiary:       #64748b;
-    --text-disabled:       #475569;
-    --text-accent:         #5eead4;
-    
-    /* ============================
-       GLOW EFFECTS
-       Matched intensity, different hues
-    ============================ */
-    --glow-success:        0 0 20px rgba(34, 197, 94, 0.15);
-    --glow-info:          0 0 20px rgba(96, 165, 250, 0.15);
-    --glow-warning:       0 0 20px rgba(251, 191, 36, 0.15);
-    --glow-accent:        0 0 24px rgba(52, 211, 153, 0.12);
-    
-    /* ============================
-       BORDER RADIUS (Unchanged - already good)
-    ============================ */
-    --radius-xl:          24px;
-    --radius-lg:          18px;
-    --radius-md:          12px;
-    --radius-sm:          8px;
-    
-    /* ============================
-       TYPOGRAPHY & SAFE AREAS
-    ============================ */
-    --safe-bottom:        env(safe-area-inset-bottom, 0px);
-    --font-head:          'Syne', sans-serif;
-    --font-body:          'DM Sans', sans-serif;
-    
-    /* ============================
-       SPACING SYSTEM (Optical Balance)
-    ============================ */
-    --space-xs:           4px;
-    --space-sm:           8px;
-    --space-md:           16px;
-    --space-lg:           24px;
-    --space-xl:           32px;
-    --space-2xl:          48px;
-    
-    /* ============================
-       TRANSITIONS
-    ============================ */
-    --transition-fast:    150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base:    250ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow:    350ms cubic-bezier(0.4, 0, 0.2, 1);
-}
+            --emerald:    #00d68f;
+            --emerald-dk: #00a86b;
+            --sapphire:   #3b82f6;
+            --amber:      #f59e0b;
+            --crimson:    #ef4444;
+            --surface-0:  #060d18;
+            --surface-1:  #0d1829;
+            --surface-2:  #132034;
+            --surface-3:  #1a2b45;
+            --surface-4:  #213655;
+            --rim:        rgba(255,255,255,0.07);
+            --text-hi:    #e8f0fe;
+            --text-md:    #8ea3c3;
+            --text-lo:    #4a6180;
+            --radius-xl:  24px;
+            --radius-lg:  18px;
+            --radius-md:  12px;
+            --radius-sm:  8px;
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --font-head:  'Syne', sans-serif;
+            --font-body:  'DM Sans', sans-serif;
+            --glow-e: 0 0 24px rgba(0, 214, 143, 0.18);
+            --glow-b: 0 0 24px rgba(59, 130, 246, 0.18);
+        }
 
         body {
             font-family: var(--font-body);
