@@ -2252,26 +2252,19 @@ window.selectPracticeOption = function(idx) {
 
 function nextPrev(delta) {
     if (delta === 1 && currentPracticeIndex === currentFile.questions.length - 1) {
-     // 5. Submit btn event listener (in bootstrap)
-// BEFORE:
-document.getElementById('submitBtn')?.addEventListener('click', () => { if (confirm('Submit exam?')) submitPractice(); });
-// AFTER:
-document.getElementById('submitBtn')?.addEventListener('click', () => {
-    showDialog({
-        title: 'Submit Exam',
-        message: `You have answered ${userAnswers.filter(a => a !== null).length} of ${currentFile.questions.length} questions. Submit now?`,
-        icon: '📝',
-        confirmText: 'Submit',
-        confirmColor: 'var(--emerald)',
-        onConfirm: () => submitPractice()
-    });
-});  submitPractice();
+        showDialog({
+            title: 'Submit Exam',
+            message: `You have answered ${userAnswers.filter(a => a !== null).length} of ${currentFile.questions.length} questions. Submit now?`,
+            icon: '📝',
+            confirmText: 'Submit',
+            confirmColor: 'var(--emerald)',
+            onConfirm: () => submitPractice()
+        });
         return;
     }
     currentPracticeIndex = Math.min(Math.max(currentPracticeIndex + delta, 0), currentFile.questions.length - 1);
     renderPracticeQuestion();
 }
-
 // ── TIMER ─────────────────────────────────────────────────────────────
 window.toggleTimerPause = function() {
     isTimerPaused = !isTimerPaused;
