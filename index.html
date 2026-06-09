@@ -1544,13 +1544,22 @@ function refreshFileList() {
     container.querySelectorAll('.edit-json-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); editInJsonEditor(btn.dataset.id); }));
     container.querySelectorAll('.delete-file-btn').forEach(btn => btn.addEventListener('click', async e => {
         e.stopPropagation();
-        if (!confirm('Delete this exam permanently?')) return;
-        const id = btn.dataset.id;
-        await dbDelete('exams', id);
-        files = files.filter(f => f.id !== id);
-        localStorage.setItem('db_updated', Date.now());
-        refreshFileList();
-        showToast('Exam deleted');
+         const id = btn.dataset.id;
+        showDialog({
+            title: 'Delete Exam',
+            message: 'This exam will be permanently deleted. This cannot be undone.',
+            icon: '🗑️',
+            confirmText: 'Delete',
+            confirmColor: 'var(--crimson)',
+            confirmTextColor: 'white',
+            onConfirm: async () => {
+                await dbDelete('exams', id);
+                files = files.filter(f => f.id !== id);
+                localStorage.setItem('db_updated', Date.now());
+                refreshFileList();
+                showToast('Exam deleted');
+            }
+        });
     }));
     container.querySelectorAll('.practice-file-btn').forEach(btn => btn.addEventListener('click', e => { e.stopPropagation(); startPractice(btn.dataset.id); }));
 }
@@ -3024,7 +3033,16 @@ window.deleteFile = async id => { if (confirm('Delete?')) { await dbDelete('exam
 
     document.getElementById('prevBtn')?.addEventListener('click', () => nextPrev(-1));
     document.getElementById('nextBtn')?.addEventListener('click', () => nextPrev(1));
-    document.getElementById('submitBtn')?.addEventListener('click', () => { if (confirm('Submit exam?')) submitPractice(); });
+    document.getElementById('submitBtn')?.addEventListener('click', () => {
+    showDialog({
+        title: 'Submit Exam',
+        message: `You have answered ${userAnswers.filter(a => a !== null).length} of ${currentFile.questions.length} questions. Submit now?`,
+        icon: '📝',
+        confirmText: 'Submit',
+        confirmColor: 'var(--emerald)',
+        onConfirm: () => submitPractice()
+    });
+});
     document.querySelectorAll('.nav-btn[data-page]').forEach(b => b.addEventListener('click', () => setPage(b.dataset.page)));
 })();
 
