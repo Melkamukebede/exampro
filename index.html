@@ -2118,8 +2118,19 @@ function updateReviewSummary() {
 async function saveExam() {
     const title   = document.getElementById('exam-title')?.value.trim();
     const subject = document.getElementById('exam-subject')?.value.trim();
-    if (!title || !subject) { showToast('Title and subject required', true); goToStep(1); return; }
-    if (!questions.length)  { showToast('Add at least one question', true); goToStep(2); return; }
+    if (!title) { showToast('Exam title is required', true); goToStep(1); return; }
+    if (!questions.length) { showToast('Add at least one question', true); goToStep(2); return; }
+
+    // when editing a draft that was already saved by parseAndAddQuestions,
+    // delete it first so checkLimits doesn't count it as an extra slot
+    if (editingExamId) {
+        const existing = files.find(f => String(f.id) === String(editingExamId));
+        if (existing && !existing.name) {
+            // it's an unsaved draft — remove from count before limit check
+            await dbDelete('exams', editingExamId);
+            files = files.filter(f => String(f.id) !== String(editingExamId));
+        }
+    }
 
     const limit = await checkLimits();
     if (!limit.allowed) {
@@ -2130,23 +2141,21 @@ async function saveExam() {
     }
 
     const exam = {
-        id:          editingExamId || 'exam_' + Date.now(),
-        name:        title,
+        id:           editingExamId || 'exam_' + Date.now(),
+        name:         title,
         title,
-        subject,
-        difficulty:  document.getElementById('exam-difficulty')?.value  || 'Medium',
-        timeLimit:   parseInt(document.getElementById('exam-time')?.value)  || 30,
-        passingScore:parseInt(document.getElementById('exam-pass')?.value)  || 70,
-        subjectType: document.getElementById('exam-subjecttype')?.value || 'theory',
-        description: document.getElementById('exam-desc')?.value?.trim() || '',
+        subject:      subject || '',
+        difficulty:   document.getElementById('exam-difficulty')?.value   || 'Medium',
+        timeLimit:    parseInt(document.getElementById('exam-time')?.value)    || 30,
+        passingScore: parseInt(document.getElementById('exam-pass')?.value)    || 70,
+        subjectType:  document.getElementById('exam-subjecttype')?.value  || 'theory',
+        description:  document.getElementById('exam-desc')?.value?.trim() || '',
         questions,
-        updatedAt:   new Date().toISOString()
+        updatedAt:    new Date().toISOString()
     };
 
-    if (editingExamId) files = files.map(e => e.id === editingExamId ? exam : e);
-    else files.push(exam);
-
-    for (const e of files) await dbPut('exams', e);
+    await dbPut('exams', exam);
+    files = await dbGetAll('exams');
     localStorage.setItem('db_updated', Date.now());
     editingExamId = null;
     questions = [];
