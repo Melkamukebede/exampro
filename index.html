@@ -2115,18 +2115,30 @@ function updateReviewSummary() {
         </div>`;
 }
 
+async function checkLimits() {
+    if (window.isPremium) return { allowed: true };
+    // don't count drafts (no name) against the limit
+    const namedExams = files.filter(f => f.name && String(f.id) !== String(editingExamId));
+    if (!editingExamId && namedExams.length >= 2)
+        return { allowed: false, reason: 'Free tier: max 2 exams. Upgrade to add more.' };
+    if (questions.length > 5)
+        return { allowed: false, reason: 'Free tier: max 5 questions per exam.' };
+    return { allowed: true };
+}
+
 async function saveExam() {
     const title   = document.getElementById('exam-title')?.value.trim();
     const subject = document.getElementById('exam-subject')?.value.trim();
+
+    // only title is required — subject is optional
     if (!title) { showToast('Exam title is required', true); goToStep(1); return; }
     if (!questions.length) { showToast('Add at least one question', true); goToStep(2); return; }
 
-    // when editing a draft that was already saved by parseAndAddQuestions,
-    // delete it first so checkLimits doesn't count it as an extra slot
+    // if editing a nameless draft, delete it before limit check
+    // so it doesn't consume a free slot
     if (editingExamId) {
         const existing = files.find(f => String(f.id) === String(editingExamId));
         if (existing && !existing.name) {
-            // it's an unsaved draft — remove from count before limit check
             await dbDelete('exams', editingExamId);
             files = files.filter(f => String(f.id) !== String(editingExamId));
         }
@@ -2140,8 +2152,9 @@ async function saveExam() {
         return;
     }
 
+    const examId = editingExamId || 'exam_' + Date.now();
     const exam = {
-        id:           editingExamId || 'exam_' + Date.now(),
+        id:           examId,
         name:         title,
         title,
         subject:      subject || '',
@@ -2154,12 +2167,14 @@ async function saveExam() {
         updatedAt:    new Date().toISOString()
     };
 
+    // save only this one exam — not the whole array
     await dbPut('exams', exam);
+    // re-fetch fresh list from DB
     files = await dbGetAll('exams');
     localStorage.setItem('db_updated', Date.now());
     editingExamId = null;
     questions = [];
-    showToast('Exam saved!');
+    showToast('✅ Exam saved!');
     setPage('files');
 }
 // ── PRACTICE ──────────────────────────────────────────────────────────
