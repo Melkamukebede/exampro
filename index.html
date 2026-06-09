@@ -1784,12 +1784,21 @@ function editFile(id) {
         document.querySelectorAll('.explanation-content').forEach(el => renderMath(el));
     });
 
-    document.getElementById('clear-results-btn')?.addEventListener('click', async () => {
-        if (!confirm('Clear all results?')) return;
-        await dbClear('results');
-        results = [];
-        renderResults();
-        showToast('Results cleared');
+     document.getElementById('clear-results-btn')?.addEventListener('click', () => {
+        showDialog({
+            title: 'Clear All Results',
+            message: 'All practice history will be permanently removed.',
+            icon: '⚠️',
+            confirmText: 'Clear All',
+            confirmColor: 'var(--crimson)',
+            confirmTextColor: 'white',
+            onConfirm: async () => {
+                await dbClear('results');
+                results = [];
+                renderResults();
+                showToast('Results cleared');
+            }
+        });
     });
 }
 
@@ -1808,15 +1817,23 @@ window.toggleReviewDetails = function(idx) {
     }
 };
 
-window.deleteResult = async function(idx) {
-    if (!confirm('Delete this result?')) return;
-    const r = results[idx];
-    if (r?.id) await dbDelete('results', r.id);
-    results.splice(idx, 1);
-    renderResults();
-    showToast('Result deleted');
+window.deleteResult = function(idx) {
+    showDialog({
+        title: 'Delete Result',
+        message: 'This result will be removed from your history.',
+        icon: '🗑️',
+        confirmText: 'Delete',
+        confirmColor: 'var(--crimson)',
+        confirmTextColor: 'white',
+        onConfirm: async () => {
+            const r = results[idx];
+            if (r?.id) await dbDelete('results', r.id);
+            results.splice(idx, 1);
+            renderResults();
+            showToast('Result deleted');
+        }
+    });
 };
-
 function renderExplanation(htmlString) {
     if (!htmlString) return '';
     const tempDiv = document.createElement('div');
@@ -3017,7 +3034,22 @@ document.addEventListener('keydown', e => {
 window.setPage = setPage;
 window.startPractice = startPractice;
 window.editFile = editFile;
-window.deleteFile = async id => { if (confirm('Delete?')) { await dbDelete('exams', id); files = files.filter(f => String(f.id) !== String(id)); localStorage.setItem('db_updated', Date.now()); setPage(currentPage); } };
+window.deleteFile = function(id) {
+    showDialog({
+        title: 'Delete Exam',
+        message: 'This exam will be permanently deleted.',
+        icon: '🗑️',
+        confirmText: 'Delete',
+        confirmColor: 'var(--crimson)',
+        confirmTextColor: 'white',
+        onConfirm: async () => {
+            await dbDelete('exams', id);
+            files = files.filter(f => String(f.id) !== String(id));
+            localStorage.setItem('db_updated', Date.now());
+            setPage(currentPage);
+        }
+    });
+};
 
 // ── BOOTSTRAP ─────────────────────────────────────────────────────────
 (async () => {
