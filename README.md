@@ -1,4 +1,4 @@
-# 📚 ExamMaster Pro
+#  ExamMaster Pro
 
 **Create, Practice, Master – Anytime, Anywhere.**
 
@@ -6,31 +6,31 @@ A powerful, fully offline‑capable exam preparation suite for students, teacher
 
 ---
 
-## ✨ Features
+## Features
 
-### 🎯 Core Features
+### Core Features
 - **Full Exam Lifecycle** – Create, edit, delete, and practice exams with multiple‑choice questions (4 options + explanation).
 - **Step‑by‑Step Exam Wizard** – Intuitive 3‑step process: Details → Questions → Review & Save.
 - **Practice Mode** – Built‑in timer (with pause/resume), progress bar, and instant feedback.
 - **Detailed Results** – Review each answer with correct/incorrect indicators and rich explanations.
 - **Offline‑First** – All data stored locally using IndexedDB. No internet required after first load.
 
-### 🤖 AI‑Powered Question Generation
+###  AI‑Powered Question Generation
 - **Exam Professor** – Generate tailored prompts for any subject. Copy and paste into ChatGPT, Claude, or any AI.
 - **Groq AI Integration** – Direct API connection to generate questions instantly (free API key required).
 - **OpenTriviaDB Integration** – Fetch thousands of free trivia questions.
 - **Paste JSON Questions** – Import structured question sets in bulk.
 
-### 🛠️ Advanced JSON Processor
+###  Advanced JSON Processor
 - **Tree/Code Editor** – Full JSON editor with syntax highlighting, search, validation, and formatting.
 - **File Manager** – Create, save, delete, import, and export JSON files.
 - **Sync with Main App** – Seamlessly transfer exams between the JSON editor and the main app.
 
-### 💎 Premium Model
+###  Premium Model
 - **Free Tier** – 2 exams, 5 questions per exam, 10 total questions.
 - **Premium Tier** – Unlimited exams and questions. One‑time offline activation.
 
-### 🎨 Modern UI
+###  Modern UI
 - Dark glassmorphism theme with smooth animations.
 - SVG icons throughout – no external fonts required.
 - Fully responsive – works on phones, tablets, and desktops.
@@ -38,7 +38,7 @@ A powerful, fully offline‑capable exam preparation suite for students, teacher
 
 ---
 
-## 🚀 Tech Stack
+##  Tech Stack
 
 | Layer | Technology |
 |-------|------------|
@@ -54,12 +54,12 @@ A powerful, fully offline‑capable exam preparation suite for students, teacher
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 
 ---
 
-## 🛠️ Installation
+##  Installation
 
 ### Option 1: Use Online (Easiest)
 The app is hosted on **GitHub Pages**. Visit:
@@ -79,7 +79,7 @@ https://github.com/Melkamukebede/exampro/
 
 ---
 
-## 🔧 Configuration
+##  Configuration
 
 ### Groq API Key
 1. Get a free API key from [console.groq.com](https://console.groq.com/keys).
@@ -94,7 +94,7 @@ https://github.com/Melkamukebede/exampro/
 
 ---
 
-## 📱 Android Integration
+##  Android Integration
 
 The app is designed to run inside an Android `WebView`. A complete `MainActivity.kt` is provided with:
 - Native file import/export.
@@ -104,7 +104,7 @@ The app is designed to run inside an Android `WebView`. A complete `MainActivity
 
 ---
 
-## 🌐 Browser vs WebView
+##  Browser vs WebView
 
 | Environment | Limits |
 |-------------|--------|
@@ -113,7 +113,7 @@ The app is designed to run inside an Android `WebView`. A complete `MainActivity
 
 ---
 
-## 📊 Performance
+##  Performance
 
 - Loads instantly on modern devices.
 - IndexedDB handles thousands of questions without performance degradation.
@@ -121,19 +121,19 @@ The app is designed to run inside an Android `WebView`. A complete `MainActivity
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
 
 ---
 
-## 📄 License
+##  License
 
 This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🙏 Acknowledgements
+##  Acknowledgements
 
 - [KaTeX](https://katex.org/) – Math rendering
 - [Marked.js](https://marked.js.org/) – Markdown parsing
@@ -145,6 +145,6 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 
 ---
 
-## 🌟 Final Words
+##  Final Words
 
 *"The future of exam preparation is here – offline, fast, and completely under your control."*
