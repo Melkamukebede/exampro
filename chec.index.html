@@ -1,0 +1,2388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+<title>ExamMaster Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<style>
+:root {
+  --cream: #FAF8F3;
+  --cream-2: #F3EFE6;
+  --cream-3: #EAE4D8;
+  --ink: #1C1A17;
+  --ink-2: #3D3A33;
+  --ink-3: #6B6759;
+  --ink-4: #9E9A8E;
+  --accent: #D4500A;
+  --accent-light: #FBE8DC;
+  --accent-mid: #F4A070;
+  --teal: #0F7A6E;
+  --teal-light: #D9F0ED;
+  --gold: #B8860B;
+  --gold-light: #FDF5D9;
+  --border: #DDD8CC;
+  --border-strong: #C8C2B4;
+  --shadow-soft: 0 2px 16px rgba(28,26,23,0.06), 0 1px 4px rgba(28,26,23,0.04);
+  --shadow-card: 0 4px 24px rgba(28,26,23,0.08), 0 1px 6px rgba(28,26,23,0.04);
+  --shadow-lift: 0 8px 40px rgba(28,26,23,0.12), 0 2px 8px rgba(28,26,23,0.06);
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(212, 80, 10, 0.25); }
+  70% { box-shadow: 0 0 0 10px rgba(212, 80, 10, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 80, 10, 0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes countUp {
+  from { transform: translateY(6px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes waveIn {
+  0% { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 0% 0 0); }
+}
+@keyframes notifSlide {
+  from { transform: translateY(-12px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes progressBar {
+  from { width: 0%; }
+}
+
+.animate-fadeUp { animation: fadeUp 0.5s var(--transition) both; }
+.animate-fadeIn { animation: fadeIn 0.4s ease both; }
+.animate-scaleIn { animation: scaleIn 0.35s var(--transition) both; }
+
+/* ─── TOPBAR ─── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(250, 248, 243, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 1.5rem;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(212,80,10,0.3);
+  transition: transform var(--transition-spring);
+}
+.brand-icon:hover { transform: rotate(-8deg) scale(1.08); }
+.brand-icon svg { width: 20px; height: 20px; fill: white; }
+.brand-name {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 17px;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.brand-name em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+.nav-item:hover { background: var(--cream-2); color: var(--ink); }
+.nav-item.active {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* ─── TIER BADGE ─── */
+.tier-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  background: var(--gold-light);
+  border: 1px solid rgba(184,134,11,0.2);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gold);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.tier-badge:hover { background: #FBF0C0; box-shadow: 0 2px 8px rgba(184,134,11,0.15); }
+.tier-badge .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: pulse-ring 2.5s infinite;
+}
+
+/* ─── BUTTONS ─── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: white;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.btn-primary:hover {
+  background: #B8420A;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(212,80,10,0.3);
+  color: white;
+}
+.btn-primary:active { transform: translateY(0); }
+.btn-primary svg { width: 15px; height: 15px; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--ink-2);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 400;
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-secondary:hover { background: var(--cream-2); border-color: var(--ink-4); transform: translateY(-1px); }
+.btn-secondary svg { width: 15px; height: 15px; }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink-3);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.btn-ghost:hover { background: var(--cream-2); color: var(--ink); }
+.btn-ghost svg { width: 15px; height: 15px; }
+
+/* ─── MAIN LAYOUT ─── */
+.main-layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: calc(100vh - 62px);
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  background: white;
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 0;
+  position: sticky;
+  top: 62px;
+  height: calc(100vh - 62px);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.sidebar-section-label {
+  padding: 12px 20px 6px;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  color: var(--ink-3);
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  border-left: 3px solid transparent;
+  text-decoration: none;
+}
+.sidebar-item svg { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.7; }
+.sidebar-item:hover { background: var(--cream); color: var(--ink); }
+.sidebar-item:hover svg { opacity: 1; }
+.sidebar-item.active {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 500;
+  border-left-color: var(--accent);
+}
+.sidebar-item.active svg { opacity: 1; }
+
+.sidebar-count {
+  margin-left: auto;
+  background: var(--cream-2);
+  color: var(--ink-4);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+.sidebar-item.active .sidebar-count {
+  background: rgba(212,80,10,0.12);
+  color: var(--accent);
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 1.5rem 1.25rem 1rem;
+  border-top: 1px solid var(--border);
+}
+.upgrade-card {
+  background: linear-gradient(135deg, var(--accent-light) 0%, var(--gold-light) 100%);
+  border: 1px solid rgba(212,80,10,0.12);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+.upgrade-card h4 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.upgrade-card p {
+  font-size: 11.5px;
+  color: var(--ink-3);
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.upgrade-progress {
+  height: 4px;
+  background: rgba(28,26,23,0.1);
+  border-radius: 99px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.upgrade-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  animation: progressBar 1s ease 0.5s both;
+  width: 40%;
+}
+
+/* ─── CONTENT ─── */
+.content-area {
+  padding: 2rem 2.5rem;
+  min-width: 0;
+}
+
+/* ─── PAGE HEADER ─── */
+.page-header {
+  margin-bottom: 2rem;
+  animation: fadeUp 0.5s ease both;
+}
+.page-header-eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.page-header h1 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.page-header h1 em { font-style: italic; color: var(--accent); }
+.page-header p {
+  font-size: 14px;
+  color: var(--ink-3);
+  max-width: 520px;
+}
+
+/* ─── STATS ROW ─── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stat-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition);
+  animation: fadeUp 0.5s ease both;
+}
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.15s; }
+.stat-card:nth-child(4) { animation-delay: 0.2s; }
+.stat-card:hover { box-shadow: var(--shadow-card); transform: translateY(-2px); border-color: var(--border-strong); }
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.stat-card.orange::before { background: var(--accent); }
+.stat-card.teal::before { background: var(--teal); }
+.stat-card.gold::before { background: var(--gold); }
+.stat-card.ink::before { background: var(--ink-2); }
+
+.stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+.stat-icon.orange { background: var(--accent-light); color: var(--accent); }
+.stat-icon.teal { background: var(--teal-light); color: var(--teal); }
+.stat-icon.gold { background: var(--gold-light); color: var(--gold); }
+.stat-icon.ink { background: var(--cream-2); color: var(--ink-2); }
+.stat-icon svg { width: 18px; height: 18px; }
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 4px;
+  animation: countUp 0.5s ease both;
+  animation-delay: 0.4s;
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--ink-4);
+  font-weight: 400;
+}
+.stat-trend {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 99px;
+}
+.stat-trend.up { background: #E8F5E9; color: #2E7D32; }
+.stat-trend.neutral { background: var(--cream-2); color: var(--ink-4); }
+
+/* ─── SECTION HEADING ─── */
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.section-heading h2 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.section-heading h2 em { font-style: italic; color: var(--accent); }
+
+/* ─── EXAM CARDS GRID ─── */
+.exam-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.exam-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all var(--transition);
+  animation: fadeUp 0.5s ease both;
+  position: relative;
+}
+.exam-card:nth-child(1) { animation-delay: 0.08s; }
+.exam-card:nth-child(2) { animation-delay: 0.14s; }
+.exam-card:nth-child(3) { animation-delay: 0.2s; }
+.exam-card:hover {
+  box-shadow: var(--shadow-lift);
+  transform: translateY(-3px);
+  border-color: var(--border-strong);
+}
+
+.exam-card-banner {
+  height: 6px;
+}
+.exam-card-banner.physics { background: linear-gradient(90deg, #0F7A6E, #1AADA0); }
+.exam-card-banner.math { background: linear-gradient(90deg, var(--accent), #F4834A); }
+.exam-card-banner.bio { background: linear-gradient(90deg, #2E7D32, #56A85A); }
+.exam-card-banner.cs { background: linear-gradient(90deg, #1565C0, #42A5F5); }
+
+.exam-card-body { padding: 1.25rem; }
+
+.exam-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.exam-badge {
+  font-size: 10.5px;
+  font-weight: 500;
+  padding: 3px 9px;
+  border-radius: 99px;
+  letter-spacing: 0.02em;
+}
+.exam-badge.physics { background: var(--teal-light); color: var(--teal); }
+.exam-badge.math { background: var(--accent-light); color: var(--accent); }
+.exam-badge.bio { background: #E8F5E9; color: #2E7D32; }
+.exam-badge.cs { background: #E3F2FD; color: #1565C0; }
+
+.exam-card-title {
+  font-family: var(--font-display);
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+.exam-card-desc {
+  font-size: 12.5px;
+  color: var(--ink-4);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.exam-card-stats {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.exam-stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.exam-stat svg { width: 13px; height: 13px; opacity: 0.6; }
+
+.exam-progress-wrap {
+  margin-bottom: 14px;
+}
+.exam-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--ink-4);
+  margin-bottom: 5px;
+}
+.exam-progress-bar {
+  height: 5px;
+  background: var(--cream-2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.exam-progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 1s ease;
+}
+.exam-progress-fill.physics { background: var(--teal); }
+.exam-progress-fill.math { background: var(--accent); }
+.exam-progress-fill.bio { background: #2E7D32; }
+.exam-progress-fill.cs { background: #1565C0; }
+
+.exam-card-actions {
+  display: flex;
+  gap: 6px;
+  padding: 10px 1.25rem;
+  border-top: 1px solid var(--border);
+  background: var(--cream);
+}
+.exam-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+}
+.exam-action-btn.start {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+  flex: 1;
+  justify-content: center;
+}
+.exam-action-btn.start:hover { background: #B8420A; box-shadow: 0 3px 10px rgba(212,80,10,0.25); }
+.exam-action-btn.edit {
+  background: white;
+  color: var(--ink-3);
+  border-color: var(--border);
+}
+.exam-action-btn.edit:hover { background: var(--cream-2); color: var(--ink); }
+.exam-action-btn svg { width: 13px; height: 13px; }
+
+/* ─── AI FEATURES SECTION ─── */
+.ai-section {
+  margin-bottom: 2rem;
+}
+.ai-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.ai-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  animation: fadeUp 0.5s ease both;
+  position: relative;
+  overflow: hidden;
+}
+.ai-card:nth-child(1) { animation-delay: 0.1s; }
+.ai-card:nth-child(2) { animation-delay: 0.16s; }
+.ai-card:nth-child(3) { animation-delay: 0.22s; }
+.ai-card:hover {
+  box-shadow: var(--shadow-card);
+  transform: translateY(-2px);
+  border-color: var(--border-strong);
+}
+.ai-card::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; right: -40px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  opacity: 0.06;
+  transition: all 0.4s ease;
+}
+.ai-card.professor::after { background: var(--accent); }
+.ai-card.groq::after { background: var(--teal); }
+.ai-card.trivia::after { background: var(--gold); }
+.ai-card:hover::after { transform: scale(1.5); opacity: 0.1; }
+
+.ai-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  font-size: 22px;
+}
+.ai-card.professor .ai-card-icon { background: var(--accent-light); }
+.ai-card.groq .ai-card-icon { background: var(--teal-light); }
+.ai-card.trivia .ai-card-icon { background: var(--gold-light); }
+
+.ai-card h3 {
+  font-family: var(--font-display);
+  font-size: 15.5px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.ai-card p {
+  font-size: 12.5px;
+  color: var(--ink-3);
+  line-height: 1.55;
+  margin-bottom: 14px;
+}
+.ai-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  transition: gap var(--transition);
+  cursor: pointer;
+}
+.ai-card.groq .ai-card-link { color: var(--teal); }
+.ai-card.trivia .ai-card-link { color: var(--gold); }
+.ai-card-link:hover { gap: 8px; }
+.ai-card-link svg { width: 14px; height: 14px; }
+
+/* ─── QUICK CREATE ─── */
+.quick-create {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 2rem;
+  animation: fadeUp 0.5s ease 0.25s both;
+}
+.quick-create-header {
+  background: linear-gradient(135deg, var(--ink) 0%, var(--ink-2) 100%);
+  padding: 1.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.quick-create-header h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: white;
+  letter-spacing: -0.02em;
+}
+.quick-create-header h2 em { font-style: italic; color: var(--accent-mid); }
+.quick-create-header p { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 4px; }
+
+.wizard-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 2rem;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+}
+.wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px 14px 0;
+  font-size: 12.5px;
+  color: var(--ink-4);
+  position: relative;
+  transition: color var(--transition);
+}
+.wizard-step.active { color: var(--accent); font-weight: 500; }
+.wizard-step.done { color: var(--teal); }
+.wizard-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+.wizard-step.active .wizard-step-num {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.wizard-step.done .wizard-step-num {
+  background: var(--teal);
+  border-color: var(--teal);
+  color: white;
+}
+.wizard-sep {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+  margin: 0 8px;
+}
+
+.quick-create-body { padding: 1.5rem 2rem 2rem; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 12.5px; font-weight: 500; color: var(--ink-2); }
+.form-input {
+  padding: 9px 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--cream);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--ink);
+  transition: all var(--transition);
+  outline: none;
+}
+.form-input:focus {
+  border-color: var(--accent);
+  background: white;
+  box-shadow: 0 0 0 3px rgba(212,80,10,0.08);
+}
+.form-input::placeholder { color: var(--ink-4); }
+.form-select {
+  padding: 9px 13px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--cream);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition);
+}
+.form-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(212,80,10,0.08); }
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28,26,23,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal-overlay.open {
+  display: flex;
+  animation: fadeIn 0.2s ease both;
+}
+.modal {
+  background: white;
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lift), 0 0 0 1px rgba(28,26,23,0.06);
+  animation: scaleIn 0.3s var(--transition-spring) both;
+}
+.modal-header {
+  padding: 1.5rem 2rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.modal-header h2 {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.modal-header p { font-size: 13px; color: var(--ink-3); margin-top: 3px; }
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-3);
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+.modal-close:hover { background: var(--cream); color: var(--ink); }
+.modal-close svg { width: 16px; height: 16px; }
+.modal-body { padding: 1.5rem 2rem; }
+.modal-footer {
+  padding: 1rem 2rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  background: var(--cream);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* ─── EXAM ACTIVE UI ─── */
+.exam-ui {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.exam-ui-header {
+  background: var(--ink);
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.exam-ui-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 400;
+  font-style: italic;
+  color: white;
+}
+.exam-timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+.exam-timer svg { width: 15px; height: 15px; color: var(--accent-mid); }
+.exam-timer span {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 300;
+  color: white;
+  letter-spacing: 0.05em;
+}
+.exam-progress-header {
+  padding: 12px 1.5rem;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.exam-q-counter {
+  font-size: 12px;
+  color: var(--ink-4);
+  white-space: nowrap;
+}
+.exam-progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--cream-2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.exam-progress-indicator {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-mid));
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+.exam-body { padding: 2rem; }
+.exam-question-text {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+  margin-bottom: 1.5rem;
+}
+.answer-options { display: flex; flex-direction: column; gap: 10px; }
+.answer-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  background: white;
+}
+.answer-option:hover { border-color: var(--accent); background: var(--accent-light); }
+.answer-option.selected { border-color: var(--accent); background: var(--accent-light); }
+.answer-option.correct { border-color: var(--teal); background: var(--teal-light); }
+.answer-option.wrong { border-color: #C62828; background: #FFEBEE; }
+.option-letter {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--cream-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--ink-3);
+  flex-shrink: 0;
+  transition: all var(--transition);
+}
+.answer-option:hover .option-letter,
+.answer-option.selected .option-letter { background: var(--accent); color: white; }
+.answer-option.correct .option-letter { background: var(--teal); color: white; }
+.answer-option.wrong .option-letter { background: #C62828; color: white; }
+.option-text { font-size: 14px; color: var(--ink); line-height: 1.5; padding-top: 3px; }
+
+.exam-nav {
+  padding: 1rem 2rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── NOTIFICATIONS ─── */
+.notification-area {
+  position: fixed;
+  top: 80px;
+  right: 1.5rem;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.notification {
+  pointer-events: all;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-card);
+  width: 300px;
+  animation: notifSlide 0.35s var(--transition-spring) both;
+}
+.notification.success { border-left: 3px solid var(--teal); }
+.notification.warning { border-left: 3px solid var(--gold); }
+.notification.error { border-left: 3px solid var(--accent); }
+.notif-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.notification.success .notif-icon { background: var(--teal-light); color: var(--teal); }
+.notification.warning .notif-icon { background: var(--gold-light); color: var(--gold); }
+.notification.error .notif-icon { background: var(--accent-light); color: var(--accent); }
+.notif-icon svg { width: 14px; height: 14px; }
+.notif-content { flex: 1; min-width: 0; }
+.notif-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+.notif-msg { font-size: 11.5px; color: var(--ink-3); line-height: 1.4; }
+.notif-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-4);
+  padding: 0;
+  flex-shrink: 0;
+  transition: color var(--transition);
+}
+.notif-close:hover { color: var(--ink); }
+.notif-close svg { width: 14px; height: 14px; }
+
+/* ─── PROFESSOR MODAL ─── */
+.professor-modal .settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.radio-group { display: flex; flex-direction: column; gap: 6px; }
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.radio-option:hover { border-color: var(--accent); background: var(--accent-light); }
+.radio-option input { accent-color: var(--accent); }
+
+.diff-slider-wrap { margin-bottom: 1rem; }
+.diff-slider-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-4); margin-top: 4px; }
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--cream-3);
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(212,80,10,0.3);
+  transition: transform 0.15s ease;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+.prompt-output {
+  background: var(--ink);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  color: rgba(255,255,255,0.85);
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 1rem;
+  position: relative;
+  min-height: 80px;
+}
+.prompt-output .copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.7);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: var(--font-body);
+}
+.prompt-output .copy-btn:hover { background: rgba(255,255,255,0.18); color: white; }
+
+/* ─── JSON PASTE MODAL ─── */
+.json-textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  color: rgba(255,255,255,0.85);
+  font-family: 'DM Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.7;
+  outline: none;
+  resize: vertical;
+  transition: border-color var(--transition);
+}
+.json-textarea:focus { border-color: var(--accent); }
+.json-textarea::placeholder { color: rgba(255,255,255,0.25); }
+
+.json-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  border-bottom: none;
+  font-size: 11.5px;
+  color: var(--ink-4);
+}
+.json-toolbar-actions { display: flex; gap: 4px; }
+.json-toolbar-btn {
+  padding: 4px 10px;
+  border-radius: 5px;
+  background: white;
+  border: 1px solid var(--border);
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--ink-3);
+  transition: all var(--transition);
+}
+.json-toolbar-btn:hover { background: var(--cream-2); color: var(--ink); }
+
+.json-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  font-size: 11.5px;
+  color: var(--ink-4);
+}
+.json-status.valid { color: var(--teal); }
+.json-status.error-state { color: #C62828; }
+.json-status svg { width: 13px; height: 13px; }
+
+/* ─── LOADING ─── */
+.loading-spinner {
+  width: 24px; height: 24px;
+  border: 2px solid var(--cream-3);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--ink-4);
+}
+.empty-state-icon { font-size: 48px; margin-bottom: 1rem; display: block; }
+.empty-state h3 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ink-2);
+  margin-bottom: 6px;
+}
+.empty-state p { font-size: 13.5px; color: var(--ink-4); margin-bottom: 1.5rem; }
+
+/* ─── RESULTS PAGE ─── */
+.result-header {
+  text-align: center;
+  padding: 2.5rem 2rem;
+  background: linear-gradient(135deg, var(--ink) 0%, var(--ink-2) 100%);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+.result-score-ring {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 1rem;
+  position: relative;
+}
+.result-score-ring svg { transform: rotate(-90deg); }
+.result-score-num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.result-score-num strong {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 500;
+  color: white;
+  letter-spacing: -0.03em;
+}
+.result-score-num span { font-size: 11px; color: rgba(255,255,255,0.5); }
+.result-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 400;
+  font-style: italic;
+  color: white;
+  margin-bottom: 6px;
+}
+.result-subtitle { font-size: 13px; color: rgba(255,255,255,0.5); }
+
+/* ─── TAGS / CHIPS ─── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 99px;
+  font-size: 11.5px;
+  font-weight: 400;
+}
+.tag.cream { background: var(--cream-2); color: var(--ink-3); border: 1px solid var(--border); }
+.tag.accent { background: var(--accent-light); color: var(--accent); }
+.tag.teal { background: var(--teal-light); color: var(--teal); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1100px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .ai-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 900px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .content-area { padding: 1.5rem; }
+  .topbar { padding: 0 1rem; }
+  .ai-grid { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .exam-grid { grid-template-columns: 1fr; }
+  .topbar-nav { display: none; }
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--cream-3); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-strong); }
+
+/* ─── PAGE TRANSITIONS ─── */
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.3s ease both; }
+
+/* ─── TABS ─── */
+.tab-bar {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+.tab-btn {
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  color: var(--ink-4);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--ink); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
+/* ─── TOGGLE SWITCH ─── */
+.toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.toggle {
+  width: 38px;
+  height: 22px;
+  background: var(--cream-3);
+  border-radius: 99px;
+  position: relative;
+  transition: background var(--transition);
+}
+.toggle.on { background: var(--accent); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--transition-spring);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.toggle.on::after { transform: translateX(16px); }
+</style>
+</head>
+<body>
+
+<!-- NOTIFICATION AREA -->
+<div class="notification-area" id="notifArea"></div>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <a class="topbar-brand" href="#" onclick="showPage('home')">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2L3 7l9 5 9-5-9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/></svg>
+    </div>
+    <span class="brand-name">Exam<em>Master</em> Pro</span>
+  </a>
+
+  <nav class="topbar-nav">
+    <button class="nav-item active" id="topNav-home" onclick="showPage('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      Home
+    </button>
+    <button class="nav-item" id="topNav-files" onclick="showPage('files')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+      Files
+    </button>
+    <button class="nav-item" id="topNav-results" onclick="showPage('results')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Results
+    </button>
+    <button class="nav-item" id="topNav-create" onclick="showPage('create')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Create
+    </button>
+    <button class="nav-item" id="topNav-exams" onclick="showPage('exams')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Exams
+    </button>
+  </nav>
+
+  <div class="topbar-actions">
+    <div class="tier-badge" onclick="showNotif('Upgrade to unlock unlimited exams!', 'Upgrade available', 'warning')">
+      <span class="dot"></span>
+      FREE — 2 files · 5 Q/file
+    </div>
+    <button class="btn-primary" onclick="showPage('create')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Exam
+    </button>
+  </div>
+</header>
+
+<div class="main-layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section-label">Overview</div>
+    <button class="sidebar-item active" onclick="showPage('home')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+      Dashboard
+    </button>
+    <button class="sidebar-item" onclick="showPage('files')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+      My Files
+      <span class="sidebar-count">2</span>
+    </button>
+    <button class="sidebar-item" onclick="showPage('exams')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      My Exams
+      <span class="sidebar-count">4</span>
+    </button>
+    <button class="sidebar-item" onclick="showPage('results')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Results
+    </button>
+
+    <div class="sidebar-section-label" style="margin-top:8px">Create</div>
+    <button class="sidebar-item" onclick="showPage('create')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Wizard
+    </button>
+    <button class="sidebar-item" onclick="openProfessor()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 6v6l4 2"/></svg>
+      Exam Professor
+    </button>
+    <button class="sidebar-item" onclick="openJsonPaste()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg>
+      Paste JSON
+    </button>
+
+    <div class="sidebar-section-label" style="margin-top:8px">Import</div>
+    <button class="sidebar-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>
+      JSON Editor
+    </button>
+    <button class="sidebar-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      OpenTriviaDB
+    </button>
+
+    <div class="sidebar-footer">
+      <div class="upgrade-card">
+        <h4>Go Premium</h4>
+        <p>Unlock unlimited exams and questions. One-time activation.</p>
+        <div class="upgrade-progress">
+          <div class="upgrade-progress-fill"></div>
+        </div>
+        <button class="btn-primary" style="width:100%;justify-content:center;font-size:12.5px;padding:7px 14px;" onclick="showNotif('Premium activation coming soon!', 'Upgrade', 'warning')">
+          Upgrade now
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content-area">
+
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
+      <div class="page-header">
+        <div class="page-header-eyebrow">Dashboard</div>
+        <h1>Good morning, <em>Scholar</em></h1>
+        <p>Ready to continue studying? You have 3 exams in progress and 1 new session today.</p>
+      </div>
+
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card orange">
+          <div class="stat-icon orange">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+          </div>
+          <div class="stat-value">4</div>
+          <div class="stat-label">Total exams</div>
+          <span class="stat-trend neutral">2/5 limit</span>
+        </div>
+        <div class="stat-card teal">
+          <div class="stat-icon teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          </div>
+          <div class="stat-value">127</div>
+          <div class="stat-label">Questions answered</div>
+          <span class="stat-trend up">↑ 12 today</span>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-icon gold">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+          </div>
+          <div class="stat-value">78%</div>
+          <div class="stat-label">Avg. score</div>
+          <span class="stat-trend up">↑ 4%</span>
+        </div>
+        <div class="stat-card ink">
+          <div class="stat-icon ink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+          </div>
+          <div class="stat-value">3h 24m</div>
+          <div class="stat-label">Study time</div>
+          <span class="stat-trend up">↑ 22 min</span>
+        </div>
+      </div>
+
+      <!-- RECENT EXAMS -->
+      <div class="section-heading">
+        <h2>Recent <em>exams</em></h2>
+        <button class="btn-ghost" onclick="showPage('exams')">
+          View all
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+        </button>
+      </div>
+
+      <div class="exam-grid">
+        <div class="exam-card">
+          <div class="exam-card-banner physics"></div>
+          <div class="exam-card-body">
+            <div class="exam-card-meta">
+              <span class="exam-badge physics">Physics</span>
+              <span class="tag cream">University</span>
+            </div>
+            <div class="exam-card-title">Thermodynamics &amp; Heat Transfer</div>
+            <div class="exam-card-desc">Laws of thermodynamics, entropy, heat engines, and thermal equilibrium.</div>
+            <div class="exam-card-stats">
+              <span class="exam-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                25 min
+              </span>
+              <span class="exam-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg>
+                20 Qs
+              </span>
+              <span class="exam-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+                84%
+              </span>
+            </div>
+            <div class="exam-progress-wrap">
+              <div class="exam-progress-label"><span>Last attempt</span><span>84%</span></div>
+              <div class="exam-progress-bar"><div class="exam-progress-fill physics" style="width:84%"></div></div>
+            </div>
+          </div>
+          <div class="exam-card-actions">
+            <button class="exam-action-btn start" onclick="startExam('Thermodynamics &amp; Heat Transfer')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
+              Retake
+            </button>
+            <button class="exam-action-btn edit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+          </div>
+        </div>
+
+        <div class="exam-card">
+          <div class="exam-card-banner math"></div>
+          <div class="exam-card-body">
+            <div class="exam-card-meta">
+              <span class="exam-badge math">Mathematics</span>
+              <span class="tag cream">High School</span>
+            </div>
+            <div class="exam-card-title">Differential Calculus</div>
+            <div class="exam-card-desc">Limits, derivatives, chain rule, and applications of differentiation.</div>
+            <div class="exam-card-stats">
+              <span class="exam-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                40 min
+              </span>
+              <span class="exam-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg>
+                30 Qs
+              </span>
+              <span class="exam-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+                71%
+              </span>
+            </div>
+            <div class="exam-progress-wrap">
+              <div class="exam-progress-label"><span>Last attempt</span><span>71%</span></div>
+              <div class="exam-progress-bar"><div class="exam-progress-fill math" style="width:71%"></div></div>
+            </div>
+          </div>
+          <div class="exam-card-actions">
+            <button class="exam-action-btn start" onclick="startExam('Differential Calculus')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
+              Retake
+            </button>
+            <button class="exam-action-btn edit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+          </div>
+        </div>
+
+        <div class="exam-card">
+          <div class="exam-card-banner bio"></div>
+          <div class="exam-card-body">
+            <div class="exam-card-meta">
+              <span class="exam-badge bio">Biology</span>
+              <span class="tag cream">Easy</span>
+            </div>
+            <div class="exam-card-title">Cell Biology Fundamentals</div>
+            <div class="exam-card-desc">Cell structure, organelles, mitosis, meiosis, and cellular respiration.</div>
+            <div class="exam-card-stats">
+              <span class="exam-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+                30 min
+              </span>
+              <span class="exam-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg>
+                25 Qs
+              </span>
+              <span class="exam-stat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
+                91%
+              </span>
+            </div>
+            <div class="exam-progress-wrap">
+              <div class="exam-progress-label"><span>Last attempt</span><span>91%</span></div>
+              <div class="exam-progress-bar"><div class="exam-progress-fill bio" style="width:91%"></div></div>
+            </div>
+          </div>
+          <div class="exam-card-actions">
+            <button class="exam-action-btn start" onclick="startExam('Cell Biology Fundamentals')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
+              Retake
+            </button>
+            <button class="exam-action-btn edit">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI FEATURES -->
+      <div class="ai-section">
+        <div class="section-heading">
+          <h2>AI <em>tools</em></h2>
+        </div>
+        <div class="ai-grid">
+          <div class="ai-card professor" onclick="openProfessor()">
+            <div class="ai-card-icon">🎓</div>
+            <h3>Exam Professor</h3>
+            <p>Generate tailored prompts for any subject. Copy to ChatGPT, Claude, or any AI to get perfect questions.</p>
+            <span class="ai-card-link">
+              Open Professor
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+            </span>
+          </div>
+          <div class="ai-card groq" onclick="showNotif('Enter your Groq API key in settings to enable direct AI generation.', 'Groq AI', 'success')">
+            <div class="ai-card-icon">⚡</div>
+            <h3>Groq AI Generation</h3>
+            <p>Connect your free Groq API key to generate hundreds of questions in seconds — directly inside the app.</p>
+            <span class="ai-card-link">
+              Connect Groq
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+            </span>
+          </div>
+          <div class="ai-card trivia" onclick="showNotif('Loading questions from OpenTriviaDB...', 'OpenTriviaDB', 'success')">
+            <div class="ai-card-icon">🧩</div>
+            <h3>OpenTriviaDB</h3>
+            <p>Fetch thousands of free trivia questions across dozens of categories. Great for general knowledge practice.</p>
+            <span class="ai-card-link">
+              Browse questions
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXAMS PAGE -->
+    <div class="page" id="page-exams">
+      <div class="page-header">
+        <div class="page-header-eyebrow">Library</div>
+        <h1>Your <em>exams</em></h1>
+        <p>All your created and imported exams in one place.</p>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn active">All (4)</button>
+        <button class="tab-btn">Physics</button>
+        <button class="tab-btn">Mathematics</button>
+        <button class="tab-btn">Biology</button>
+        <button class="tab-btn">CS</button>
+      </div>
+
+      <div class="exam-grid">
+        <div class="exam-card">
+          <div class="exam-card-banner physics"></div>
+          <div class="exam-card-body">
+            <div class="exam-card-meta"><span class="exam-badge physics">Physics</span><span class="tag cream">University</span></div>
+            <div class="exam-card-title">Thermodynamics &amp; Heat Transfer</div>
+            <div class="exam-card-desc">20 questions · 84% best score</div>
+            <div class="exam-progress-wrap">
+              <div class="exam-progress-label"><span>Best score</span><span>84%</span></div>
+              <div class="exam-progress-bar"><div class="exam-progress-fill physics" style="width:84%"></div></div>
+            </div>
+          </div>
+          <div class="exam-card-actions">
+            <button class="exam-action-btn start" onclick="startExam('Thermodynamics')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>Start
+            </button>
+            <button class="exam-action-btn edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+          </div>
+        </div>
+        <div class="exam-card">
+          <div class="exam-card-banner math"></div>
+          <div class="exam-card-body">
+            <div class="exam-card-meta"><span class="exam-badge math">Mathematics</span><span class="tag cream">HS</span></div>
+            <div class="exam-card-title">Differential Calculus</div>
+            <div class="exam-card-desc">30 questions · 71% best score</div>
+            <div class="exam-progress-wrap">
+              <div class="exam-progress-label"><span>Best score</span><span>71%</span></div>
+              <div class="exam-progress-bar"><div class="exam-progress-fill math" style="width:71%"></div></div>
+            </div>
+          </div>
+          <div class="exam-card-actions">
+            <button class="exam-action-btn start" onclick="startExam('Differential Calculus')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>Start</button>
+            <button class="exam-action-btn edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+          </div>
+        </div>
+        <div class="exam-card">
+          <div class="exam-card-banner bio"></div>
+          <div class="exam-card-body">
+            <div class="exam-card-meta"><span class="exam-badge bio">Biology</span><span class="tag cream">Easy</span></div>
+            <div class="exam-card-title">Cell Biology Fundamentals</div>
+            <div class="exam-card-desc">25 questions · 91% best score</div>
+            <div class="exam-progress-wrap">
+              <div class="exam-progress-label"><span>Best score</span><span>91%</span></div>
+              <div class="exam-progress-bar"><div class="exam-progress-fill bio" style="width:91%"></div></div>
+            </div>
+          </div>
+          <div class="exam-card-actions">
+            <button class="exam-action-btn start" onclick="startExam('Cell Biology')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>Start</button>
+            <button class="exam-action-btn edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+          </div>
+        </div>
+        <div class="exam-card">
+          <div class="exam-card-banner cs"></div>
+          <div class="exam-card-body">
+            <div class="exam-card-meta"><span class="exam-badge cs">CS</span><span class="tag cream">University</span></div>
+            <div class="exam-card-title">Data Structures &amp; Algorithms</div>
+            <div class="exam-card-desc">40 questions · Not attempted</div>
+            <div class="exam-progress-wrap">
+              <div class="exam-progress-label"><span>Progress</span><span>0%</span></div>
+              <div class="exam-progress-bar"><div class="exam-progress-fill cs" style="width:0%"></div></div>
+            </div>
+          </div>
+          <div class="exam-card-actions">
+            <button class="exam-action-btn start" onclick="startExam('Data Structures')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>Start</button>
+            <button class="exam-action-btn edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVE EXAM PAGE -->
+    <div class="page" id="page-exam-active">
+      <div class="exam-ui">
+        <div class="exam-ui-header">
+          <span class="exam-ui-title" id="activeExamTitle">Loading exam...</span>
+          <div class="exam-timer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+            <span id="examTimerDisplay">00:00</span>
+          </div>
+        </div>
+        <div class="exam-progress-header">
+          <span class="exam-q-counter" id="examQCounter">Question 1 of 10</span>
+          <div class="exam-progress-track">
+            <div class="exam-progress-indicator" id="examProgressBar" style="width:10%"></div>
+          </div>
+        </div>
+        <div class="exam-body">
+          <div class="exam-question-text" id="examQuestion">
+            What is the first law of thermodynamics?
+          </div>
+          <div class="answer-options" id="examOptions">
+            <div class="answer-option" onclick="selectAnswer(this, 0)">
+              <div class="option-letter">A</div>
+              <div class="option-text">Energy cannot be created or destroyed, only transformed from one form to another.</div>
+            </div>
+            <div class="answer-option" onclick="selectAnswer(this, 1)">
+              <div class="option-letter">B</div>
+              <div class="option-text">The entropy of a closed system always increases over time.</div>
+            </div>
+            <div class="answer-option" onclick="selectAnswer(this, 2)">
+              <div class="option-letter">C</div>
+              <div class="option-text">Heat flows from a colder object to a hotter object spontaneously.</div>
+            </div>
+            <div class="answer-option" onclick="selectAnswer(this, 3)">
+              <div class="option-letter">D</div>
+              <div class="option-text">The absolute temperature of a perfect crystal at zero Kelvin is zero.</div>
+            </div>
+          </div>
+        </div>
+        <div class="exam-nav">
+          <button class="btn-secondary" id="prevBtn" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
+            Previous
+          </button>
+          <button class="btn-ghost" onclick="showPage('exams')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Exit
+          </button>
+          <button class="btn-primary" id="nextBtn" onclick="nextQuestion()">
+            Next
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CREATE PAGE -->
+    <div class="page" id="page-create">
+      <div class="page-header">
+        <div class="page-header-eyebrow">Wizard</div>
+        <h1>Create new <em>exam</em></h1>
+        <p>Follow the 3-step wizard to build your perfect exam.</p>
+      </div>
+      <div class="quick-create">
+        <div class="quick-create-header">
+          <div>
+            <h2>Exam <em>details</em></h2>
+            <p>Step 1 of 3 — Name and configure your exam</p>
+          </div>
+          <button class="btn-ghost" style="color:rgba(255,255,255,0.6)" onclick="showPage('home')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="wizard-steps">
+          <div class="wizard-step active">
+            <div class="wizard-step-num">1</div>
+            Details
+          </div>
+          <div class="wizard-sep"></div>
+          <div class="wizard-step">
+            <div class="wizard-step-num">2</div>
+            Questions
+          </div>
+          <div class="wizard-sep"></div>
+          <div class="wizard-step">
+            <div class="wizard-step-num">3</div>
+            Review &amp; Save
+          </div>
+        </div>
+        <div class="quick-create-body">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">Exam name</label>
+              <input type="text" class="form-input" placeholder="e.g. University Physics — Midterm 2026">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Subject</label>
+              <select class="form-select">
+                <option>Mathematics</option>
+                <option>Physics</option>
+                <option>Biology</option>
+                <option>Chemistry</option>
+                <option>Computer Science</option>
+                <option>History</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Education level</label>
+              <select class="form-select">
+                <option>Elementary</option>
+                <option>High School</option>
+                <option selected>University</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Time limit (minutes)</label>
+              <input type="number" class="form-input" placeholder="e.g. 45" min="1" max="240">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Difficulty</label>
+              <select class="form-select">
+                <option>Easy</option>
+                <option selected>Medium</option>
+                <option>Hard</option>
+                <option>Mixed</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Description (optional)</label>
+              <input type="text" class="form-input" placeholder="Brief description of what this exam covers...">
+            </div>
+          </div>
+          <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:1.5rem">
+            <button class="btn-secondary" onclick="showPage('home')">Cancel</button>
+            <button class="btn-primary" onclick="showNotif('Step 1 complete! Add your questions in step 2.', 'Details saved', 'success')">
+              Continue to Questions
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILES PAGE -->
+    <div class="page" id="page-files">
+      <div class="page-header">
+        <div class="page-header-eyebrow">Storage</div>
+        <h1>My <em>files</em></h1>
+        <p>JSON question files stored locally in your browser.</p>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.5rem">
+        <div style="padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;color:var(--ink-4)">2 of 2 files used (free plan)</span>
+          <button class="btn-primary" style="font-size:12px;padding:6px 14px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New file
+          </button>
+        </div>
+        <div style="padding:1.5rem;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--cream);transition:all 0.2s ease;cursor:pointer" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:38px;height:38px;background:var(--accent-light);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:18px">📄</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13.5px;font-weight:500;color:var(--ink);margin-bottom:2px">physics_questions.json</div>
+              <div style="font-size:11.5px;color:var(--ink-4)">5 questions · 2.4 KB · Modified today</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn-ghost" style="font-size:12px;padding:5px 10px">Export</button>
+              <button class="btn-ghost" style="font-size:12px;padding:5px 10px;color:#C62828">Delete</button>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--cream);cursor:pointer" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border)'">
+            <div style="width:38px;height:38px;background:var(--teal-light);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:18px">📄</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13.5px;font-weight:500;color:var(--ink);margin-bottom:2px">calculus_problems.json</div>
+              <div style="font-size:11.5px;color:var(--ink-4)">5 questions · 3.1 KB · Modified 2 days ago</div>
+            </div>
+            <div style="display:flex;gap:6px">
+              <button class="btn-ghost" style="font-size:12px;padding:5px 10px">Export</button>
+              <button class="btn-ghost" style="font-size:12px;padding:5px 10px;color:#C62828">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;padding:1rem;background:var(--gold-light);border:1px solid rgba(184,134,11,0.2);border-radius:var(--radius)">
+        <span style="font-size:13px;color:var(--gold);font-weight:500">You've reached the free plan limit of 2 files.</span>
+        <span style="font-size:13px;color:var(--ink-3)"> Upgrade to Premium for unlimited storage.</span>
+      </div>
+    </div>
+
+    <!-- RESULTS PAGE -->
+    <div class="page" id="page-results">
+      <div class="page-header">
+        <div class="page-header-eyebrow">Analytics</div>
+        <h1>Your <em>results</em></h1>
+        <p>Detailed performance history and score analytics.</p>
+      </div>
+      <div style="background:white;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:1.5rem">
+        <div class="result-header">
+          <div class="result-score-ring">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="10"/>
+              <circle cx="60" cy="60" r="50" fill="none" stroke="#D4500A" stroke-width="10" stroke-dasharray="314" stroke-dashoffset="69" stroke-linecap="round"/>
+            </svg>
+            <div class="result-score-num">
+              <strong>78%</strong>
+              <span>avg</span>
+            </div>
+          </div>
+          <div class="result-title">Strong performance!</div>
+          <div class="result-subtitle">Based on 7 completed exam sessions</div>
+        </div>
+        <div style="padding:1.5rem;display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+            <span class="exam-badge physics" style="min-width:80px;text-align:center">Physics</span>
+            <span style="flex:1;font-size:13.5px;color:var(--ink-2)">Thermodynamics &amp; Heat Transfer</span>
+            <span style="font-weight:500;font-size:14px;color:var(--teal)">84%</span>
+            <span style="font-size:11.5px;color:var(--ink-4)">Today</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+            <span class="exam-badge bio" style="min-width:80px;text-align:center">Biology</span>
+            <span style="flex:1;font-size:13.5px;color:var(--ink-2)">Cell Biology Fundamentals</span>
+            <span style="font-weight:500;font-size:14px;color:var(--teal)">91%</span>
+            <span style="font-size:11.5px;color:var(--ink-4)">Yesterday</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+            <span class="exam-badge math" style="min-width:80px;text-align:center">Math</span>
+            <span style="flex:1;font-size:13.5px;color:var(--ink-2)">Differential Calculus</span>
+            <span style="font-weight:500;font-size:14px;color:var(--gold)">71%</span>
+            <span style="font-size:11.5px;color:var(--ink-4)">2 days ago</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <span class="exam-badge cs" style="min-width:80px;text-align:center">CS</span>
+            <span style="flex:1;font-size:13.5px;color:var(--ink-2)">Algorithms Basics</span>
+            <span style="font-weight:500;font-size:14px;color:var(--accent)">65%</span>
+            <span style="font-size:11.5px;color:var(--ink-4)">3 days ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ─── PROFESSOR MODAL ─── -->
+<div class="modal-overlay" id="professorModal">
+  <div class="modal professor-modal" style="max-width:700px">
+    <div class="modal-header">
+      <div>
+        <h2>Exam Professor</h2>
+        <p>Configure your AI prompt generator — copy result into any AI model.</p>
+      </div>
+      <button class="modal-close" onclick="closeProfessor()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="settings-grid">
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <input type="text" class="form-input" id="profSubject" placeholder="e.g. University Physics" oninput="updatePrompt()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Number of questions</label>
+          <input type="number" class="form-input" id="profQNum" value="20" min="1" max="100" oninput="updatePrompt()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Structure</label>
+          <div class="radio-group">
+            <label class="radio-option"><input type="radio" name="profStructure" value="MCQ" checked onchange="updatePrompt()"> Multiple choice</label>
+            <label class="radio-option"><input type="radio" name="profStructure" value="TF" onchange="updatePrompt()"> True / False</label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Explanation style</label>
+          <div class="radio-group">
+            <label class="radio-option"><input type="radio" name="profExpl" value="step" checked onchange="updatePrompt()"> Step-by-step</label>
+            <label class="radio-option"><input type="radio" name="profExpl" value="brief" onchange="updatePrompt()"> Brief</label>
+            <label class="radio-option"><input type="radio" name="profExpl" value="none" onchange="updatePrompt()"> None</label>
+          </div>
+        </div>
+      </div>
+      <div class="diff-slider-wrap">
+        <label class="form-label" style="margin-bottom:8px;display:block">Difficulty mix — Easy <span id="easyPct">20</span>% / Medium <span id="medPct">60</span>% / Hard <span id="hardPct">20</span>%</label>
+        <input type="range" id="diffSlider" min="0" max="40" value="20" oninput="updateDiff(this.value);updatePrompt()">
+        <div class="diff-slider-labels"><span>More easy</span><span>Balanced</span><span>More hard</span></div>
+      </div>
+      <div>
+        <label class="form-label" style="margin-bottom:6px;display:block">Additional instructions (optional)</label>
+        <input type="text" class="form-input" id="profExtra" placeholder="e.g. Focus on kinematic equations and vector components" oninput="updatePrompt()">
+      </div>
+      <div class="prompt-output" id="promptOutput">
+        <button class="copy-btn" onclick="copyPrompt()">Copy</button>
+        <span id="promptText" style="display:block;padding-right:60px">Fill in the subject and settings above to generate your AI prompt...</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeProfessor()">Close</button>
+      <button class="btn-primary" onclick="copyPrompt()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        Copy prompt
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── JSON PASTE MODAL ─── -->
+<div class="modal-overlay" id="jsonModal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <div>
+        <h2>Paste JSON questions</h2>
+        <p>Paste a valid JSON array to import questions in bulk.</p>
+      </div>
+      <button class="modal-close" onclick="closeJsonPaste()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="json-toolbar">
+        <span id="jsonStats">0 lines · 0 chars · 0 Qs detected</span>
+        <div class="json-toolbar-actions">
+          <button class="json-toolbar-btn" onclick="formatJson()">Format</button>
+          <button class="json-toolbar-btn" onclick="clearJson()">Clear</button>
+        </div>
+      </div>
+      <textarea class="json-textarea" id="jsonInput" placeholder='[{"text":"What is...","options":["A","B","C","D"],"correct":0,"explanation":"Because..."}]' oninput="lintJson()"></textarea>
+      <div class="json-status" id="jsonStatus">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Paste a valid JSON array. Required fields per question: <code>text</code> <code>options</code> (4 strings) <code>correct</code> (0–3) — optional: <code>explanation</code>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeJsonPaste()">Cancel</button>
+      <button class="btn-primary" id="jsonImportBtn" disabled onclick="importJson()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Parse &amp; Add
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ─── PAGE NAVIGATION ───
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById('page-' + id);
+  if (page) page.classList.add('active');
+
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const navBtn = document.getElementById('topNav-' + id);
+  if (navBtn) navBtn.classList.add('active');
+
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+}
+
+// ─── NOTIFICATIONS ───
+function showNotif(msg, title, type = 'success') {
+  const area = document.getElementById('notifArea');
+  const icons = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>',
+    warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    error:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+  };
+  const n = document.createElement('div');
+  n.className = 'notification ' + type;
+  n.innerHTML = `<div class="notif-icon">${icons[type]||icons.success}</div><div class="notif-content"><div class="notif-title">${title}</div><div class="notif-msg">${msg}</div></div><button class="notif-close" onclick="this.parentElement.remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  area.appendChild(n);
+  setTimeout(() => { if (n.parentElement) n.remove(); }, 4000);
+}
+
+// ─── PROFESSOR MODAL ───
+function openProfessor() {
+  document.getElementById('professorModal').classList.add('open');
+  updatePrompt();
+}
+function closeProfessor() {
+  document.getElementById('professorModal').classList.remove('open');
+}
+
+function updateDiff(val) {
+  val = parseInt(val);
+  const easy = val;
+  const hard = val;
+  const med = 100 - easy - hard;
+  document.getElementById('easyPct').textContent = easy;
+  document.getElementById('medPct').textContent = Math.max(med, 0);
+  document.getElementById('hardPct').textContent = hard;
+}
+
+function updatePrompt() {
+  const subj  = document.getElementById('profSubject').value || '[Subject]';
+  const num   = document.getElementById('profQNum').value || '20';
+  const struct= document.querySelector('input[name=profStructure]:checked')?.value || 'MCQ';
+  const expl  = document.querySelector('input[name=profExpl]:checked')?.value || 'step';
+  const extra = document.getElementById('profExtra').value;
+  const easy  = document.getElementById('easyPct').textContent;
+  const med   = document.getElementById('medPct').textContent;
+  const hard  = document.getElementById('hardPct').textContent;
+  const explMap = { step: 'detailed step-by-step', brief: 'brief', none: 'no' };
+  const structMap = { MCQ: 'multiple-choice (4 options)', TF: 'true/false' };
+  let prompt = `Generate ${num} ${structMap[struct]} questions on the topic of "${subj}".
+
+Requirements:
+- Difficulty distribution: ${easy}% Easy, ${med}% Medium, ${hard}% Hard
+- Include ${explMap[expl]} explanations for each correct answer
+- Format as a JSON array with fields: text, options (array of 4 strings), correct (0-3 index), explanation
+
+${extra ? 'Additional instructions: ' + extra + '\n' : ''}Return ONLY the JSON array, no extra text or markdown.`;
+  document.getElementById('promptText').textContent = prompt;
+}
+
+function copyPrompt() {
+  const t = document.getElementById('promptText').textContent;
+  navigator.clipboard.writeText(t).then(() => {
+    showNotif('Prompt copied! Paste it into Claude, ChatGPT, or Groq.', 'Copied to clipboard', 'success');
+    closeProfessor();
+  }).catch(() => {
+    showNotif('Could not copy — please select and copy manually.', 'Copy failed', 'error');
+  });
+}
+
+// ─── JSON PASTE MODAL ───
+function openJsonPaste() {
+  document.getElementById('jsonModal').classList.add('open');
+}
+function closeJsonPaste() {
+  document.getElementById('jsonModal').classList.remove('open');
+}
+
+function lintJson() {
+  const raw = document.getElementById('jsonInput').value;
+  const statusEl = document.getElementById('jsonStatus');
+  const importBtn = document.getElementById('jsonImportBtn');
+  const statsEl = document.getElementById('jsonStats');
+  const lines = raw.split('\n').length;
+  const chars = raw.length;
+  if (!raw.trim()) {
+    statsEl.textContent = '0 lines · 0 chars · 0 Qs detected';
+    statusEl.className = 'json-status';
+    importBtn.disabled = true;
+    return;
+  }
+  statsEl.textContent = `${lines} lines · ${chars} chars · `;
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) throw new Error('Must be an array');
+    const valid = parsed.filter(q => q.text && Array.isArray(q.options) && q.options.length === 4 && typeof q.correct === 'number');
+    statsEl.textContent += `${valid.length} Qs detected`;
+    statusEl.className = 'json-status valid';
+    statusEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg> ${valid.length} valid question${valid.length !== 1 ? 's' : ''} found — ready to import`;
+    importBtn.disabled = valid.length === 0;
+  } catch (e) {
+    statsEl.textContent += '0 Qs detected';
+    statusEl.className = 'json-status error-state';
+    statusEl.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg> ${e.message}`;
+    importBtn.disabled = true;
+  }
+}
+
+function formatJson() {
+  const el = document.getElementById('jsonInput');
+  try {
+    el.value = JSON.stringify(JSON.parse(el.value), null, 2);
+    lintJson();
+  } catch(e) { showNotif('Cannot format — invalid JSON.', 'Format error', 'error'); }
+}
+function clearJson() {
+  document.getElementById('jsonInput').value = '';
+  lintJson();
+}
+function importJson() {
+  try {
+    const data = JSON.parse(document.getElementById('jsonInput').value);
+    const valid = data.filter(q => q.text && Array.isArray(q.options) && q.options.length === 4 && typeof q.correct === 'number');
+    closeJsonPaste();
+    showNotif(`${valid.length} question${valid.length !== 1 ? 's' : ''} imported successfully and ready to use.`, 'Import successful', 'success');
+  } catch(e) { showNotif('Import failed — check your JSON.', 'Import error', 'error'); }
+}
+
+// ─── EXAM RUNNER ───
+let examState = { title: '', q: 0, total: 10, selected: null, timerSec: 0, timerInterval: null };
+
+const sampleQuestions = [
+  { text: "What is the first law of thermodynamics?", options: ["Energy cannot be created or destroyed, only transformed from one form to another.", "The entropy of a closed system always increases over time.", "Heat flows from colder to hotter objects spontaneously.", "The absolute temperature at zero Kelvin is zero."], correct: 0 },
+  { text: "Which of the following correctly defines entropy?", options: ["A measure of the total energy in a system.", "A measure of the disorder or randomness in a system.", "The rate at which heat is transferred between bodies.", "The work done by a system during expansion."], correct: 1 },
+  { text: "What does the second law of thermodynamics state?", options: ["Energy is always conserved in all processes.", "The entropy of the universe tends to increase over time.", "Temperature and pressure are directly proportional.", "All heat can be converted to work in ideal conditions."], correct: 1 },
+  { text: "In an adiabatic process, which quantity remains constant?", options: ["Temperature", "Pressure", "Heat exchange with surroundings (Q=0)", "Volume"], correct: 2 },
+  { text: "What is the efficiency of a Carnot engine operating between 300K and 600K?", options: ["25%", "50%", "75%", "100%"], correct: 1 }
+];
+
+function startExam(title) {
+  examState = { title, q: 0, total: sampleQuestions.length, selected: null, timerSec: 0, timerInterval: null };
+  clearInterval(examState.timerInterval);
+  examState.timerInterval = setInterval(() => {
+    examState.timerSec++;
+    const m = String(Math.floor(examState.timerSec/60)).padStart(2,'0');
+    const s = String(examState.timerSec%60).padStart(2,'0');
+    const el = document.getElementById('examTimerDisplay');
+    if (el) el.textContent = m+':'+s;
+  }, 1000);
+  document.getElementById('activeExamTitle').textContent = title;
+  renderQuestion();
+  showPage('exam-active');
+}
+
+function renderQuestion() {
+  const q = sampleQuestions[examState.q];
+  if (!q) return;
+  const qEl = document.getElementById('examQuestion');
+  const optsEl = document.getElementById('examOptions');
+  const cEl = document.getElementById('examQCounter');
+  const pEl = document.getElementById('examProgressBar');
+  if (qEl) qEl.textContent = q.text;
+  if (cEl) cEl.textContent = `Question ${examState.q+1} of ${examState.total}`;
+  if (pEl) pEl.style.width = `${((examState.q+1)/examState.total)*100}%`;
+  if (optsEl) {
+    const letters = ['A','B','C','D'];
+    optsEl.innerHTML = q.options.map((opt, i) =>
+      `<div class="answer-option" onclick="selectAnswer(this,${i})"><div class="option-letter">${letters[i]}</div><div class="option-text">${opt}</div></div>`
+    ).join('');
+  }
+  examState.selected = null;
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  if (prevBtn) prevBtn.disabled = examState.q === 0;
+  if (nextBtn) nextBtn.textContent = examState.q === examState.total - 1 ? 'Submit' : 'Next';
+  if (nextBtn) nextBtn.innerHTML = examState.q === examState.total - 1
+    ? 'Submit <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="20,6 9,17 4,12"/></svg>'
+    : 'Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><polyline points="9,18 15,12 9,6"/></svg>';
+}
+
+function selectAnswer(el, idx) {
+  document.querySelectorAll('#examOptions .answer-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  examState.selected = idx;
+}
+
+function nextQuestion() {
+  if (examState.selected === null) {
+    showNotif('Select an answer before continuing.', 'No answer selected', 'warning');
+    return;
+  }
+  const q = sampleQuestions[examState.q];
+  const opts = document.querySelectorAll('#examOptions .answer-option');
+  opts.forEach((o, i) => {
+    if (i === q.correct) o.classList.add('correct');
+    else if (i === examState.selected && i !== q.correct) o.classList.add('wrong');
+  });
+  setTimeout(() => {
+    if (examState.q < examState.total - 1) {
+      examState.q++;
+      renderQuestion();
+    } else {
+      clearInterval(examState.timerInterval);
+      showPage('results');
+      showNotif('Your exam results have been saved to your history.', 'Exam complete!', 'success');
+    }
+  }, 1000);
+}
+
+// ─── CLOSE MODALS ON OVERLAY CLICK ───
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+
+// ─── ANIMATE PROGRESS BARS ON LOAD ───
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.exam-progress-fill').forEach(el => {
+      const w = el.style.width;
+      el.style.width = '0%';
+      setTimeout(() => { el.style.transition = 'width 1s ease'; el.style.width = w; }, 100);
+    });
+  }, 300);
+});
+</script>
+</body>
+</html>
