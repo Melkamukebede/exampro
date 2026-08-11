@@ -1556,6 +1556,7 @@ function revealAnswer(){
   if(!examSession.revealed.includes(examSession.qi)) examSession.revealed.push(examSession.qi);
   renderExamUI();
 }
+  //pause practicing
 function togglePause(){
   examSession.paused=!examSession.paused;
   const lbl=document.getElementById('exam-pause-lbl');
