@@ -30,27 +30,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--i
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 input,select,textarea{font-family:inherit}
 a{text-decoration:none;color:inherit}
-
-/* ANIMATIONS */
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 @keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-@keyframes slideRight{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
 @keyframes notif{from{opacity:0;transform:translateY(-10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes progressFill{from{width:0}}
-@keyframes ringDraw{from{stroke-dashoffset:283}to{stroke-dashoffset:var(--dash)}}
-@keyframes countUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-
-/* TOPBAR */
 .topbar{position:sticky;top:0;z-index:200;height:56px;background:rgba(247,245,240,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 16px}
 .brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;letter-spacing:-.02em;margin-right:4px}
 .brand-ico{width:32px;height:32px;background:var(--orange);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 2px 6px rgba(201,74,0,.35);transition:transform var(--ts)}
 .brand-ico:hover{transform:rotate(-8deg) scale(1.1)}
 .brand span em{color:var(--orange);font-style:italic;font-family:'Playfair Display',serif}
-
-/* NAV TABS */
 .nav-tabs{display:flex;gap:2px;flex:1}
 .ntab{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;color:var(--ink3);font-size:13px;font-weight:400;transition:all var(--t)}
 .ntab:hover{background:var(--bg2);color:var(--ink)}
@@ -58,8 +49,6 @@ a{text-decoration:none;color:inherit}
 .ntab svg{width:15px;height:15px;flex-shrink:0}
 .ntab .label{display:none}
 @media(min-width:600px){.ntab .label{display:inline}}
-
-/* TOPBAR RIGHT */
 .tb-right{display:flex;align-items:center;gap:8px;margin-left:auto}
 .tier-pill{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;background:var(--gold-bg);border:1px solid rgba(154,114,0,.2);font-size:11.5px;font-weight:500;color:var(--gold);cursor:pointer;transition:all var(--t)}
 .tier-pill:hover{background:#F5EAB8}
@@ -77,11 +66,7 @@ a{text-decoration:none;color:inherit}
 .btn-teal{background:var(--teal);color:#fff}
 .btn-teal:hover{background:#085950;transform:translateY(-1px)}
 .btn-sm{padding:5px 10px;font-size:12px}
-
-/* LAYOUT */
 .layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 56px)}
-
-/* SIDEBAR */
 .sidebar{background:var(--white);border-right:1px solid var(--border);padding:12px 0;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto;display:flex;flex-direction:column}
 .sb-label{padding:14px 16px 5px;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4)}
 .sb-item{display:flex;align-items:center;gap:9px;padding:8px 16px;color:var(--ink3);font-size:13px;width:100%;text-align:left;border-left:3px solid transparent;transition:all var(--t)}
@@ -98,70 +83,39 @@ a{text-decoration:none;color:inherit}
 .upgrade-box p{font-size:11px;color:var(--ink3);margin-bottom:10px}
 .usage-bar{height:4px;background:rgba(26,24,20,.1);border-radius:99px;margin-bottom:10px;overflow:hidden}
 .usage-fill{height:100%;background:var(--orange);border-radius:99px;animation:progressFill .8s ease .3s both;width:40%}
-
-/* CONTENT */
 .content{padding:24px 28px;min-width:0}
-
-/* PAGE */
 .page{display:none}
 .page.active{display:block;animation:fadeIn .25s ease both}
-
-/* PAGE HEADER */
 .ph{margin-bottom:20px;animation:fadeUp .45s ease both}
 .ph-eye{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--orange);margin-bottom:4px}
 .ph h1{font-family:'Playfair Display',serif;font-size:26px;font-weight:500;letter-spacing:-.02em;color:var(--ink);line-height:1.2;margin-bottom:4px}
 .ph h1 em{font-style:italic;color:var(--orange)}
 .ph p{font-size:13px;color:var(--ink3);max-width:480px}
-
-/* STATS */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
 .stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:16px;position:relative;overflow:hidden;transition:all var(--t);animation:fadeUp .45s ease both}
-.stat-card:nth-child(1){animation-delay:.05s}
-.stat-card:nth-child(2){animation-delay:.1s}
-.stat-card:nth-child(3){animation-delay:.15s}
-.stat-card:nth-child(4){animation-delay:.2s}
+.stat-card:nth-child(1){animation-delay:.05s}.stat-card:nth-child(2){animation-delay:.1s}.stat-card:nth-child(3){animation-delay:.15s}.stat-card:nth-child(4){animation-delay:.2s}
 .stat-card:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
 .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r2) var(--r2) 0 0}
-.sc-orange::before{background:var(--orange)}
-.sc-teal::before{background:var(--teal)}
-.sc-gold::before{background:var(--gold)}
-.sc-ink::before{background:var(--ink2)}
+.sc-orange::before{background:var(--orange)}.sc-teal::before{background:var(--teal)}.sc-gold::before{background:var(--gold)}.sc-ink::before{background:var(--ink2)}
 .stat-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
-.sc-orange .stat-ico{background:var(--orange-bg);color:var(--orange)}
-.sc-teal .stat-ico{background:var(--teal-bg);color:var(--teal)}
-.sc-gold .stat-ico{background:var(--gold-bg);color:var(--gold)}
-.sc-ink .stat-ico{background:var(--bg2);color:var(--ink2)}
+.sc-orange .stat-ico{background:var(--orange-bg);color:var(--orange)}.sc-teal .stat-ico{background:var(--teal-bg);color:var(--teal)}.sc-gold .stat-ico{background:var(--gold-bg);color:var(--gold)}.sc-ink .stat-ico{background:var(--bg2);color:var(--ink2)}
 .stat-ico svg{width:17px;height:17px}
-.stat-val{font-family:'Playfair Display',serif;font-size:24px;font-weight:500;color:var(--ink);letter-spacing:-.03em;line-height:1;margin-bottom:3px;animation:countUp .5s ease .4s both}
+.stat-val{font-family:'Playfair Display',serif;font-size:24px;font-weight:500;color:var(--ink);letter-spacing:-.03em;line-height:1;margin-bottom:3px}
 .stat-lbl{font-size:11.5px;color:var(--ink4)}
 .stat-trend{position:absolute;top:14px;right:14px;font-size:10.5px;font-weight:500;padding:2px 7px;border-radius:99px}
-.st-up{background:var(--green-bg);color:var(--green)}
-.st-neu{background:var(--bg2);color:var(--ink4)}
-
-/* SECTION ROW */
+.st-up{background:var(--green-bg);color:var(--green)}.st-neu{background:var(--bg2);color:var(--ink4)}
 .sec-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .sec-row h2{font-family:'Playfair Display',serif;font-size:17px;font-weight:500;color:var(--ink);letter-spacing:-.02em}
 .sec-row h2 em{font-style:italic;color:var(--orange)}
-
-/* EXAM GRID */
 .exam-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:12px;margin-bottom:22px}
 .ecard{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;transition:all var(--t);animation:fadeUp .45s ease both}
 .ecard:hover{box-shadow:var(--sh3);transform:translateY(-3px);border-color:var(--border2)}
 .ecard-strip{height:5px}
-.s-physics{background:linear-gradient(90deg,var(--teal),#1AADA0)}
-.s-math{background:linear-gradient(90deg,var(--orange),#E87040)}
-.s-bio{background:linear-gradient(90deg,var(--green),#56A85A)}
-.s-cs{background:linear-gradient(90deg,var(--blue),#42A5F5)}
-.s-default{background:linear-gradient(90deg,var(--ink3),var(--ink4))}
+.s-physics{background:linear-gradient(90deg,var(--teal),#1AADA0)}.s-math{background:linear-gradient(90deg,var(--orange),#E87040)}.s-bio{background:linear-gradient(90deg,var(--green),#56A85A)}.s-cs{background:linear-gradient(90deg,var(--blue),#42A5F5)}.s-default{background:linear-gradient(90deg,var(--ink3),var(--ink4))}
 .ecard-body{padding:14px}
 .ecard-meta{display:flex;align-items:center;gap:6px;margin-bottom:8px}
 .badge{font-size:10.5px;font-weight:500;padding:2px 8px;border-radius:99px}
-.b-physics{background:var(--teal-bg);color:var(--teal)}
-.b-math{background:var(--orange-bg);color:var(--orange)}
-.b-bio{background:var(--green-bg);color:var(--green)}
-.b-cs{background:var(--blue-bg);color:var(--blue)}
-.b-default{background:var(--bg2);color:var(--ink3)}
-.b-level{background:var(--bg2);color:var(--ink3);font-weight:400}
+.b-physics{background:var(--teal-bg);color:var(--teal)}.b-math{background:var(--orange-bg);color:var(--orange)}.b-bio{background:var(--green-bg);color:var(--green)}.b-cs{background:var(--blue-bg);color:var(--blue)}.b-default{background:var(--bg2);color:var(--ink3)}.b-level{background:var(--bg2);color:var(--ink3);font-weight:400}
 .ecard-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px;line-height:1.3}
 .ecard-desc{font-size:11.5px;color:var(--ink4);margin-bottom:12px;line-height:1.5}
 .ecard-stats{display:flex;gap:12px;margin-bottom:12px}
@@ -171,42 +125,23 @@ a{text-decoration:none;color:inherit}
 .prog-labels{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink4);margin-bottom:4px}
 .prog-bar{height:4px;background:var(--bg2);border-radius:99px;overflow:hidden}
 .prog-fill{height:100%;border-radius:99px;animation:progressFill 1s ease .5s both}
-.pf-physics{background:var(--teal)}
-.pf-math{background:var(--orange)}
-.pf-bio{background:var(--green)}
-.pf-cs{background:var(--blue)}
-.pf-default{background:var(--ink3)}
+.pf-physics{background:var(--teal)}.pf-math{background:var(--orange)}.pf-bio{background:var(--green)}.pf-cs{background:var(--blue)}.pf-default{background:var(--ink3)}
 .ecard-foot{display:flex;gap:6px;padding:10px 14px;background:var(--bg);border-top:1px solid var(--border)}
 .eact{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:7px;font-size:12px;font-weight:500;transition:all var(--t)}
 .eact svg{width:12px;height:12px}
-.eact-start{background:var(--orange);color:#fff;flex:1;justify-content:center}
-.eact-start:hover{background:#A83D00;box-shadow:0 2px 8px rgba(201,74,0,.25)}
-.eact-edit{background:var(--white);color:var(--ink3);border:1px solid var(--border)}
-.eact-edit:hover{background:var(--bg2);color:var(--ink)}
-.eact-del{background:var(--white);color:var(--red);border:1px solid var(--border)}
-.eact-del:hover{background:var(--red-bg)}
-
-/* AI CARDS */
+.eact-start{background:var(--orange);color:#fff;flex:1;justify-content:center}.eact-start:hover{background:#A83D00}
+.eact-edit{background:var(--white);color:var(--ink3);border:1px solid var(--border)}.eact-edit:hover{background:var(--bg2);color:var(--ink)}
+.eact-del{background:var(--white);color:var(--red);border:1px solid var(--border)}.eact-del:hover{background:var(--red-bg)}
 .ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:22px}
-.aicard{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:18px;cursor:pointer;transition:all var(--t);animation:fadeUp .45s ease both;position:relative;overflow:hidden}
-.aicard:nth-child(1){animation-delay:.1s}
-.aicard:nth-child(2){animation-delay:.15s}
-.aicard:nth-child(3){animation-delay:.2s}
+.aicard{background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:18px;cursor:pointer;transition:all var(--t);animation:fadeUp .45s ease both}
 .aicard:hover{box-shadow:var(--sh2);transform:translateY(-2px);border-color:var(--border2)}
 .aicard-ico{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px}
-.aicard.ac-orange .aicard-ico{background:var(--orange-bg)}
-.aicard.ac-teal .aicard-ico{background:var(--teal-bg)}
-.aicard.ac-gold .aicard-ico{background:var(--gold-bg)}
+.aicard.ac-orange .aicard-ico{background:var(--orange-bg)}.aicard.ac-teal .aicard-ico{background:var(--teal-bg)}.aicard.ac-gold .aicard-ico{background:var(--gold-bg)}
 .aicard h3{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:5px}
 .aicard p{font-size:12px;color:var(--ink3);line-height:1.55;margin-bottom:12px}
 .aicard-cta{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;transition:gap var(--t)}
-.aicard.ac-orange .aicard-cta{color:var(--orange)}
-.aicard.ac-teal .aicard-cta{color:var(--teal)}
-.aicard.ac-gold .aicard-cta{color:var(--gold)}
-.aicard-cta svg{width:13px;height:13px}
-.aicard:hover .aicard-cta{gap:7px}
-
-/* MODAL */
+.aicard.ac-orange .aicard-cta{color:var(--orange)}.aicard.ac-teal .aicard-cta{color:var(--teal)}.aicard.ac-gold .aicard-cta{color:var(--gold)}
+.aicard-cta svg{width:13px;height:13px}.aicard:hover .aicard-cta{gap:7px}
 .overlay{position:fixed;inset:0;background:rgba(26,24,20,.5);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:12px}
 .overlay.open{display:flex;animation:fadeIn .2s ease both}
 .modal{background:var(--white);border-radius:var(--r3);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;box-shadow:var(--sh3),0 0 0 1px rgba(26,24,20,.06);animation:scaleIn .3s var(--ts) both}
@@ -218,25 +153,18 @@ a{text-decoration:none;color:inherit}
 .mclose svg{width:15px;height:15px}
 .mbody{padding:18px 22px}
 .mfooter{padding:12px 22px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;background:var(--bg);border-radius:0 0 var(--r3) var(--r3)}
-
-/* FORM */
 .fg{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
 .fg label{font-size:12px;font-weight:500;color:var(--ink2)}
 .fg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.fg-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-input[type=text],input[type=number],select,textarea{padding:8px 11px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--ink);font-size:13px;outline:none;transition:all var(--t);width:100%}
-input[type=text]:focus,input[type=number]:focus,select:focus,textarea:focus{border-color:var(--orange);background:var(--white);box-shadow:0 0 0 3px rgba(201,74,0,.1)}
+input[type=text],input[type=number],input[type=password],select,textarea{padding:8px 11px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--ink);font-size:13px;outline:none;transition:all var(--t);width:100%}
+input[type=text]:focus,input[type=number]:focus,input[type=password]:focus,select:focus,textarea:focus{border-color:var(--orange);background:var(--white);box-shadow:0 0 0 3px rgba(201,74,0,.1)}
 input::placeholder,textarea::placeholder{color:var(--ink4)}
 select{cursor:pointer}
-
-/* RADIO GROUP */
 .radio-list{display:flex;flex-direction:column;gap:6px}
 .rl-item{display:flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all var(--t);font-size:13px;color:var(--ink2)}
 .rl-item:hover{border-color:var(--orange);background:var(--orange-bg)}
 .rl-item input{accent-color:var(--orange)}
 .rl-item.selected{border-color:var(--orange);background:var(--orange-bg);color:var(--orange);font-weight:500}
-
-/* RANGE */
 .range-wrap label{display:flex;justify-content:space-between;font-size:12px;font-weight:500;color:var(--ink2);margin-bottom:6px}
 .range-wrap label span{color:var(--ink4);font-weight:400}
 input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:99px;background:var(--bg3);outline:none;border:none;padding:0}
@@ -245,38 +173,22 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
 .range-labels{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink4);margin-top:3px}
 .diff-display{display:flex;gap:8px;margin-top:8px}
 .diff-chip{flex:1;text-align:center;padding:6px;border-radius:8px;font-size:11.5px;font-weight:500}
-.dc-easy{background:var(--green-bg);color:var(--green)}
-.dc-med{background:var(--gold-bg);color:var(--gold)}
-.dc-hard{background:var(--red-bg);color:var(--red)}
-
-/* WIZARD */
+.dc-easy{background:var(--green-bg);color:var(--green)}.dc-med{background:var(--gold-bg);color:var(--gold)}.dc-hard{background:var(--red-bg);color:var(--red)}
 .wizard-bar{display:flex;align-items:center;padding:0 22px;background:var(--bg);border-bottom:1px solid var(--border)}
-.wstep{display:flex;align-items:center;gap:6px;padding:12px 0;font-size:12.5px;color:var(--ink4);position:relative}
+.wstep{display:flex;align-items:center;gap:6px;padding:12px 0;font-size:12.5px;color:var(--ink4)}
 .wstep-n{width:22px;height:22px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;flex-shrink:0;transition:all var(--t)}
-.wstep.active{color:var(--orange)}
-.wstep.active .wstep-n{background:var(--orange);border-color:var(--orange);color:#fff}
-.wstep.done{color:var(--teal)}
-.wstep.done .wstep-n{background:var(--teal);border-color:var(--teal);color:#fff}
+.wstep.active{color:var(--orange)}.wstep.active .wstep-n{background:var(--orange);border-color:var(--orange);color:#fff}
+.wstep.done{color:var(--teal)}.wstep.done .wstep-n{background:var(--teal);border-color:var(--teal);color:#fff}
 .wsep{flex:1;height:1px;background:var(--border);margin:0 10px}
-
-/* QUESTION BUILDER */
 .qb-list{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;max-height:340px;overflow-y:auto;padding-right:4px}
 .qb-item{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px}
 .qb-item-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .qb-num{width:24px;height:24px;border-radius:7px;background:var(--orange-bg);color:var(--orange);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.qb-item-hdr input{flex:1;background:var(--white)}
 .opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .opt-wrap{display:flex;align-items:center;gap:5px}
-.opt-letter{width:22px;height:22px;border-radius:6px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;color:var(--ink3);flex-shrink:0;transition:all var(--t)}
-.opt-radio:checked+.opt-letter{background:var(--teal);color:#fff}
-.opt-radio{display:none}
+.opt-letter{width:22px;height:22px;border-radius:6px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;color:var(--ink3);flex-shrink:0;transition:all var(--t);cursor:pointer}
 .opt-wrap.selected .opt-letter{background:var(--teal);color:#fff}
 .opt-wrap input[type=text]{flex:1;font-size:12px;padding:6px 9px}
-.qb-expl{margin-top:6px}
-.qb-expl textarea{font-size:12px;min-height:52px;resize:none}
-.qb-actions{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
-
-/* EXAM ACTIVE */
 .exam-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;margin-bottom:20px;animation:scaleIn .3s ease both}
 .exam-hdr{background:var(--ink);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
 .exam-hdr-title{font-family:'Playfair Display',serif;font-size:16px;font-style:italic;color:#fff;font-weight:400}
@@ -292,7 +204,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
 .exam-score-live{font-size:12px;color:var(--ink3);white-space:nowrap}
 .exam-body{padding:24px 28px}
 .exam-q-num{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--orange);margin-bottom:8px}
-.exam-q-text{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;color:var(--ink);line-height:1.45;margin-bottom:20px;letter-spacing:-.01em}
+.exam-q-text{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;color:var(--ink);line-height:1.45;margin-bottom:20px}
 .options-list{display:flex;flex-direction:column;gap:9px}
 .opt-btn{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;border:1.5px solid var(--border);border-radius:var(--r2);cursor:pointer;transition:all var(--t);background:var(--white);text-align:left;width:100%}
 .opt-btn:hover{border-color:var(--orange);background:var(--orange-bg)}
@@ -313,12 +225,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
 .exam-nav{padding:12px 20px 18px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border)}
 .q-dots{display:flex;gap:4px;flex-wrap:wrap;flex:1;padding:0 12px}
 .qdot{width:10px;height:10px;border-radius:50%;background:var(--bg3);cursor:pointer;transition:all var(--t);border:1px solid var(--border)}
-.qdot:hover{background:var(--border2)}
-.qdot.answered{background:var(--teal)}
-.qdot.current{background:var(--orange);border-color:var(--orange)}
-.qdot.wrong-dot{background:var(--red)}
-
-/* RESULT PAGE */
+.qdot:hover{background:var(--border2)}.qdot.answered{background:var(--teal)}.qdot.current{background:var(--orange);border-color:var(--orange)}.qdot.wrong-dot{background:var(--red)}
 .result-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;margin-bottom:20px;animation:fadeUp .4s ease both}
 .result-hdr{background:var(--ink);padding:28px 24px;text-align:center}
 .score-ring{width:110px;height:110px;margin:0 auto 14px;position:relative}
@@ -329,456 +236,213 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
 .result-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;font-style:italic;color:#fff;margin-bottom:4px}
 .result-sub{font-size:12.5px;color:rgba(255,255,255,.45)}
 .result-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--border)}
-.rs-item{padding:16px;text-align:center;border-right:1px solid var(--border)}
-.rs-item:last-child{border-right:none}
+.rs-item{padding:16px;text-align:center;border-right:1px solid var(--border)}.rs-item:last-child{border-right:none}
 .rs-val{font-family:'Playfair Display',serif;font-size:22px;font-weight:500;color:var(--ink)}
 .rs-lbl{font-size:11px;color:var(--ink4);margin-top:2px}
 .result-answers{padding:18px 22px}
 .ra-item{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
 .ra-item:last-child{border-bottom:none}
 .ra-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:600;flex-shrink:0}
-.ra-correct .ra-num{background:var(--teal-bg);color:var(--teal)}
-.ra-wrong .ra-num{background:var(--red-bg);color:var(--red)}
+.ra-correct .ra-num{background:var(--teal-bg);color:var(--teal)}.ra-wrong .ra-num{background:var(--red-bg);color:var(--red)}
 .ra-content{flex:1;min-width:0}
 .ra-q{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:3px}
-.ra-ans{font-size:11.5px}
-.ra-correct .ra-ans{color:var(--teal)}
-.ra-wrong .ra-ans{color:var(--red)}
+.ra-ans{font-size:11.5px}.ra-correct .ra-ans{color:var(--teal)}.ra-wrong .ra-ans{color:var(--red)}
 .ra-expl{font-size:11px;color:var(--ink3);margin-top:3px}
-.ra-icon{flex-shrink:0;margin-top:4px}
-.ra-icon svg{width:16px;height:16px}
-.ra-correct .ra-icon svg{color:var(--teal)}
-.ra-wrong .ra-icon svg{color:var(--red)}
-
-/* FILES */
+.ra-icon{flex-shrink:0;margin-top:4px}.ra-icon svg{width:16px;height:16px}
+.ra-correct .ra-icon svg{color:var(--teal)}.ra-wrong .ra-icon svg{color:var(--red)}
 .file-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 .file-item{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--white);border:1px solid var(--border);border-radius:var(--r);cursor:pointer;transition:all var(--t)}
 .file-item:hover{border-color:var(--orange);background:var(--orange-bg)}
 .file-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
-.file-info{flex:1;min-width:0}
-.file-name{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:1px}
-.file-meta{font-size:11px;color:var(--ink4)}
+.file-info{flex:1;min-width:0}.file-name{font-size:13px;font-weight:500;color:var(--ink);margin-bottom:1px}.file-meta{font-size:11px;color:var(--ink4)}
 .file-actions{display:flex;gap:5px}
-
-/* JSON PASTE */
 .json-toolbar{display:flex;align-items:center;justify-content:space-between;padding:7px 11px;background:var(--bg2);border:1px solid var(--border);border-radius:8px 8px 0 0;border-bottom:none}
-.json-tb-left{font-size:11px;color:var(--ink4)}
-.json-tb-right{display:flex;gap:4px}
-.json-tb-btn{padding:3px 9px;border-radius:5px;background:var(--white);border:1px solid var(--border);font-size:11px;color:var(--ink3);cursor:pointer;transition:all var(--t)}
-.json-tb-btn:hover{background:var(--bg3);color:var(--ink)}
+.json-tb-left{font-size:11px;color:var(--ink4)}.json-tb-right{display:flex;gap:4px}
+.json-tb-btn{padding:3px 9px;border-radius:5px;background:var(--white);border:1px solid var(--border);font-size:11px;color:var(--ink3);cursor:pointer;transition:all var(--t)}.json-tb-btn:hover{background:var(--bg3);color:var(--ink)}
 .json-ta{width:100%;min-height:180px;padding:11px;border:1px solid var(--border);background:var(--ink);color:rgba(255,255,255,.85);font-family:'Courier New',monospace;font-size:12px;line-height:1.7;outline:none;resize:vertical;border-radius:0;transition:border-color var(--t)}
 .json-ta:focus{border-color:var(--orange)}
 .json-status{display:flex;align-items:center;gap:6px;padding:7px 11px;border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;background:var(--bg);font-size:11.5px;color:var(--ink4)}
-.js-ok{color:var(--teal)}
-.js-err{color:var(--red)}
-.js-wait{color:var(--ink4)}
+.js-ok{color:var(--teal)}.js-err{color:var(--red)}.js-wait{color:var(--ink4)}
 .json-status svg{width:12px;height:12px}
 .json-preview{margin-top:12px;max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
 .json-prev-item{padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--ink2)}
 .json-prev-item strong{color:var(--ink);display:block;margin-bottom:2px}
-
-/* NOTIFICATION */
 .notif-area{position:fixed;top:68px;right:16px;z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
 .notif{pointer-events:all;display:flex;align-items:flex-start;gap:9px;background:var(--white);border:1px solid var(--border);border-radius:var(--r2);padding:11px 13px;box-shadow:var(--sh2);width:290px;animation:notif .3s var(--ts) both}
-.notif.n-success{border-left:3px solid var(--teal)}
-.notif.n-warn{border-left:3px solid var(--gold)}
-.notif.n-error{border-left:3px solid var(--orange)}
+.notif.n-success{border-left:3px solid var(--teal)}.notif.n-warn{border-left:3px solid var(--gold)}.notif.n-error{border-left:3px solid var(--orange)}
 .notif-ico{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.n-success .notif-ico{background:var(--teal-bg);color:var(--teal)}
-.n-warn .notif-ico{background:var(--gold-bg);color:var(--gold)}
-.n-error .notif-ico{background:var(--orange-bg);color:var(--orange)}
+.n-success .notif-ico{background:var(--teal-bg);color:var(--teal)}.n-warn .notif-ico{background:var(--gold-bg);color:var(--gold)}.n-error .notif-ico{background:var(--orange-bg);color:var(--orange)}
 .notif-ico svg{width:13px;height:13px}
-.notif-body{flex:1;min-width:0}
-.notif-title{font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:1px}
-.notif-msg{font-size:11px;color:var(--ink3);line-height:1.4}
-.notif-x{color:var(--ink4);flex-shrink:0;padding:0;transition:color var(--t)}
-.notif-x:hover{color:var(--ink)}
-.notif-x svg{width:13px;height:13px}
-
-/* TABS */
+.notif-body{flex:1;min-width:0}.notif-title{font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:1px}.notif-msg{font-size:11px;color:var(--ink3);line-height:1.4}
+.notif-x{color:var(--ink4);flex-shrink:0;padding:0;transition:color var(--t)}.notif-x:hover{color:var(--ink)}.notif-x svg{width:13px;height:13px}
 .tab-bar{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:16px;overflow-x:auto}
 .tbtn{padding:9px 14px;border:none;background:none;font-size:13px;color:var(--ink4);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all var(--t);white-space:nowrap}
-.tbtn:hover{color:var(--ink)}
-.tbtn.active{color:var(--orange);border-bottom-color:var(--orange);font-weight:500}
-
-/* EMPTY STATE */
-.empty{text-align:center;padding:40px 20px;color:var(--ink4)}
-.empty-ico{font-size:40px;margin-bottom:12px}
-.empty h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:500;color:var(--ink2);margin-bottom:4px}
-.empty p{font-size:12.5px;margin-bottom:16px}
-
-/* SPINNER */
+.tbtn:hover{color:var(--ink)}.tbtn.active{color:var(--orange);border-bottom-color:var(--orange);font-weight:500}
+.empty{text-align:center;padding:40px 20px;color:var(--ink4)}.empty-ico{font-size:40px;margin-bottom:12px}
+.empty h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:500;color:var(--ink2);margin-bottom:4px}.empty p{font-size:12.5px;margin-bottom:16px}
 .spin{width:20px;height:20px;border:2px solid var(--bg3);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle}
-
-/* TOGGLE */
 .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
-.toggle-info{font-size:13px;color:var(--ink2)}
-.toggle-info small{display:block;font-size:11px;color:var(--ink4)}
+.toggle-info{font-size:13px;color:var(--ink2)}.toggle-info small{display:block;font-size:11px;color:var(--ink4)}
 .tog{width:36px;height:20px;background:var(--bg3);border-radius:99px;position:relative;cursor:pointer;transition:background var(--t);flex-shrink:0}
-.tog.on{background:var(--orange)}
-.tog::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform var(--ts);box-shadow:0 1px 3px rgba(0,0,0,.2)}
-.tog.on::after{transform:translateX(16px)}
-
-/* GROQ */
-.groq-key-wrap{position:relative}
-.groq-key-wrap input{padding-right:70px}
-.groq-test-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:4px 10px;background:var(--teal);color:#fff;border-radius:6px;font-size:11.5px;cursor:pointer;transition:all var(--t)}
-.groq-test-btn:hover{background:#085950}
-
-/* RESPONSIVE */
+.tog.on{background:var(--orange)}.tog::after{content:'';position:absolute;top:3px;left:3px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform var(--ts);box-shadow:0 1px 3px rgba(0,0,0,.2)}.tog.on::after{transform:translateX(16px)}
+.groq-key-wrap{position:relative}.groq-key-wrap input{padding-right:70px}
+.groq-test-btn{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:4px 10px;background:var(--teal);color:#fff;border-radius:6px;font-size:11.5px;cursor:pointer;font-family:inherit;transition:all var(--t)}.groq-test-btn:hover{background:#085950}
 @media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.content{padding:16px}}
 @media(max-width:700px){.stats{grid-template-columns:1fr 1fr}.ai-grid{grid-template-columns:1fr}.exam-grid{grid-template-columns:1fr}}
 @media(max-width:500px){.stats{grid-template-columns:1fr 1fr}.result-stats{grid-template-columns:1fr 1fr}}
-
-/* SCROLLBAR */
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:99px}
-::-webkit-scrollbar-thumb:hover{background:var(--border2)}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:99px}::-webkit-scrollbar-thumb:hover{background:var(--border2)}
 </style>
 </head>
 <body>
-
-<!-- NOTIFICATIONS -->
 <div class="notif-area" id="notifArea"></div>
-
-<!-- TOPBAR -->
 <header class="topbar">
   <div class="brand">
-    <div class="brand-ico">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 2L3 7l9 5 9-5-9-5M3 12l9 5 9-5M3 17l9 5 9-5"/></svg>
-    </div>
+    <div class="brand-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 2L3 7l9 5 9-5-9-5M3 12l9 5 9-5M3 17l9 5 9-5"/></svg></div>
     <span>Exam<em>Master</em> Pro</span>
   </div>
   <nav class="nav-tabs">
-    <button class="ntab active" id="nt-home" onclick="nav('home')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
-      <span class="label">Home</span>
-    </button>
-    <button class="ntab" id="nt-files" onclick="nav('files')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-      <span class="label">Files</span>
-    </button>
-    <button class="ntab" id="nt-exams" onclick="nav('exams')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      <span class="label">Exams</span>
-    </button>
-    <button class="ntab" id="nt-results" onclick="nav('results')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-      <span class="label">Results</span>
-    </button>
-    <button class="ntab" id="nt-create" onclick="nav('create')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-      <span class="label">Create</span>
-    </button>
+    <button class="ntab active" id="nt-home" onclick="nav('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg><span class="label">Home</span></button>
+    <button class="ntab" id="nt-files" onclick="nav('files')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg><span class="label">Files</span></button>
+    <button class="ntab" id="nt-exams" onclick="nav('exams')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><span class="label">Exams</span></button>
+    <button class="ntab" id="nt-results" onclick="nav('results')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="label">Results</span></button>
+    <button class="ntab" id="nt-create" onclick="nav('create')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><span class="label">Create</span></button>
   </nav>
   <div class="tb-right">
-    <div class="tier-pill" onclick="openUpgrade()">
-      <span class="tier-dot"></span>
-      FREE · 2 files · 5 Q/file
-    </div>
-    <button class="btn btn-primary btn-sm" onclick="nav('create')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      New exam
-    </button>
+    <div class="tier-pill" id="tier-pill-btn" onclick="openUpgrade()"><span class="tier-dot"></span><span id="tier-label">FREE · 2 files · 5 Q/file</span></div>
+    <button class="btn btn-primary btn-sm" onclick="nav('create')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New exam</button>
   </div>
 </header>
-
 <div class="layout">
-<!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sb-label">Overview</div>
-  <button class="sb-item active" id="sb-home" onclick="nav('home')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-    Dashboard
-  </button>
-  <button class="sb-item" id="sb-files" onclick="nav('files')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
-    Files
-    <span class="sb-badge" id="sb-files-count">2</span>
-  </button>
-  <button class="sb-item" id="sb-exams" onclick="nav('exams')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-    My Exams
-    <span class="sb-badge" id="sb-exams-count">0</span>
-  </button>
-  <button class="sb-item" id="sb-results" onclick="nav('results')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-    Results
-  </button>
-
-  <div class="sb-label" style="margin-top:8px">Tools</div>
-  <button class="sb-item" onclick="openProfessor()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M15 8h2M17 6v4"/></svg>
-    Exam Professor
-  </button>
-  <button class="sb-item" onclick="openJsonPaste()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg>
-    Paste JSON
-  </button>
-  <button class="sb-item" onclick="openGroq()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
-    Groq AI
-  </button>
-  <button class="sb-item" onclick="openTrivia()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
-    OpenTriviaDB
-  </button>
-
+  <button class="sb-item active" id="sb-home" onclick="nav('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Dashboard</button>
+  <button class="sb-item" id="sb-files" onclick="nav('files')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Files<span class="sb-badge" id="sb-files-count">0</span></button>
+  <button class="sb-item" id="sb-exams" onclick="nav('exams')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>My Exams<span class="sb-badge" id="sb-exams-count">0</span></button>
+  <button class="sb-item" id="sb-results" onclick="nav('results')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Results</button>
+  <div class="sb-label" style="margin-top:8px">AI Tools</div>
+  <button class="sb-item" onclick="openProfessor()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/></svg>Exam Professor</button>
+  <button class="sb-item" onclick="openJsonPaste()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="16,18 22,12 16,6"/><polyline points="8,6 2,12 8,18"/></svg>Paste JSON</button>
+  <button class="sb-item" onclick="openGroq()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>Groq AI</button>
+  <button class="sb-item" onclick="openTrivia()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>OpenTriviaDB</button>
   <div class="sb-label" style="margin-top:8px">Create</div>
-  <button class="sb-item" id="sb-create" onclick="nav('create')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-    Wizard
-  </button>
-  <button class="sb-item" onclick="openEncrypted()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-    Encrypted Exam
-  </button>
-
+  <button class="sb-item" id="sb-create" onclick="nav('create')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Wizard</button>
+  <button class="sb-item" onclick="openEncrypted()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Encrypted Exam</button>
   <div class="sb-footer">
     <div class="upgrade-box">
       <h4>Unlock Premium</h4>
-      <p>Unlimited exams, questions & offline activation via SMS.</p>
-      <div class="usage-bar"><div class="usage-fill"></div></div>
-      <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:12px;padding:7px" onclick="openUpgrade()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
-        Upgrade
-      </button>
+      <p>Unlimited exams, files & questions. One-time SMS activation.</p>
+      <div class="usage-bar"><div class="usage-fill" id="usage-fill-bar"></div></div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;font-size:12px;padding:7px" onclick="openUpgrade()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>Upgrade</button>
     </div>
   </div>
 </aside>
-
-<!-- MAIN CONTENT -->
 <main class="content">
-
-<!-- ═══ HOME PAGE ═══ -->
+<!-- HOME -->
 <div class="page active" id="page-home">
-  <div class="ph">
-    <div class="ph-eye">Dashboard</div>
-    <h1>Good morning, <em>Scholar</em></h1>
-    <p>All your exam tools in one place. Create, practice, analyse.</p>
-  </div>
-
+  <div class="ph"><div class="ph-eye">Dashboard</div><h1>Good morning, <em>Scholar</em></h1><p>All your exam tools in one place. Create, practise, analyse.</p></div>
   <div class="stats">
-    <div class="stat-card sc-orange">
-      <div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div>
-      <div class="stat-val" id="stat-exams">0</div>
-      <div class="stat-lbl">Total exams</div>
-      <span class="stat-trend st-neu" id="stat-limit">0 / 2 free</span>
-    </div>
-    <div class="stat-card sc-teal">
-      <div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div>
-      <div class="stat-val" id="stat-answered">0</div>
-      <div class="stat-lbl">Qs answered (all time)</div>
-      <span class="stat-trend st-up" id="stat-today-q">0 today</span>
-    </div>
-    <div class="stat-card sc-gold">
-      <div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg></div>
-      <div class="stat-val" id="stat-avg">—</div>
-      <div class="stat-lbl">Average score</div>
-      <span class="stat-trend st-neu" id="stat-sessions">0 sessions</span>
-    </div>
-    <div class="stat-card sc-ink">
-      <div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></div>
-      <div class="stat-val" id="stat-files">0</div>
-      <div class="stat-lbl">JSON files</div>
-      <span class="stat-trend st-neu">2 max free</span>
-    </div>
+    <div class="stat-card sc-orange"><div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div><div class="stat-val" id="stat-exams">0</div><div class="stat-lbl">Total exams</div><span class="stat-trend st-neu" id="stat-limit">0/2 free</span></div>
+    <div class="stat-card sc-teal"><div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg></div><div class="stat-val" id="stat-answered">0</div><div class="stat-lbl">Qs answered</div><span class="stat-trend st-up" id="stat-today-q">0 today</span></div>
+    <div class="stat-card sc-gold"><div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg></div><div class="stat-val" id="stat-avg">—</div><div class="stat-lbl">Average score</div><span class="stat-trend st-neu" id="stat-sessions">0 sessions</span></div>
+    <div class="stat-card sc-ink"><div class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg></div><div class="stat-val" id="stat-files">0</div><div class="stat-lbl">JSON files</div><span class="stat-trend st-neu">2 max free</span></div>
   </div>
-
-  <!-- RECENT EXAMS -->
-  <div class="sec-row">
-    <h2>Recent <em>exams</em></h2>
-    <button class="btn btn-ghost btn-sm" onclick="nav('exams')">
-      View all
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
-    </button>
-  </div>
-  <div id="home-exam-grid" class="exam-grid">
-    <div class="empty"><div class="empty-ico">📝</div><h3>No exams yet</h3><p>Create your first exam using the wizard or import JSON.</p><button class="btn btn-primary" onclick="nav('create')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create exam</button></div>
-  </div>
-
-  <!-- AI TOOLS -->
-  <div class="sec-row"><h2>AI <em>tools</em></h2></div>
+  <div class="sec-row"><h2>Recent <em>exams</em></h2><button class="btn btn-ghost btn-sm" onclick="nav('exams')">View all<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></button></div>
+  <div id="home-exam-grid" class="exam-grid"></div>
+  <div class="sec-row" style="margin-top:8px"><h2>AI <em>tools</em></h2></div>
   <div class="ai-grid">
-    <div class="aicard ac-orange" onclick="openProfessor()">
-      <div class="aicard-ico">🎓</div>
-      <h3>Exam Professor</h3>
-      <p>Generate a detailed AI prompt for any subject. Paste into Claude, ChatGPT, or Groq to get perfectly formatted JSON questions.</p>
-      <span class="aicard-cta">Open Professor <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></span>
-    </div>
-    <div class="aicard ac-teal" onclick="openGroq()">
-      <div class="aicard-ico">⚡</div>
-      <h3>Groq AI</h3>
-      <p>Connect your free Groq API key for direct in-app question generation — hundreds of questions in seconds.</p>
-      <span class="aicard-cta">Connect Groq <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></span>
-    </div>
-    <div class="aicard ac-gold" onclick="openTrivia()">
-      <div class="aicard-ico">🧩</div>
-      <h3>OpenTriviaDB</h3>
-      <p>Fetch free trivia questions across 20+ categories. Great for general knowledge and mixed-subject practice.</p>
-      <span class="aicard-cta">Browse questions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></span>
-    </div>
+    <div class="aicard ac-orange" onclick="openProfessor()"><div class="aicard-ico">🎓</div><h3>Exam Professor</h3><p>Generate a perfect AI prompt for any subject. Paste into Claude, ChatGPT or Groq to get formatted JSON questions back.</p><span class="aicard-cta">Open Professor<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></span></div>
+    <div class="aicard ac-teal" onclick="openGroq()"><div class="aicard-ico">⚡</div><h3>Groq AI</h3><p>Connect your free Groq API key for direct in-app question generation — hundreds of questions in seconds.</p><span class="aicard-cta">Connect Groq<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></span></div>
+    <div class="aicard ac-gold" onclick="openTrivia()"><div class="aicard-ico">🧩</div><h3>OpenTriviaDB</h3><p>Fetch free trivia questions across 20+ categories instantly for general knowledge and mixed-subject practice.</p><span class="aicard-cta">Browse questions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></span></div>
   </div>
 </div>
-
-<!-- ═══ FILES PAGE ═══ -->
+<!-- FILES -->
 <div class="page" id="page-files">
-  <div class="ph"><div class="ph-eye">Storage</div><h1>My <em>files</em></h1><p>JSON question files stored in IndexedDB — offline, no server needed.</p></div>
+  <div class="ph"><div class="ph-eye">Storage</div><h1>My <em>files</em></h1><p>JSON question files stored in IndexedDB — fully offline.</p></div>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-    <span style="font-size:12.5px;color:var(--ink3)" id="file-usage-label">0 of 2 files used (free plan)</span>
+    <span style="font-size:12.5px;color:var(--ink3)" id="file-usage-label">0 of 2 files used</span>
     <div style="display:flex;gap:6px">
-      <button class="btn btn-secondary btn-sm" onclick="importFileFromDisk()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Import
-      </button>
-      <button class="btn btn-primary btn-sm" onclick="newFile()" id="new-file-btn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        New file
-      </button>
+      <button class="btn btn-secondary btn-sm" onclick="importFileFromDisk()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import</button>
+      <button class="btn btn-primary btn-sm" onclick="newFile()" id="new-file-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New file</button>
     </div>
   </div>
   <div class="file-list" id="file-list-el"></div>
-  <div id="file-limit-banner" style="display:none;text-align:center;padding:12px;background:var(--gold-bg);border:1px solid rgba(154,114,0,.2);border-radius:var(--r);font-size:12.5px;color:var(--gold)">
-    <strong>Free plan limit reached</strong> — upgrade to Premium for unlimited files.
-    <button class="btn btn-secondary btn-sm" style="margin-left:8px" onclick="openUpgrade()">Upgrade</button>
-  </div>
+  <div id="file-limit-banner" style="display:none;text-align:center;padding:12px;background:var(--gold-bg);border:1px solid rgba(154,114,0,.2);border-radius:var(--r);font-size:12.5px;color:var(--gold)"><strong>Free plan limit reached</strong> — upgrade for unlimited files. <button class="btn btn-secondary btn-sm" style="margin-left:8px" onclick="openUpgrade()">Upgrade</button></div>
 </div>
-
-<!-- ═══ EXAMS PAGE ═══ -->
+<!-- EXAMS -->
 <div class="page" id="page-exams">
-  <div class="ph"><div class="ph-eye">Library</div><h1>My <em>exams</em></h1><p>All exams stored in IndexedDB. Start, edit, duplicate or delete.</p></div>
+  <div class="ph"><div class="ph-eye">Library</div><h1>My <em>exams</em></h1><p>All exams stored in IndexedDB. Start, edit or delete.</p></div>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
     <div class="tab-bar" style="margin:0;border:none;flex:1">
       <button class="tbtn active" data-filter="all">All</button>
       <button class="tbtn" data-filter="pending">Not started</button>
       <button class="tbtn" data-filter="done">Completed</button>
     </div>
-    <button class="btn btn-primary btn-sm" onclick="nav('create')">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      New
-    </button>
+    <button class="btn btn-primary btn-sm" onclick="nav('create')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New</button>
   </div>
   <div class="exam-grid" id="exams-grid"></div>
 </div>
-
-<!-- ═══ ACTIVE EXAM PAGE ═══ -->
-<div class="page" id="page-exam-active">
-  <div class="exam-wrap" id="exam-container"></div>
-</div>
-
-<!-- ═══ RESULTS PAGE ═══ -->
+<!-- ACTIVE EXAM -->
+<div class="page" id="page-exam-active"><div id="exam-container"></div></div>
+<!-- RESULTS -->
 <div class="page" id="page-results">
   <div class="ph"><div class="ph-eye">Analytics</div><h1>Your <em>results</em></h1><p>Performance history from IndexedDB.</p></div>
   <div id="results-container"></div>
 </div>
-
-<!-- ═══ CREATE PAGE ═══ -->
+<!-- CREATE -->
 <div class="page" id="page-create">
-  <div class="ph"><div class="ph-eye">Wizard</div><h1>Create new <em>exam</em></h1><p>3-step wizard — details, questions, then save.</p></div>
+  <div class="ph"><div class="ph-eye">Wizard</div><h1>Create new <em>exam</em></h1><p>3-step wizard — details, questions, then save to IndexedDB.</p></div>
   <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden">
-    <!-- wizard header -->
     <div style="background:var(--ink);padding:16px 22px;display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div style="font-family:'Playfair Display',serif;font-size:19px;color:#fff;font-style:italic" id="wiz-hdr-title">Exam details</div>
-        <div style="font-size:12px;color:rgba(255,255,255,.45)" id="wiz-hdr-sub">Step 1 of 3</div>
-      </div>
-      <button class="btn btn-ghost" style="color:rgba(255,255,255,.5)" onclick="nav('home')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+      <div><div style="font-family:'Playfair Display',serif;font-size:19px;color:#fff;font-style:italic" id="wiz-hdr-title">Exam details</div><div style="font-size:12px;color:rgba(255,255,255,.45)" id="wiz-hdr-sub">Step 1 of 3</div></div>
+      <button class="btn btn-ghost" style="color:rgba(255,255,255,.5)" onclick="nav('home')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
-    <!-- steps bar -->
     <div class="wizard-bar">
-      <div class="wstep active" id="ws1"><div class="wstep-n">1</div>Details</div>
-      <div class="wsep"></div>
-      <div class="wstep" id="ws2"><div class="wstep-n">2</div>Questions</div>
-      <div class="wsep"></div>
+      <div class="wstep active" id="ws1"><div class="wstep-n">1</div>Details</div><div class="wsep"></div>
+      <div class="wstep" id="ws2"><div class="wstep-n">2</div>Questions</div><div class="wsep"></div>
       <div class="wstep" id="ws3"><div class="wstep-n">3</div>Review & Save</div>
     </div>
-    <!-- step bodies -->
     <div id="wstep-1" style="padding:20px 22px 22px">
       <div class="fg"><label>Exam name *</label><input type="text" id="wiz-name" placeholder="e.g. University Physics — Midterm 2026" oninput="wizUpdate()"></div>
       <div class="fg-row">
-        <div class="fg"><label>Subject</label>
-          <select id="wiz-subject">
-            <option>Mathematics</option><option>Physics</option><option>Biology</option>
-            <option>Chemistry</option><option>Computer Science</option><option>History</option>
-            <option>English</option><option>Other</option>
-          </select>
-        </div>
-        <div class="fg"><label>Level</label>
-          <select id="wiz-level"><option>Elementary</option><option>High School</option><option selected>University</option></select>
-        </div>
+        <div class="fg"><label>Subject</label><select id="wiz-subject"><option>Mathematics</option><option>Physics</option><option>Biology</option><option>Chemistry</option><option>Computer Science</option><option>History</option><option>English</option><option>Other</option></select></div>
+        <div class="fg"><label>Level</label><select id="wiz-level"><option>Elementary</option><option>High School</option><option selected>University</option></select></div>
       </div>
       <div class="fg-row">
         <div class="fg"><label>Time limit (min)</label><input type="number" id="wiz-time" placeholder="45" min="1" max="240"></div>
-        <div class="fg"><label>Difficulty</label>
-          <select id="wiz-diff"><option>Easy</option><option selected>Medium</option><option>Hard</option><option>Mixed</option></select>
-        </div>
+        <div class="fg"><label>Difficulty</label><select id="wiz-diff"><option>Easy</option><option selected>Medium</option><option>Hard</option><option>Mixed</option></select></div>
       </div>
       <div class="fg"><label>Description</label><input type="text" id="wiz-desc" placeholder="Brief overview of what this exam covers"></div>
       <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px">
         <button class="btn btn-secondary" onclick="nav('home')">Cancel</button>
-        <button class="btn btn-primary" id="wiz-next1" disabled onclick="wizGo(2)">
-          Continue
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
-        </button>
+        <button class="btn btn-primary" id="wiz-next1" disabled onclick="wizGo(2)">Continue<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></button>
       </div>
     </div>
-
     <div id="wstep-2" style="display:none;padding:20px 22px 22px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <span style="font-size:12.5px;color:var(--ink3)" id="q-count-label">0 questions added (max 5 free)</span>
-        <button class="btn btn-primary btn-sm" onclick="addQuestion()" id="add-q-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Add question
-        </button>
+        <span style="font-size:12.5px;color:var(--ink3)" id="q-count-label">0 questions</span>
+        <button class="btn btn-primary btn-sm" onclick="addQuestion()" id="add-q-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add question</button>
       </div>
-      <div class="qb-list" id="qb-list">
-        <div class="empty" style="padding:24px"><div class="empty-ico" style="font-size:28px">❓</div><p style="font-size:12.5px">Click "Add question" to start building your exam.</p></div>
-      </div>
+      <div class="qb-list" id="qb-list"></div>
       <div style="display:flex;justify-content:space-between;gap:8px;margin-top:6px">
-        <button class="btn btn-secondary" onclick="wizGo(1)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
-          Back
-        </button>
-        <button class="btn btn-primary" id="wiz-next2" onclick="wizGo(3)">
-          Review
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
-        </button>
+        <button class="btn btn-secondary" onclick="wizGo(1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>Back</button>
+        <button class="btn btn-primary" onclick="wizGo(3)">Review<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></button>
       </div>
     </div>
-
     <div id="wstep-3" style="display:none;padding:20px 22px 22px">
       <div id="wiz-review"></div>
       <div style="display:flex;justify-content:space-between;gap:8px;margin-top:16px">
-        <button class="btn btn-secondary" onclick="wizGo(2)">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
-          Back
-        </button>
-        <button class="btn btn-teal" onclick="saveExam()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>
-          Save exam
-        </button>
+        <button class="btn btn-secondary" onclick="wizGo(2)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>Back</button>
+        <button class="btn btn-teal" onclick="saveExam()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17,21 17,13 7,13 7,21"/><polyline points="7,3 7,8 15,8"/></svg>Save exam</button>
       </div>
     </div>
   </div>
 </div>
-
 </main>
 </div>
-
-<!-- ════════════════════════════════════════
-     MODALS
-════════════════════════════════════════ -->
-
 <!-- PROFESSOR MODAL -->
 <div class="overlay" id="prof-modal">
 <div class="modal" style="max-width:700px">
-  <div class="mhdr">
-    <div><h2>Exam Professor</h2><p>Configure → copy prompt → paste into any AI → paste JSON back</p></div>
-    <button class="mclose" onclick="closeModal('prof-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  </div>
+  <div class="mhdr"><div><h2>🎓 Exam Professor</h2><p>Configure → copy prompt → paste into any AI → paste JSON back here</p></div><button class="mclose" onclick="closeModal('prof-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="mbody">
     <div class="fg-row">
       <div class="fg"><label>Subject *</label><input type="text" id="p-subject" placeholder="e.g. University Physics" oninput="buildPrompt()"></div>
@@ -786,15 +450,13 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
     </div>
     <div class="fg"><label>Topics (comma separated)</label><input type="text" id="p-topics" placeholder="e.g. Newton's laws, kinematics, momentum" oninput="buildPrompt()"></div>
     <div class="fg-row">
-      <div class="fg">
-        <label>Question structure</label>
-        <div class="radio-list" id="p-struct-group">
+      <div class="fg"><label>Question structure</label>
+        <div class="radio-list">
           <label class="rl-item selected"><input type="radio" name="p-struct" value="Multiple Choice" checked onchange="buildPrompt()"> 🔢 Multiple Choice (4 options)</label>
           <label class="rl-item"><input type="radio" name="p-struct" value="True/False" onchange="buildPrompt()"> ✔️ True / False</label>
         </div>
       </div>
-      <div class="fg">
-        <label>Explanation style</label>
+      <div class="fg"><label>Explanation style</label>
         <div class="radio-list">
           <label class="rl-item selected"><input type="radio" name="p-expl" value="step-by-step" checked onchange="buildPrompt()"> 🔢 Step-by-step</label>
           <label class="rl-item"><input type="radio" name="p-expl" value="conceptual" onchange="buildPrompt()"> 💡 Conceptual</label>
@@ -804,16 +466,14 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
       </div>
     </div>
     <div class="fg-row">
-      <div class="fg">
-        <label>Subject type</label>
+      <div class="fg"><label>Subject type</label>
         <div class="radio-list">
           <label class="rl-item selected"><input type="radio" name="p-type" value="Calculation" checked onchange="buildPrompt()"> 📊 Calculation</label>
           <label class="rl-item"><input type="radio" name="p-type" value="Theory" onchange="buildPrompt()"> 📚 Theory</label>
           <label class="rl-item"><input type="radio" name="p-type" value="Mixed" onchange="buildPrompt()"> 🔀 Mixed</label>
         </div>
       </div>
-      <div class="fg">
-        <label>Memory tricks</label>
+      <div class="fg"><label>Memory tricks</label>
         <div class="radio-list">
           <label class="rl-item"><input type="radio" name="p-mem" value="none" checked onchange="buildPrompt()"> ∅ None</label>
           <label class="rl-item selected"><input type="radio" name="p-mem" value="few" onchange="buildPrompt()"> 🧠 Few</label>
@@ -822,1149 +482,384 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
       </div>
     </div>
     <div class="fg-row">
-      <div class="fg">
-        <label>Education level</label>
-        <select id="p-edu" onchange="buildPrompt()">
-          <option>Elementary</option><option selected>High School</option><option>University</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Concept depth</label>
-        <select id="p-depth" onchange="buildPrompt()">
-          <option>Basic</option><option selected>Intermediate</option><option>Advanced</option>
-        </select>
-      </div>
+      <div class="fg"><label>Education level</label><select id="p-edu" onchange="buildPrompt()"><option>Elementary</option><option selected>High School</option><option>University</option></select></div>
+      <div class="fg"><label>Concept depth</label><select id="p-depth" onchange="buildPrompt()"><option>Basic</option><option selected>Intermediate</option><option>Advanced</option></select></div>
     </div>
     <div class="fg">
       <div class="range-wrap">
-        <label>Difficulty mix <span id="diff-label">Easy <strong id="d-easy">20</strong>% · Medium <strong id="d-med">60</strong>% · Hard <strong id="d-hard">20</strong>%</span></label>
+        <label>Difficulty mix <span>Easy <strong id="d-easy">20</strong>% · Med <strong id="d-med">60</strong>% · Hard <strong id="d-hard">20</strong>%</span></label>
         <input type="range" id="p-diff" min="0" max="40" value="20" oninput="updateDiff(this.value);buildPrompt()">
         <div class="range-labels"><span>← More easy</span><span>Balanced</span><span>More hard →</span></div>
       </div>
       <div class="diff-display">
-        <div class="diff-chip dc-easy">Easy: <strong id="dc-easy">20</strong>%</div>
-        <div class="diff-chip dc-med">Medium: <strong id="dc-med">60</strong>%</div>
-        <div class="diff-chip dc-hard">Hard: <strong id="dc-hard">20</strong>%</div>
+        <div class="diff-chip dc-easy">Easy <strong id="dc-easy">20</strong>%</div>
+        <div class="diff-chip dc-med">Medium <strong id="dc-med">60</strong>%</div>
+        <div class="diff-chip dc-hard">Hard <strong id="dc-hard">20</strong>%</div>
       </div>
     </div>
-    <div class="fg"><label>Additional instructions</label><input type="text" id="p-extra" placeholder="e.g. Focus on kinematic equations and vector components" oninput="buildPrompt()"></div>
+    <div class="fg"><label>Additional instructions</label><input type="text" id="p-extra" placeholder="e.g. Focus on kinematic equations and vectors" oninput="buildPrompt()"></div>
     <div style="margin-top:12px">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
         <label style="font-size:12px;font-weight:500;color:var(--ink2)">Generated prompt</label>
         <span style="font-size:11px;color:var(--ink4)" id="p-tokens">~0 tokens</span>
       </div>
       <div style="background:var(--ink);border-radius:var(--r);padding:14px;position:relative;min-height:80px">
-        <button style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.7);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit;transition:all var(--t)" onmouseover="this.style.background='rgba(255,255,255,.22)'" onmouseout="this.style.background='rgba(255,255,255,.12)'" onclick="copyPrompt()">Copy</button>
-        <pre style="color:rgba(255,255,255,.82);font-family:'Courier New',monospace;font-size:11.5px;line-height:1.7;white-space:pre-wrap;padding-right:60px;margin:0" id="p-output">Fill in a subject above to generate your prompt...</pre>
+        <button style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.7);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit" onclick="copyPrompt()">Copy</button>
+        <pre style="color:rgba(255,255,255,.82);font-family:'Courier New',monospace;font-size:11.5px;line-height:1.7;white-space:pre-wrap;padding-right:60px;margin:0" id="p-output">Fill in a subject above to generate your prompt…</pre>
       </div>
     </div>
   </div>
   <div class="mfooter">
     <button class="btn btn-secondary" onclick="closeModal('prof-modal')">Close</button>
-    <button class="btn btn-ghost btn-sm" onclick="closeModal('prof-modal');openJsonPaste()">
-      Next: Paste JSON
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg>
-    </button>
-    <button class="btn btn-primary" onclick="copyPrompt()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-      Copy prompt
-    </button>
+    <button class="btn btn-ghost btn-sm" onclick="closeModal('prof-modal');openJsonPaste()">Next: Paste JSON<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></button>
+    <button class="btn btn-primary" onclick="copyPrompt()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy prompt</button>
   </div>
 </div>
 </div>
-
 <!-- JSON PASTE MODAL -->
 <div class="overlay" id="json-modal">
 <div class="modal" style="max-width:620px">
-  <div class="mhdr">
-    <div><h2>Paste JSON questions</h2><p>Required: <code>text</code> · <code>options</code> (4 strings) · <code>correct</code> (0–3) · optional: <code>explanation</code></p></div>
-    <button class="mclose" onclick="closeModal('json-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  </div>
+  <div class="mhdr"><div><h2>📋 Paste JSON questions</h2><p>Required per item: <code>text</code> · <code>options</code> (4 strings) · <code>correct</code> (0–3) · optional: <code>explanation</code></p></div><button class="mclose" onclick="closeModal('json-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="mbody">
     <div class="json-toolbar">
       <span class="json-tb-left" id="json-stats">0 lines · 0 chars · 0 Qs</span>
       <div class="json-tb-right">
-        <button class="json-tb-btn" onclick="pasteFromClipboard()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:11px;height:11px;vertical-align:middle;margin-right:3px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Paste
-        </button>
+        <button class="json-tb-btn" onclick="pasteFromClipboard()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="width:11px;height:11px;vertical-align:middle;margin-right:2px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Paste</button>
         <button class="json-tb-btn" onclick="formatJSON()">Format</button>
         <button class="json-tb-btn" onclick="clearJSON()">Clear</button>
       </div>
     </div>
     <textarea class="json-ta" id="json-ta" placeholder='[{"text":"What is...","options":["A","B","C","D"],"correct":0,"explanation":"Because..."}]' oninput="lintJSON()"></textarea>
-    <div class="json-status js-wait" id="json-status">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      Waiting for input…
-    </div>
+    <div class="json-status js-wait" id="json-status"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Waiting for input…</div>
     <div class="json-preview" id="json-preview"></div>
   </div>
   <div class="mfooter">
-    <div style="margin-right:auto">
-      <div class="fg" style="margin:0;flex-direction:row;align-items:center;gap:8px">
-        <label style="font-size:12px;white-space:nowrap">Save to file:</label>
-        <select id="json-target-file" style="padding:5px 9px;font-size:12px;min-width:160px">
-          <option value="new">+ New file</option>
-        </select>
-      </div>
+    <div style="margin-right:auto;display:flex;align-items:center;gap:8px">
+      <label style="font-size:12px;white-space:nowrap;color:var(--ink2)">Save to:</label>
+      <select id="json-target-file" style="padding:5px 9px;font-size:12px;min-width:160px"><option value="new">+ New file</option></select>
     </div>
     <button class="btn btn-secondary" onclick="closeModal('json-modal')">Cancel</button>
-    <button class="btn btn-primary" id="json-import-btn" disabled onclick="importJSON()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      Parse & Add
-    </button>
+    <button class="btn btn-primary" id="json-import-btn" disabled onclick="importJSON()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Parse & Add</button>
   </div>
 </div>
 </div>
-
 <!-- GROQ MODAL -->
 <div class="overlay" id="groq-modal">
-<div class="modal" style="max-width:520px">
-  <div class="mhdr">
-    <div><h2>⚡ Groq AI</h2><p>Generate questions directly in-app using the free Groq API.</p></div>
-    <button class="mclose" onclick="closeModal('groq-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  </div>
+<div class="modal" style="max-width:500px">
+  <div class="mhdr"><div><h2>⚡ Groq AI</h2><p>Generate questions directly in-app using the free Groq API.</p></div><button class="mclose" onclick="closeModal('groq-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="mbody">
-    <div class="fg">
-      <label>Groq API key</label>
-      <div class="groq-key-wrap">
-        <input type="password" id="groq-key" placeholder="gsk_..." oninput="saveGroqKey()">
-        <button class="groq-test-btn" onclick="testGroq()">Test</button>
-      </div>
-      <small style="font-size:11px;color:var(--ink4);margin-top:3px">Get a free key at <a href="https://console.groq.com" target="_blank" style="color:var(--teal)">console.groq.com</a>. Stored locally only.</small>
-    </div>
+    <div class="fg"><label>Groq API key</label><div class="groq-key-wrap"><input type="password" id="groq-key" placeholder="gsk_..." oninput="saveGroqKey()"><button class="groq-test-btn" onclick="testGroq()">Test</button></div><small style="font-size:11px;color:var(--ink4);margin-top:3px;display:block">Free key at <a href="https://console.groq.com" target="_blank" style="color:var(--teal)">console.groq.com</a> — stored locally only.</small></div>
     <div class="fg"><label>Subject</label><input type="text" id="groq-subject" placeholder="e.g. Differential Calculus"></div>
     <div class="fg-row">
       <div class="fg"><label>Number of questions</label><input type="number" id="groq-num" value="10" min="1" max="50"></div>
-      <div class="fg"><label>Difficulty</label>
-        <select id="groq-diff"><option>Easy</option><option selected>Medium</option><option>Hard</option></select>
-      </div>
+      <div class="fg"><label>Difficulty</label><select id="groq-diff"><option>Easy</option><option selected>Medium</option><option>Hard</option></select></div>
     </div>
-    <div class="toggle-row">
-      <div class="toggle-info">Include explanations<small>Add step-by-step explanation per question</small></div>
-      <div class="tog on" id="groq-expl-tog" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-top:10px;min-height:60px;font-size:12px;color:var(--ink3);display:none" id="groq-output">Output will appear here…</div>
+    <div class="toggle-row"><div class="toggle-info">Include explanations<small>Step-by-step per question</small></div><div class="tog on" id="groq-expl-tog" onclick="this.classList.toggle('on')"></div></div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-top:10px;min-height:50px;font-size:12px;color:var(--ink3);display:none" id="groq-output"></div>
   </div>
   <div class="mfooter">
     <button class="btn btn-secondary" onclick="closeModal('groq-modal')">Cancel</button>
-    <button class="btn btn-primary" onclick="runGroq()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
-      Generate
-    </button>
+    <button class="btn btn-primary" onclick="runGroq()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>Generate</button>
   </div>
 </div>
 </div>
-
 <!-- TRIVIA MODAL -->
 <div class="overlay" id="trivia-modal">
-<div class="modal" style="max-width:540px">
-  <div class="mhdr">
-    <div><h2>🧩 OpenTriviaDB</h2><p>Fetch free questions from opentdb.com</p></div>
-    <button class="mclose" onclick="closeModal('trivia-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  </div>
+<div class="modal" style="max-width:520px">
+  <div class="mhdr"><div><h2>🧩 OpenTriviaDB</h2><p>Fetch free questions from opentdb.com</p></div><button class="mclose" onclick="closeModal('trivia-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="mbody">
     <div class="fg-row">
       <div class="fg"><label>Number of questions</label><input type="number" id="trivia-num" value="10" min="1" max="50"></div>
-      <div class="fg"><label>Difficulty</label>
-        <select id="trivia-diff"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select>
-      </div>
+      <div class="fg"><label>Difficulty</label><select id="trivia-diff"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select></div>
     </div>
-    <div class="fg"><label>Category</label>
-      <select id="trivia-cat">
-        <option value="9">General Knowledge</option>
-        <option value="17">Science & Nature</option>
-        <option value="18">Computer Science</option>
-        <option value="19">Mathematics</option>
-        <option value="23">History</option>
-        <option value="25">Art</option>
-        <option value="26">Celebrities</option>
-        <option value="27">Animals</option>
-      </select>
-    </div>
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-top:4px;min-height:50px;font-size:12px;color:var(--ink3)" id="trivia-status">Configure above and click Fetch.</div>
+    <div class="fg"><label>Category</label><select id="trivia-cat"><option value="9">General Knowledge</option><option value="17">Science & Nature</option><option value="18">Computer Science</option><option value="19">Mathematics</option><option value="23">History</option><option value="25">Art</option><option value="27">Animals</option></select></div>
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px;font-size:12px;color:var(--ink3)" id="trivia-status">Configure above and click Fetch.</div>
     <div class="json-preview" id="trivia-preview" style="margin-top:8px"></div>
   </div>
   <div class="mfooter">
     <button class="btn btn-secondary" onclick="closeModal('trivia-modal')">Cancel</button>
-    <button class="btn btn-primary" onclick="fetchTrivia()" id="trivia-fetch-btn">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3m0 18a9 9 0 009-9"/></svg>
-      Fetch questions
-    </button>
-    <button class="btn btn-teal" id="trivia-add-btn" style="display:none" onclick="addTriviaToFile()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/></svg>
-      Save to file
-    </button>
+    <button class="btn btn-primary" onclick="fetchTrivia()" id="trivia-fetch-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>Fetch</button>
+    <button class="btn btn-teal" id="trivia-add-btn" style="display:none" onclick="addTriviaToFile()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/></svg>Save to file</button>
   </div>
 </div>
 </div>
-
 <!-- ENCRYPTED EXAM MODAL -->
 <div class="overlay" id="enc-modal">
-<div class="modal" style="max-width:460px">
-  <div class="mhdr">
-    <div><h2>🔒 Encrypted Exam</h2><p>Load an exam file encrypted with a pass-code.</p></div>
-    <button class="mclose" onclick="closeModal('enc-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  </div>
+<div class="modal" style="max-width:440px">
+  <div class="mhdr"><div><h2>🔒 Encrypted Exam</h2><p>Load an exam file protected with a pass-code.</p></div><button class="mclose" onclick="closeModal('enc-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="mbody">
-    <div class="fg"><label>Upload encrypted file (.json)</label><input type="file" id="enc-file-inp" accept=".json" style="background:var(--white)"></div>
+    <div class="fg"><label>Upload encrypted .json file</label><input type="file" id="enc-file-inp" accept=".json" style="background:var(--white)"></div>
     <div class="fg"><label>Pass-code</label><input type="password" id="enc-code" placeholder="Enter your code"></div>
-    <div style="font-size:12px;color:var(--ink4);margin-top:4px">This feature uses a simple XOR cipher. Files encrypted with ExamMaster Pro's export tool can be opened here.</div>
+    <div style="font-size:11.5px;color:var(--ink4)">Files exported with ExamMaster Pro's encrypted export can be opened here.</div>
   </div>
   <div class="mfooter">
     <button class="btn btn-secondary" onclick="closeModal('enc-modal')">Cancel</button>
-    <button class="btn btn-primary" onclick="decryptExam()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-      Unlock & Load
-    </button>
+    <button class="btn btn-primary" onclick="decryptExam()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Unlock & Load</button>
   </div>
 </div>
 </div>
-
 <!-- UPGRADE MODAL -->
 <div class="overlay" id="upgrade-modal">
 <div class="modal" style="max-width:460px">
-  <div class="mhdr">
-    <div><h2>⭐ Go Premium</h2><p>One-time offline activation via SMS code.</p></div>
-    <button class="mclose" onclick="closeModal('upgrade-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  </div>
+  <div class="mhdr"><div><h2>⭐ Go Premium</h2><p>One-time offline activation via SMS code.</p></div><button class="mclose" onclick="closeModal('upgrade-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
   <div class="mbody">
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
       <div style="padding:14px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r)">
-        <div style="font-size:20px;margin-bottom:6px">🆓</div>
+        <div style="font-size:22px;margin-bottom:6px">🆓</div>
         <div style="font-weight:600;font-size:13px;margin-bottom:8px">Free</div>
-        <div style="font-size:11.5px;color:var(--ink3);line-height:1.7">✓ 2 JSON files<br>✓ 5 questions/file<br>✓ All AI tools<br>✗ Unlimited exams</div>
+        <div style="font-size:11.5px;color:var(--ink3);line-height:1.8">✓ 2 JSON files<br>✓ 5 questions/file<br>✓ All AI tools<br>✗ Unlimited exams</div>
       </div>
       <div style="padding:14px;background:var(--gold-bg);border:2px solid var(--gold);border-radius:var(--r)">
-        <div style="font-size:20px;margin-bottom:6px">⭐</div>
+        <div style="font-size:22px;margin-bottom:6px">⭐</div>
         <div style="font-weight:600;font-size:13px;margin-bottom:8px;color:var(--gold)">Premium</div>
-        <div style="font-size:11.5px;color:var(--ink3);line-height:1.7">✓ Unlimited files<br>✓ Unlimited questions<br>✓ Export encrypted<br>✓ One-time SMS activation</div>
+        <div style="font-size:11.5px;color:var(--ink3);line-height:1.8">✓ Unlimited files<br>✓ Unlimited questions<br>✓ Encrypted export<br>✓ SMS activation</div>
       </div>
     </div>
-    <div class="fg"><label>Activation code (from SMS)</label><input type="text" id="prem-code" placeholder="Enter your activation code"></div>
+    <div class="fg"><label>Activation code</label><input type="text" id="prem-code" placeholder="Enter your SMS activation code"></div>
+    <div style="font-size:11px;color:var(--ink4);margin-top:-6px">Demo code: <strong style="color:var(--orange);letter-spacing:.05em">EXAMPRO2026</strong></div>
   </div>
   <div class="mfooter">
     <button class="btn btn-secondary" onclick="closeModal('upgrade-modal')">Cancel</button>
-    <button class="btn btn-primary" onclick="activatePremium()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>
-      Activate
-    </button>
+    <button class="btn btn-primary" onclick="activatePremium()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>Activate</button>
   </div>
 </div>
 </div>
-
-<!-- ════════════════════════════════════════
-     APPLICATION SCRIPT
-════════════════════════════════════════ -->
 <script>
-/* ── IndexedDB ── */
-const DB_NAME='ExamMasterPro', DB_VER=1;
-let db;
-function openDB(){
-  return new Promise((res,rej)=>{
-    const req=indexedDB.open(DB_NAME,DB_VER);
-    req.onupgradeneeded=e=>{
-      const d=e.target.result;
-      if(!d.objectStoreNames.contains('files')) d.createObjectStore('files',{keyPath:'id',autoIncrement:true});
-      if(!d.objectStoreNames.contains('exams')) d.createObjectStore('exams',{keyPath:'id',autoIncrement:true});
-      if(!d.objectStoreNames.contains('results')) d.createObjectStore('results',{keyPath:'id',autoIncrement:true});
-      if(!d.objectStoreNames.contains('settings')) d.createObjectStore('settings',{keyPath:'key'});
-    };
-    req.onsuccess=e=>{db=e.target.result;res(db)};
-    req.onerror=e=>rej(e);
-  });
-}
-function dbAll(store){
-  return new Promise((res,rej)=>{
-    const tx=db.transaction(store,'readonly');
-    const req=tx.objectStore(store).getAll();
-    req.onsuccess=()=>res(req.result);
-    req.onerror=e=>rej(e);
-  });
-}
-function dbPut(store,data){
-  return new Promise((res,rej)=>{
-    const tx=db.transaction(store,'readwrite');
-    const req=tx.objectStore(store).put(data);
-    req.onsuccess=()=>res(req.result);
-    req.onerror=e=>rej(e);
-  });
-}
-function dbAdd(store,data){
-  return new Promise((res,rej)=>{
-    const tx=db.transaction(store,'readwrite');
-    const req=tx.objectStore(store).add(data);
-    req.onsuccess=()=>res(req.result);
-    req.onerror=e=>rej(e);
-  });
-}
-function dbDelete(store,id){
-  return new Promise((res,rej)=>{
-    const tx=db.transaction(store,'readwrite');
-    const req=tx.objectStore(store).delete(id);
-    req.onsuccess=()=>res();
-    req.onerror=e=>rej(e);
-  });
-}
-function dbGet(store,key){
-  return new Promise((res,rej)=>{
-    const tx=db.transaction(store,'readonly');
-    const req=tx.objectStore(store).get(key);
-    req.onsuccess=()=>res(req.result);
-    req.onerror=e=>rej(e);
-  });
-}
-
-/* ── App State ── */
-let APP={files:[],exams:[],results:[],premium:false,groqKey:'',currentPage:'home'};
-let examSession=null;
-
-/* ── Init ── */
+const DB_NAME='ExamMasterPro2',DB_VER=1;let db;
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{const d=e.target.result;['files','exams','results','settings'].forEach(s=>{if(!d.objectStoreNames.contains(s)){const opts=s==='settings'?{keyPath:'key'}:{keyPath:'id',autoIncrement:true};d.createObjectStore(s,opts)}})};r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=e=>rej(e)})}
+function dbAll(s){return new Promise((res,rej)=>{const r=db.transaction(s,'readonly').objectStore(s).getAll();r.onsuccess=()=>res(r.result);r.onerror=e=>rej(e)})}
+function dbAdd(s,d){return new Promise((res,rej)=>{const r=db.transaction(s,'readwrite').objectStore(s).add(d);r.onsuccess=()=>res(r.result);r.onerror=e=>rej(e)})}
+function dbPut(s,d){return new Promise((res,rej)=>{const r=db.transaction(s,'readwrite').objectStore(s).put(d);r.onsuccess=()=>res(r.result);r.onerror=e=>rej(e)})}
+function dbDel(s,id){return new Promise((res,rej)=>{const r=db.transaction(s,'readwrite').objectStore(s).delete(id);r.onsuccess=()=>res();r.onerror=e=>rej(e)})}
+function dbGet(s,k){return new Promise((res,rej)=>{const r=db.transaction(s,'readonly').objectStore(s).get(k);r.onsuccess=()=>res(r.result);r.onerror=e=>rej(e)})}
+let APP={files:[],exams:[],results:[],premium:false,groqKey:''};
+let examSession=null,wizQ=[],wizStep=1,jsonParsed=[],triviaFetched=[];
 async function init(){
   await openDB();
-  APP.files=await dbAll('files');
-  APP.exams=await dbAll('exams');
-  APP.results=await dbAll('results');
-  const prem=await dbGet('settings','premium');
-  APP.premium=prem&&prem.value===true;
-  const gk=await dbGet('settings','groqKey');
-  if(gk) APP.groqKey=gk.value;
-  document.getElementById('groq-key').value=APP.groqKey;
-  refreshStats();
-  renderExamGrid('home-exam-grid',APP.exams.slice(-3));
-  renderFileList();
-  renderExamGrid('exams-grid',APP.exams);
-  renderResults();
-  updateFileLimitUI();
+  APP.files=await dbAll('files');APP.exams=await dbAll('exams');APP.results=await dbAll('results');
+  const p=await dbGet('settings','premium');APP.premium=p&&p.value===true;
+  const g=await dbGet('settings','groqKey');if(g)APP.groqKey=g.value;
+  if(document.getElementById('groq-key'))document.getElementById('groq-key').value=APP.groqKey;
+  refreshAll();
 }
-
-/* ── Navigation ── */
+function refreshAll(){refreshStats();renderExamGrid('home-exam-grid',APP.exams.slice(-3));renderExamGrid('exams-grid',APP.exams);renderFileList();renderResults();updateTierUI()}
 function nav(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const p=document.getElementById('page-'+id);
-  if(p) p.classList.add('active');
+  const pg=document.getElementById('page-'+id);if(pg)pg.classList.add('active');
   document.querySelectorAll('.ntab').forEach(n=>n.classList.remove('active'));
-  const nt=document.getElementById('nt-'+id);
-  if(nt) nt.classList.add('active');
+  const nt=document.getElementById('nt-'+id);if(nt)nt.classList.add('active');
   document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('active'));
-  const sb=document.getElementById('sb-'+id);
-  if(sb) sb.classList.add('active');
-  APP.currentPage=id;
+  const sb=document.getElementById('sb-'+id);if(sb)sb.classList.add('active');
   if(id==='home'){refreshStats();renderExamGrid('home-exam-grid',APP.exams.slice(-3))}
-  if(id==='exams') renderExamGrid('exams-grid',APP.exams);
+  if(id==='exams')renderExamGrid('exams-grid',APP.exams);
   if(id==='files'){renderFileList();updateFileLimitUI()}
-  if(id==='results') renderResults();
+  if(id==='results')renderResults();
 }
-
-/* ── Stats ── */
+function updateTierUI(){
+  const lbl=document.getElementById('tier-label');
+  if(lbl)lbl.textContent=APP.premium?'⭐ PREMIUM — Unlimited':'FREE · 2 files · 5 Q/file';
+  const pill=document.getElementById('tier-pill-btn');
+  if(pill){pill.style.background=APP.premium?'var(--teal-bg)':'var(--gold-bg)';pill.style.color=APP.premium?'var(--teal)':'var(--gold)';pill.style.borderColor=APP.premium?'rgba(10,107,96,.2)':'rgba(154,114,0,.2)'}
+  const sb=document.querySelector('.upgrade-box');
+  if(sb&&APP.premium)sb.innerHTML='<div style="text-align:center;padding:4px"><div style="font-size:22px;margin-bottom:4px">⭐</div><div style="font-size:12.5px;font-weight:600;color:var(--teal)">Premium active!</div><div style="font-size:11px;color:var(--ink3);margin-top:2px">Unlimited files & questions.</div></div>';
+}
 function refreshStats(){
-  const totalQ=APP.results.reduce((a,r)=>a+r.total,0);
-  const todayQ=APP.results.filter(r=>new Date(r.date).toDateString()===new Date().toDateString()).reduce((a,r)=>a+r.total,0);
-  const avgScore=APP.results.length?Math.round(APP.results.reduce((a,r)=>a+r.score,0)/APP.results.length):null;
-  document.getElementById('stat-exams').textContent=APP.exams.length;
-  document.getElementById('stat-limit').textContent=`${APP.exams.length} / ${APP.premium?'∞':'2 free'}`;
-  document.getElementById('stat-answered').textContent=totalQ;
-  document.getElementById('stat-today-q').textContent=`${todayQ} today`;
-  document.getElementById('stat-avg').textContent=avgScore!==null?avgScore+'%':'—';
-  document.getElementById('stat-sessions').textContent=`${APP.results.length} sessions`;
-  document.getElementById('stat-files').textContent=APP.files.length;
-  document.getElementById('sb-exams-count').textContent=APP.exams.length;
-  document.getElementById('sb-files-count').textContent=APP.files.length;
+  const totalQ=APP.results.reduce((a,r)=>a+(r.total||0),0);
+  const todayQ=APP.results.filter(r=>new Date(r.date).toDateString()===new Date().toDateString()).reduce((a,r)=>a+(r.total||0),0);
+  const avg=APP.results.length?Math.round(APP.results.reduce((a,r)=>a+(r.score||0),0)/APP.results.length):null;
+  setText('stat-exams',APP.exams.length);setText('stat-limit',`${APP.exams.length}/${APP.premium?'∞':'2 free'}`);
+  setText('stat-answered',totalQ);setText('stat-today-q',`${todayQ} today`);
+  setText('stat-avg',avg!==null?avg+'%':'—');setText('stat-sessions',`${APP.results.length} sessions`);
+  setText('stat-files',APP.files.length);
+  setText('sb-exams-count',APP.exams.length);setText('sb-files-count',APP.files.length);
+  const bar=document.getElementById('usage-fill-bar');
+  if(bar&&!APP.premium)bar.style.width=Math.min((APP.files.length/2)*100,100)+'%';
 }
-
-/* ── Subject helpers ── */
-const SUBJ_MAP={
-  'Physics':['physics','s-physics','b-physics','pf-physics'],
-  'Mathematics':['math','s-math','b-math','pf-math'],
-  'Biology':['bio','s-bio','b-bio','pf-bio'],
-  'Computer Science':['cs','s-cs','b-cs','pf-cs'],
-};
-function subjectClasses(subj){
-  for(const[k,v] of Object.entries(SUBJ_MAP)) if(subj&&subj.includes(k)) return v;
-  return ['default','s-default','b-default','pf-default'];
-}
-
-/* ── Exam Card ── */
-function examCardHTML(ex,compact=false){
-  const sc=subjectClasses(ex.subject);
-  const best=ex.bestScore!==undefined?ex.bestScore+'%':'—';
-  const w=ex.bestScore!==undefined?ex.bestScore:0;
-  const qs=ex.questions?ex.questions.length:0;
-  return `
-  <div class="ecard" style="${compact?'animation:none':''}">
-    <div class="ecard-strip ${sc[1]}"></div>
-    <div class="ecard-body">
-      <div class="ecard-meta">
-        <span class="badge ${sc[2]}">${ex.subject||'General'}</span>
-        <span class="badge b-level">${ex.level||'HS'}</span>
-      </div>
-      <div class="ecard-title">${ex.name}</div>
-      <div class="ecard-desc">${ex.description||''}</div>
-      <div class="ecard-stats">
-        <span class="estat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg>${qs} Q${qs!==1?'s':''}</span>
-        ${ex.timeLimit?`<span class="estat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>${ex.timeLimit} min</span>`:''}
-        <span class="estat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>${best}</span>
-      </div>
-      <div class="prog-wrap">
-        <div class="prog-labels"><span>Best</span><span>${best}</span></div>
-        <div class="prog-bar"><div class="prog-fill ${sc[3]}" style="width:${w}%"></div></div>
-      </div>
-    </div>
-    <div class="ecard-foot">
-      <button class="eact eact-start" onclick="startExam(${ex.id})">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
-        Start
-      </button>
-      <button class="eact eact-edit" onclick="editExam(${ex.id})" title="Edit">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      </button>
-      <button class="eact eact-del" onclick="deleteExam(${ex.id})" title="Delete">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-      </button>
-    </div>
-  </div>`;
-}
+function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v}
+const SUBJ={Physics:['s-physics','b-physics','pf-physics'],Mathematics:['s-math','b-math','pf-math'],Biology:['s-bio','b-bio','pf-bio'],'Computer Science':['s-cs','b-cs','pf-cs']};
+function sc(subj){for(const[k,v]of Object.entries(SUBJ))if(subj&&subj.includes(k))return v;return['s-default','b-default','pf-default']}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function examCardHTML(ex){
+  const s=sc(ex.subject),best=ex.bestScore!==undefined?ex.bestScore+'%':'—',w=ex.bestScore||0,qs=(ex.questions||[]).length;
+  return`<div class="ecard"><div class="ecard-strip ${s[0]}"></div><div class="ecard-body"><div class="ecard-meta"><span class="badge ${s[1]}">${ex.subject||'General'}</span><span class="badge b-level">${ex.level||'HS'}</span></div><div class="ecard-title">${esc(ex.name)}</div><div class="ecard-desc">${esc(ex.description||'')}</div><div class="ecard-stats"><span class="estat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/></svg>${qs} Q${qs!==1?'s':''}</span>${ex.timeLimit?`<span class="estat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>${ex.timeLimit}m</span>`:''}<span class="estat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9"/></svg>${best}</span></div><div class="prog-wrap"><div class="prog-labels"><span>Best</span><span>${best}</span></div><div class="prog-bar"><div class="prog-fill ${s[2]}" style="width:${w}%"></div></div></div></div><div class="ecard-foot"><button class="eact eact-start" onclick="startExam(${ex.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>Start</button><button class="eact eact-edit" onclick="editExam(${ex.id})" title="Edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="eact eact-del" onclick="deleteExam(${ex.id})" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></div></div>`}
 function renderExamGrid(elId,exams){
-  const el=document.getElementById(elId);
-  if(!el) return;
-  if(!exams||!exams.length){
-    el.innerHTML=`<div class="empty"><div class="empty-ico">📝</div><h3>No exams yet</h3><p>Create your first exam using the wizard.</p><button class="btn btn-primary" onclick="nav('create')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create exam</button></div>`;
-    return;
-  }
-  el.innerHTML=exams.map(e=>examCardHTML(e)).join('');
-}
-
-/* ── DELETE EXAM ── */
-async function deleteExam(id){
-  if(!confirm('Delete this exam?')) return;
-  await dbDelete('exams',id);
-  APP.exams=APP.exams.filter(e=>e.id!==id);
-  renderExamGrid('home-exam-grid',APP.exams.slice(-3));
-  renderExamGrid('exams-grid',APP.exams);
-  refreshStats();
-  showNotif('Exam deleted.','Deleted','warn');
-}
-
-/* ── FILES ── */
+  const el=document.getElementById(elId);if(!el)return;
+  if(!exams||!exams.length){el.innerHTML=`<div class="empty"><div class="empty-ico">📝</div><h3>No exams yet</h3><p>Create your first exam with the wizard.</p><button class="btn btn-primary" onclick="nav('create')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create exam</button></div>`;return}
+  el.innerHTML=exams.map(examCardHTML).join('')}
+async function deleteExam(id){if(!confirm('Delete this exam?'))return;await dbDel('exams',id);APP.exams=APP.exams.filter(e=>e.id!==id);renderExamGrid('home-exam-grid',APP.exams.slice(-3));renderExamGrid('exams-grid',APP.exams);refreshStats();showNotif('Exam deleted.','Deleted','warn')}
 function renderFileList(){
-  const el=document.getElementById('file-list-el');
-  if(!APP.files.length){
-    el.innerHTML=`<div class="empty"><div class="empty-ico">📂</div><h3>No files yet</h3><p>Create a new JSON file or import from disk.</p></div>`;
-    return;
-  }
-  const emojis=['🟠','🟢','🔵','🟡','🔴','🟣'];
-  el.innerHTML=APP.files.map((f,i)=>`
-    <div class="file-item">
-      <div class="file-ico" style="background:var(--orange-bg)">${emojis[i%emojis.length]}</div>
-      <div class="file-info">
-        <div class="file-name">${f.name}</div>
-        <div class="file-meta">${f.questions?f.questions.length:0} questions · ${Math.round(JSON.stringify(f).length/1024*10)/10} KB · ${new Date(f.modified||Date.now()).toLocaleDateString()}</div>
-      </div>
-      <div class="file-actions">
-        <button class="btn btn-secondary btn-sm" onclick="exportFile(${f.id})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        </button>
-        <button class="btn btn-danger btn-sm" onclick="deleteFile(${f.id})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-        </button>
-      </div>
-    </div>`).join('');
-}
+  const el=document.getElementById('file-list-el');if(!el)return;
+  if(!APP.files.length){el.innerHTML=`<div class="empty"><div class="empty-ico">📂</div><h3>No files yet</h3><p>Create a new JSON file or import from disk.</p></div>`;return}
+  el.innerHTML=APP.files.map((f,i)=>`<div class="file-item"><div class="file-ico" style="background:var(--orange-bg)">${['🟠','🟢','🔵','🟡','🔴','🟣'][i%6]}</div><div class="file-info"><div class="file-name">${esc(f.name)}</div><div class="file-meta">${(f.questions||[]).length} questions · ${(JSON.stringify(f).length/1024).toFixed(1)} KB · ${new Date(f.modified||Date.now()).toLocaleDateString()}</div></div><div class="file-actions"><button class="btn btn-secondary btn-sm" onclick="exportFile(${f.id})" title="Export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button><button class="btn btn-danger btn-sm" onclick="deleteFile(${f.id})" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></div></div>`).join('')}
 function updateFileLimitUI(){
-  const btn=document.getElementById('new-file-btn');
-  const banner=document.getElementById('file-limit-banner');
-  const lbl=document.getElementById('file-usage-label');
   const over=!APP.premium&&APP.files.length>=2;
-  btn.disabled=over;
-  banner.style.display=over?'block':'none';
-  lbl.textContent=`${APP.files.length} of ${APP.premium?'∞':'2'} files used (${APP.premium?'premium':'free'} plan)`;
+  const btn=document.getElementById('new-file-btn');if(btn)btn.disabled=over;
+  const ban=document.getElementById('file-limit-banner');if(ban)ban.style.display=over?'block':'none';
+  const lbl=document.getElementById('file-usage-label');if(lbl)lbl.textContent=`${APP.files.length} of ${APP.premium?'∞':'2'} files used (${APP.premium?'premium':'free'})`;
 }
 async function newFile(){
-  if(!APP.premium&&APP.files.length>=2){showNotif('Upgrade to Premium for more files.','Limit reached','warn');return;}
-  const name=prompt('File name:','my_questions.json');
-  if(!name) return;
+  if(!APP.premium&&APP.files.length>=2){showNotif('Upgrade to Premium for more files.','Limit reached','warn');openUpgrade();return}
+  const name=prompt('File name:','my_questions.json');if(!name)return;
   const f={name:name.endsWith('.json')?name:name+'.json',questions:[],modified:Date.now()};
-  const id=await dbAdd('files',f);
-  f.id=id;
-  APP.files.push(f);
-  renderFileList();
-  updateFileLimitUI();
-  refreshStats();
-  showNotif(`File "${f.name}" created.`,'File created','success');
-}
-async function deleteFile(id){
-  if(!confirm('Delete this file?')) return;
-  await dbDelete('files',id);
-  APP.files=APP.files.filter(f=>f.id!==id);
-  renderFileList();
-  updateFileLimitUI();
-  refreshStats();
-  showNotif('File deleted.','Deleted','warn');
-}
-function exportFile(id){
-  const f=APP.files.find(f=>f.id===id);
-  if(!f) return;
-  const blob=new Blob([JSON.stringify(f.questions,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=f.name;
-  a.click();
-  showNotif(`"${f.name}" downloaded.`,'Exported','success');
-}
-function importFileFromDisk(){
-  const inp=document.createElement('input');
-  inp.type='file';inp.accept='.json';
-  inp.onchange=async e=>{
-    const file=e.target.files[0];
-    if(!file) return;
-    const txt=await file.text();
-    try{
-      const qs=JSON.parse(txt);
-      if(!APP.premium&&APP.files.length>=2){showNotif('Upgrade to Premium for more files.','Limit reached','warn');return;}
-      const f={name:file.name,questions:Array.isArray(qs)?qs:[qs],modified:Date.now()};
-      const id=await dbAdd('files',f);f.id=id;
-      APP.files.push(f);
-      renderFileList();updateFileLimitUI();refreshStats();
-      showNotif(`Imported ${f.questions.length} questions.`,'Imported','success');
-    }catch(e){showNotif('Invalid JSON file.','Error','error')}
-  };
-  inp.click();
-}
-
-/* ── WIZARD ── */
-let wizQ=[];let wizStep=1;
-function wizUpdate(){
-  const name=document.getElementById('wiz-name').value.trim();
-  document.getElementById('wiz-next1').disabled=!name;
-}
+  const id=await dbAdd('files',f);f.id=id;APP.files.push(f);
+  renderFileList();updateFileLimitUI();refreshStats();showNotif(`"${f.name}" created.`,'File created','success')}
+async function deleteFile(id){if(!confirm('Delete this file?'))return;await dbDel('files',id);APP.files=APP.files.filter(f=>f.id!==id);renderFileList();updateFileLimitUI();refreshStats();showNotif('File deleted.','Deleted','warn')}
+function exportFile(id){const f=APP.files.find(f=>f.id===id);if(!f)return;const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(f.questions,null,2)],{type:'application/json'}));a.download=f.name;a.click();showNotif(`"${f.name}" downloaded.`,'Exported','success')}
+function importFileFromDisk(){const inp=document.createElement('input');inp.type='file';inp.accept='.json';inp.onchange=async e=>{const file=e.target.files[0];if(!file)return;try{const qs=JSON.parse(await file.text());if(!APP.premium&&APP.files.length>=2){showNotif('Upgrade for more files.','Limit','warn');return}const f={name:file.name,questions:Array.isArray(qs)?qs:[qs],modified:Date.now()};const id=await dbAdd('files',f);f.id=id;APP.files.push(f);renderFileList();updateFileLimitUI();refreshStats();showNotif(`Imported ${f.questions.length} Qs.`,'Imported','success')}catch{showNotif('Invalid JSON.','Error','error')}};inp.click()}
+function wizUpdate(){const n=document.getElementById('wiz-name');const btn=document.getElementById('wiz-next1');if(btn)btn.disabled=!(n&&n.value.trim())}
 function wizGo(step){
-  document.getElementById('wstep-'+wizStep).style.display='none';
-  wizStep=step;
-  document.getElementById('wstep-'+step).style.display='block';
-  ['ws1','ws2','ws3'].forEach((id,i)=>{
-    const el=document.getElementById(id);
-    el.className='wstep'+(i+1<step?' done':i+1===step?' active':'');
-  });
-  const titles=['Exam details','Add questions','Review & Save'];
-  const subs=['Step 1 of 3','Step 2 of 3','Step 3 of 3'];
-  document.getElementById('wiz-hdr-title').textContent=titles[step-1];
-  document.getElementById('wiz-hdr-sub').textContent=subs[step-1];
-  if(step===3) buildReview();
-}
+  document.getElementById('wstep-'+wizStep).style.display='none';wizStep=step;document.getElementById('wstep-'+step).style.display='block';
+  ['ws1','ws2','ws3'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.className='wstep'+(i+1<step?' done':i+1===step?' active':'')});
+  const t=['Exam details','Add questions','Review & Save'],s=['Step 1 of 3','Step 2 of 3','Step 3 of 3'];
+  setText('wiz-hdr-title',t[step-1]);setText('wiz-hdr-sub',s[step-1]);
+  if(step===3)buildReview();if(step===2)renderQBuilder()}
 function addQuestion(){
-  const max=APP.premium?999:5;
-  if(wizQ.length>=max){showNotif(`Free plan: max ${max} questions. Upgrade for unlimited.`,'Limit','warn');return;}
-  const id=Date.now();
-  wizQ.push({id,text:'',options:['','','',''],correct:0,explanation:''});
-  renderQBuilder();
-}
+  const max=APP.premium?9999:5;
+  if(wizQ.length>=max){showNotif(`Max ${max} questions on free plan. Upgrade for unlimited.`,'Limit','warn');openUpgrade();return}
+  wizQ.push({id:Date.now(),text:'',options:['','','',''],correct:0,explanation:''});renderQBuilder()}
 function renderQBuilder(){
-  document.getElementById('q-count-label').textContent=`${wizQ.length} question${wizQ.length!==1?'s':''} added (max ${APP.premium?'∞':'5'} free)`;
-  const el=document.getElementById('qb-list');
-  if(!wizQ.length){
-    el.innerHTML=`<div class="empty" style="padding:24px"><div class="empty-ico" style="font-size:28px">❓</div><p style="font-size:12.5px">Click "Add question" to start.</p></div>`;
-    return;
-  }
-  const letters=['A','B','C','D'];
-  el.innerHTML=wizQ.map((q,qi)=>`
-    <div class="qb-item" id="qbi-${q.id}">
-      <div class="qb-item-hdr">
-        <div class="qb-num">${qi+1}</div>
-        <input type="text" placeholder="Question text..." value="${esc(q.text)}" oninput="wizQ[${qi}].text=this.value">
-        <button class="btn btn-danger btn-sm" onclick="removeQ(${qi})" style="padding:4px 7px">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-      <div class="opt-grid">
-        ${q.options.map((opt,oi)=>`
-          <div class="opt-wrap ${q.correct===oi?'selected':''}">
-            <input type="radio" name="correct-${q.id}" class="opt-radio" ${q.correct===oi?'checked':''} onchange="wizQ[${qi}].correct=${oi};renderQBuilder()">
-            <div class="opt-letter" onclick="wizQ[${qi}].correct=${oi};renderQBuilder()" style="cursor:pointer" title="Set as correct answer">${letters[oi]}</div>
-            <input type="text" placeholder="Option ${letters[oi]}" value="${esc(opt)}" oninput="wizQ[${qi}].options[${oi}]=this.value">
-          </div>`).join('')}
-      </div>
-      <div class="qb-expl">
-        <textarea placeholder="Explanation (optional)" oninput="wizQ[${qi}].explanation=this.value">${esc(q.explanation)}</textarea>
-      </div>
-    </div>`).join('');
-}
+  setText('q-count-label',`${wizQ.length} question${wizQ.length!==1?'s':''} (max ${APP.premium?'∞':'5'} free)`);
+  const el=document.getElementById('qb-list');if(!el)return;
+  if(!wizQ.length){el.innerHTML=`<div class="empty" style="padding:24px"><div class="empty-ico" style="font-size:28px">❓</div><p>Click "Add question" to start building.</p></div>`;return}
+  const L=['A','B','C','D'];
+  el.innerHTML=wizQ.map((q,qi)=>`<div class="qb-item"><div class="qb-item-hdr"><div class="qb-num">${qi+1}</div><input type="text" placeholder="Question text…" value="${esc(q.text)}" oninput="wizQ[${qi}].text=this.value"><button class="btn btn-danger btn-sm" onclick="removeQ(${qi})" style="padding:4px 7px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div><div class="opt-grid">${q.options.map((opt,oi)=>`<div class="opt-wrap ${q.correct===oi?'selected':''}"><div class="opt-letter" onclick="wizQ[${qi}].correct=${oi};renderQBuilder()" title="Set as correct">${L[oi]}</div><input type="text" placeholder="Option ${L[oi]}" value="${esc(opt)}" oninput="wizQ[${qi}].options[${oi}]=this.value"></div>`).join('')}</div><div style="margin-top:6px"><textarea placeholder="Explanation (optional)" style="font-size:12px;min-height:44px;resize:none" oninput="wizQ[${qi}].explanation=this.value">${esc(q.explanation)}</textarea></div></div>`).join('')}
 function removeQ(idx){wizQ.splice(idx,1);renderQBuilder()}
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
 function buildReview(){
-  const name=document.getElementById('wiz-name').value;
-  const subj=document.getElementById('wiz-subject').value;
-  const lvl=document.getElementById('wiz-level').value;
-  const time=document.getElementById('wiz-time').value;
-  const diff=document.getElementById('wiz-diff').value;
-  const desc=document.getElementById('wiz-desc').value;
-  const sc=subjectClasses(subj);
-  document.getElementById('wiz-review').innerHTML=`
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:14px">
-      <div class="ecard-strip ${sc[1]}"></div>
-      <div style="padding:16px">
-        <div class="ecard-meta" style="margin-bottom:8px">
-          <span class="badge ${sc[2]}">${subj}</span>
-          <span class="badge b-level">${lvl}</span>
-          <span class="badge b-level">${diff}</span>
-          ${time?`<span class="badge b-level">${time} min</span>`:''}
-        </div>
-        <div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:4px">${name}</div>
-        ${desc?`<div style="font-size:12.5px;color:var(--ink3)">${desc}</div>`:''}
-        <div style="margin-top:10px;font-size:12px;color:var(--ink4)">${wizQ.length} question${wizQ.length!==1?'s':''} ready</div>
-      </div>
-    </div>
-    ${wizQ.length===0?`<div style="padding:12px;background:var(--red-bg);border-radius:var(--r);font-size:12.5px;color:var(--red)">⚠️ No questions added. Go back to Step 2 and add questions.</div>`:''}
-  `;
-}
+  const name=document.getElementById('wiz-name')?.value||'';const subj=document.getElementById('wiz-subject')?.value||'';
+  const lvl=document.getElementById('wiz-level')?.value||'';const time=document.getElementById('wiz-time')?.value||'';
+  const diff=document.getElementById('wiz-diff')?.value||'';const desc=document.getElementById('wiz-desc')?.value||'';
+  const s=sc(subj);const valid=wizQ.filter(q=>q.text&&q.options.every(o=>o));
+  const el=document.getElementById('wiz-review');if(!el)return;
+  el.innerHTML=`<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden"><div class="ecard-strip ${s[0]}"></div><div style="padding:16px"><div class="ecard-meta" style="margin-bottom:8px"><span class="badge ${s[1]}">${subj}</span><span class="badge b-level">${lvl}</span><span class="badge b-level">${diff}</span>${time?`<span class="badge b-level">${time}m</span>`:''}</div><div style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:4px">${esc(name)}</div>${desc?`<div style="font-size:12.5px;color:var(--ink3)">${esc(desc)}</div>`:''}<div style="margin-top:10px;font-size:12px;color:var(--ink4)">${valid.length} valid question${valid.length!==1?'s':''} ready to save</div></div></div>${valid.length===0?'<div style="margin-top:10px;padding:12px;background:var(--red-bg);border-radius:var(--r);font-size:12.5px;color:var(--red)">⚠️ No complete questions. Go back to Step 2 and fill all 4 options per question.</div>':''}`}
 async function saveExam(){
-  const name=document.getElementById('wiz-name').value.trim();
-  if(!name){showNotif('Add an exam name first.','Missing name','warn');return;}
-  if(!wizQ.length){showNotif('Add at least one question.','No questions','warn');return;}
-  const validQ=wizQ.filter(q=>q.text&&q.options.every(o=>o));
-  if(!validQ.length){showNotif('Complete at least one question with all 4 options filled.','Incomplete','warn');return;}
-  const exam={
-    name,subject:document.getElementById('wiz-subject').value,
-    level:document.getElementById('wiz-level').value,
-    timeLimit:parseInt(document.getElementById('wiz-time').value)||null,
-    difficulty:document.getElementById('wiz-diff').value,
-    description:document.getElementById('wiz-desc').value,
-    questions:validQ,created:Date.now()
-  };
-  const id=await dbAdd('exams',exam);
-  exam.id=id;
-  APP.exams.push(exam);
-  wizQ=[];wizStep=1;
-  // reset wizard
-  wizGo(1);
-  document.getElementById('wiz-name').value='';
-  renderQBuilder();
-  refreshStats();
-  showNotif(`"${name}" saved with ${validQ.length} questions.`,'Exam saved','success');
-  nav('exams');
-}
-
-/* ── EXAM RUNNER ── */
+  const name=document.getElementById('wiz-name')?.value.trim();
+  if(!name){showNotif('Add an exam name.','Missing','warn');return}
+  const valid=wizQ.filter(q=>q.text&&q.options.every(o=>o));
+  if(!valid.length){showNotif('Add at least one complete question (all 4 options).','No questions','warn');return}
+  const editId=window._editExamId;
+  const exam={name,subject:document.getElementById('wiz-subject')?.value,level:document.getElementById('wiz-level')?.value,timeLimit:parseInt(document.getElementById('wiz-time')?.value)||null,difficulty:document.getElementById('wiz-diff')?.value,description:document.getElementById('wiz-desc')?.value,questions:valid,created:Date.now()};
+  if(editId){exam.id=editId;await dbPut('exams',exam);APP.exams=APP.exams.map(e=>e.id===editId?exam:e);window._editExamId=null;showNotif(`"${name}" updated.`,'Updated','success')}
+  else{const id=await dbAdd('exams',exam);exam.id=id;APP.exams.push(exam);showNotif(`"${name}" saved (${valid.length} Qs).`,'Saved','success')}
+  wizQ=[];wizStep=1;wizGo(1);document.getElementById('wiz-name').value='';renderQBuilder();refreshStats();nav('exams')}
 async function startExam(id){
-  const exam=APP.exams.find(e=>e.id===id);
-  if(!exam){showNotif('Exam not found.','Error','error');return;}
-  if(!exam.questions||!exam.questions.length){showNotif('This exam has no questions.','Empty exam','warn');return;}
-  examSession={exam,qi:0,answers:[],startTime:Date.now(),timerSec:0,paused:false,revealed:[]};
-  examSession.answers=new Array(exam.questions.length).fill(null);
-  renderExamUI();
-  nav('exam-active');
-  startTimer();
-}
-function startTimer(){
+  const exam=APP.exams.find(e=>e.id===id);if(!exam){showNotif('Exam not found.','Error','error');return}
+  if(!(exam.questions||[]).length){showNotif('This exam has no questions.','Empty','warn');return}
+  examSession={exam,qi:0,answers:new Array(exam.questions.length).fill(null),startTime:Date.now(),timerSec:0,paused:false,revealed:[]};
   clearInterval(examSession._timer);
   examSession._timer=setInterval(()=>{
-    if(!examSession.paused){
-      examSession.timerSec++;
-      const el=document.getElementById('exam-timer-val');
-      if(el){const m=String(Math.floor(examSession.timerSec/60)).padStart(2,'0');const s=String(examSession.timerSec%60).padStart(2,'0');el.textContent=m+':'+s}
-      // time limit check
-      if(examSession.exam.timeLimit&&examSession.timerSec>=examSession.exam.timeLimit*60){
-        clearInterval(examSession._timer);
-        showNotif('Time is up!','Time limit reached','warn');
-        finishExam();
-      }
-    }
-  },1000);
-}
+    if(!examSession.paused){examSession.timerSec++;const el=document.getElementById('exam-timer-val');if(el)el.textContent=ft(examSession.timerSec);if(exam.timeLimit&&examSession.timerSec>=exam.timeLimit*60){clearInterval(examSession._timer);showNotif('Time is up!','Time limit','warn');finishExam()}}},1000);
+  renderExamUI();nav('exam-active')}
+function ft(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
 function renderExamUI(){
-  const{exam,qi,answers}=examSession;
-  const q=exam.questions[qi];
-  const total=exam.questions.length;
-  const answered=answers.filter(a=>a!==null).length;
-  const correct=answers.filter((a,i)=>a!==null&&exam.questions[i]&&a===exam.questions[i].correct).length;
-  const letters=['A','B','C','D'];
-  const dotsHTML=exam.questions.map((_,i)=>{
-    let cls='qdot';
-    if(i===qi) cls+=' current';
-    else if(answers[i]!==null) cls+=(answers[i]===exam.questions[i].correct?' answered':' wrong-dot');
-    return `<div class="${cls}" onclick="examSession.qi=${i};renderExamUI()" title="Q${i+1}"></div>`;
-  }).join('');
-  const revealed=examSession.revealed.includes(qi);
-  document.getElementById('exam-container').innerHTML=`
-    <div class="exam-hdr">
-      <span class="exam-hdr-title">${exam.name}</span>
-      <div class="exam-timer" onclick="togglePause()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-        <div>
-          <div class="exam-timer-val" id="exam-timer-val">${fmtTime(examSession.timerSec)}</div>
-          <div class="exam-timer-lbl" id="exam-pause-lbl">${examSession.paused?'paused':'tap to pause'}</div>
-        </div>
-      </div>
-    </div>
-    <div class="exam-prog-row">
-      <span class="exam-counter">Q ${qi+1} / ${total}</span>
-      <div class="exam-prog-track"><div class="exam-prog-fill" style="width:${((qi+1)/total)*100}%"></div></div>
-      <span class="exam-score-live">${correct}/${answered} correct</span>
-    </div>
-    <div class="exam-body">
-      <div class="exam-q-num">Question ${qi+1}</div>
-      <div class="exam-q-text">${q.text}</div>
-      <div class="options-list">
-        ${q.options.map((opt,oi)=>{
-          let cls='opt-btn';
-          if(revealed){
-            if(oi===q.correct) cls+=' correct';
-            else if(answers[qi]===oi&&oi!==q.correct) cls+=' wrong';
-            else cls+=' disabled';
-          } else {
-            if(answers[qi]===oi) cls+=' selected';
-          }
-          return `<button class="${cls}" onclick="selectOpt(${oi})">
-            <div class="opt-ltr">${letters[oi]}</div>
-            <div class="opt-text">${opt}</div>
-          </button>`;
-        }).join('')}
-      </div>
-      <div class="reveal-zone ${revealed?'show':''}" id="reveal-zone">
-        <div class="reveal-correct">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>
-          Correct answer: ${letters[q.correct]} — ${q.options[q.correct]}
-        </div>
-        ${q.explanation?`<div class="reveal-expl">${q.explanation}</div>`:''}
-      </div>
-    </div>
-    <div class="exam-nav">
-      <button class="btn btn-secondary btn-sm" onclick="examNav(-1)" ${qi===0?'disabled':''}>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>
-        Prev
-      </button>
-      <div class="q-dots">${dotsHTML}</div>
-      <button class="btn btn-ghost btn-sm" onclick="revealAnswer()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
-        Reveal
-      </button>
-      ${qi===total-1
-        ?`<button class="btn btn-teal btn-sm" onclick="finishExam()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>Submit</button>`
-        :`<button class="btn btn-primary btn-sm" onclick="examNav(1)">Next<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></button>`
-      }
-    </div>`;
-}
-function fmtTime(s){const m=String(Math.floor(s/60)).padStart(2,'0');const ss=String(s%60).padStart(2,'0');return m+':'+ss}
-function selectOpt(oi){
-  if(!examSession||examSession.revealed.includes(examSession.qi)) return;
-  examSession.answers[examSession.qi]=oi;
-  renderExamUI();
-}
-function examNav(dir){
-  examSession.qi=Math.max(0,Math.min(examSession.exam.questions.length-1,examSession.qi+dir));
-  renderExamUI();
-}
-function revealAnswer(){
-  if(!examSession.revealed.includes(examSession.qi)) examSession.revealed.push(examSession.qi);
-  renderExamUI();
-}
-  //pause practicing
-function togglePause(){
-  examSession.paused=!examSession.paused;
-  const lbl=document.getElementById('exam-pause-lbl');
-  if(lbl) lbl.textContent=examSession.paused?'paused':'tap to pause';
-}
-async function finishExam(){
-  clearInterval(examSession._timer);
-  const{exam,answers,timerSec}=examSession;
-  const total=exam.questions.length;
+  if(!examSession)return;const{exam,qi,answers}=examSession;const q=exam.questions[qi];const tot=exam.questions.length;
   const correct=answers.filter((a,i)=>a!==null&&a===exam.questions[i].correct).length;
-  const score=Math.round((correct/total)*100);
-  // update best score
-  if(exam.bestScore===undefined||score>exam.bestScore){
-    exam.bestScore=score;
-    await dbPut('exams',exam);
-    APP.exams=APP.exams.map(e=>e.id===exam.id?exam:e);
-  }
-  const result={examId:exam.id,examName:exam.name,subject:exam.subject,score,correct,total,timeTaken:timerSec,answers:[...answers],date:Date.now()};
-  const rid=await dbAdd('results',result);
-  result.id=rid;
-  APP.results.push(result);
-  renderResultDetail(result,exam);
-  nav('results');
-  refreshStats();
-}
+  const answered=answers.filter(a=>a!==null).length;
+  const L=['A','B','C','D'];const rev=examSession.revealed.includes(qi);
+  const dots=exam.questions.map((_,i)=>{let c='qdot';if(i===qi)c+=' current';else if(answers[i]!==null)c+=(answers[i]===exam.questions[i].correct?' answered':' wrong-dot');return`<div class="${c}" onclick="examSession.qi=${i};renderExamUI()" title="Q${i+1}"></div>`}).join('');
+  const el=document.getElementById('exam-container');if(!el)return;
+  el.innerHTML=`<div class="exam-wrap"><div class="exam-hdr"><span class="exam-hdr-title">${esc(exam.name)}</span><div class="exam-timer" onclick="togglePause()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg><div><div class="exam-timer-val" id="exam-timer-val">${ft(examSession.timerSec)}</div><div class="exam-timer-lbl" id="exam-pause-lbl">${examSession.paused?'paused':'tap to pause'}</div></div></div></div><div class="exam-prog-row"><span class="exam-counter">Q ${qi+1} / ${tot}</span><div class="exam-prog-track"><div class="exam-prog-fill" style="width:${((qi+1)/tot)*100}%"></div></div><span class="exam-score-live">${correct}/${answered} correct</span></div><div class="exam-body"><div class="exam-q-num">Question ${qi+1}</div><div class="exam-q-text">${esc(q.text)}</div><div class="options-list">${q.options.map((opt,oi)=>{let cls='opt-btn';if(rev){if(oi===q.correct)cls+=' correct';else if(answers[qi]===oi&&oi!==q.correct)cls+=' wrong';else cls+=' disabled'}else if(answers[qi]===oi)cls+=' selected';return`<button class="${cls}" onclick="selectOpt(${oi})"><div class="opt-ltr">${L[oi]}</div><div class="opt-text">${esc(opt)}</div></button>`}).join('')}</div><div class="reveal-zone ${rev?'show':''}" id="reveal-zone"><div class="reveal-correct"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg>Correct: ${L[q.correct]} — ${esc(q.options[q.correct])}</div>${q.explanation?`<div class="reveal-expl">${esc(q.explanation)}</div>`:''}</div></div><div class="exam-nav"><button class="btn btn-secondary btn-sm" onclick="examNav(-1)" ${qi===0?'disabled':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15,18 9,12 15,6"/></svg>Prev</button><div class="q-dots">${dots}</div><button class="btn btn-ghost btn-sm" onclick="revealAnswer()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/></svg>Reveal</button>${qi===tot-1?`<button class="btn btn-teal btn-sm" onclick="finishExam()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>Submit</button>`:`<button class="btn btn-primary btn-sm" onclick="examNav(1)">Next<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></button>`}</div></div>`}
+function selectOpt(oi){if(!examSession||examSession.revealed.includes(examSession.qi))return;examSession.answers[examSession.qi]=oi;renderExamUI()}
+function examNav(d){examSession.qi=Math.max(0,Math.min(examSession.exam.questions.length-1,examSession.qi+d));renderExamUI()}
+function revealAnswer(){if(!examSession.revealed.includes(examSession.qi))examSession.revealed.push(examSession.qi);renderExamUI()}
+function togglePause(){examSession.paused=!examSession.paused;const l=document.getElementById('exam-pause-lbl');if(l)l.textContent=examSession.paused?'paused':'tap to pause'}
+async function finishExam(){
+  clearInterval(examSession._timer);const{exam,answers,timerSec}=examSession;const tot=exam.questions.length;
+  const correct=answers.filter((a,i)=>a!==null&&a===exam.questions[i].correct).length;const score=Math.round((correct/tot)*100);
+  if(exam.bestScore===undefined||score>exam.bestScore){exam.bestScore=score;await dbPut('exams',exam);APP.exams=APP.exams.map(e=>e.id===exam.id?exam:e)}
+  const result={examId:exam.id,examName:exam.name,subject:exam.subject,score,correct,total:tot,timeTaken:timerSec,answers:[...answers],date:Date.now()};
+  const rid=await dbAdd('results',result);result.id=rid;APP.results.push(result);
+  renderResultDetail(result,exam);nav('results');refreshStats()}
 function renderResultDetail(result,exam){
-  const letters=['A','B','C','D'];
-  const grade=result.score>=90?'🏆 Excellent!':result.score>=75?'✅ Good job!':result.score>=60?'📈 Keep going!':'💪 Keep practising!';
-  const pct=result.score;
-  const dash=283-(283*pct/100);
-  document.getElementById('results-container').innerHTML=`
-    <div class="result-card">
-      <div class="result-hdr">
-        <div class="score-ring">
-          <svg width="110" height="110" viewBox="0 0 110 110">
-            <circle cx="55" cy="55" r="45" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="9"/>
-            <circle cx="55" cy="55" r="45" fill="none" stroke="${pct>=75?'#1AADA0':pct>=60?'#E8A040':'#E86A30'}" stroke-width="9" stroke-dasharray="283" stroke-dashoffset="${dash}" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease"/>
-          </svg>
-          <div class="score-inner"><strong>${pct}%</strong><span>${result.correct}/${result.total}</span></div>
-        </div>
-        <div class="result-title">${grade}</div>
-        <div class="result-sub">${result.examName} · ${fmtTime(result.timeTaken||0)}</div>
-      </div>
-      <div class="result-stats">
-        <div class="rs-item"><div class="rs-val">${pct}%</div><div class="rs-lbl">Score</div></div>
-        <div class="rs-item"><div class="rs-val">${result.correct}</div><div class="rs-lbl">Correct</div></div>
-        <div class="rs-item"><div class="rs-val">${result.total-result.correct}</div><div class="rs-lbl">Wrong</div></div>
-        <div class="rs-item"><div class="rs-val">${fmtTime(result.timeTaken||0)}</div><div class="rs-lbl">Time</div></div>
-      </div>
-      <div class="result-answers">
-        <div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:12px">Answer review</div>
-        ${exam.questions.map((q,i)=>{
-          const ans=result.answers[i];
-          const isCorrect=ans===q.correct;
-          return `<div class="ra-item ${isCorrect?'ra-correct':'ra-wrong'}">
-            <div class="ra-num">${i+1}</div>
-            <div class="ra-content">
-              <div class="ra-q">${q.text}</div>
-              <div class="ra-ans">${isCorrect?'✓ '+q.options[q.correct]:ans===null?'Not answered — Correct: '+q.options[q.correct]:'✗ You chose: '+q.options[ans]+' · Correct: '+q.options[q.correct]}</div>
-              ${q.explanation?`<div class="ra-expl">${q.explanation}</div>`:''}
-            </div>
-            <div class="ra-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${isCorrect?'<polyline points="20,6 9,17 4,12"/>':'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'}</svg></div>
-          </div>`;
-        }).join('')}
-      </div>
-      <div style="padding:14px 22px 18px;display:flex;gap:8px;justify-content:flex-end;background:var(--bg);border-radius:0 0 var(--r3) var(--r3)">
-        <button class="btn btn-secondary btn-sm" onclick="renderAllResults()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          History
-        </button>
-        <button class="btn btn-primary btn-sm" onclick="startExam(${exam.id})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>
-          Retake
-        </button>
-      </div>
-    </div>`;
-}
-function renderResults(){
-  if(!APP.results.length){
-    document.getElementById('results-container').innerHTML=`<div class="empty"><div class="empty-ico">📊</div><h3>No results yet</h3><p>Complete an exam to see your performance here.</p></div>`;
-    return;
-  }
-  renderAllResults();
-}
+  const L=['A','B','C','D'],pct=result.score,dash=283-(283*pct/100);
+  const grade=pct>=90?'🏆 Excellent!':pct>=75?'✅ Good job!':pct>=60?'📈 Keep going!':'💪 Keep practising!';
+  const el=document.getElementById('results-container');if(!el)return;
+  el.innerHTML=`<div class="result-card"><div class="result-hdr"><div class="score-ring"><svg width="110" height="110" viewBox="0 0 110 110"><circle cx="55" cy="55" r="45" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="9"/><circle cx="55" cy="55" r="45" fill="none" stroke="${pct>=75?'#1AADA0':pct>=60?'#E8A040':'#E86A30'}" stroke-width="9" stroke-dasharray="283" stroke-dashoffset="${dash}" stroke-linecap="round" style="transition:stroke-dashoffset 1s ease"/></svg><div class="score-inner"><strong>${pct}%</strong><span>${result.correct}/${result.total}</span></div></div><div class="result-title">${grade}</div><div class="result-sub">${esc(result.examName)} · ${ft(result.timeTaken||0)}</div></div><div class="result-stats"><div class="rs-item"><div class="rs-val">${pct}%</div><div class="rs-lbl">Score</div></div><div class="rs-item"><div class="rs-val">${result.correct}</div><div class="rs-lbl">Correct</div></div><div class="rs-item"><div class="rs-val">${result.total-result.correct}</div><div class="rs-lbl">Wrong</div></div><div class="rs-item"><div class="rs-val">${ft(result.timeTaken||0)}</div><div class="rs-lbl">Time</div></div></div><div class="result-answers"><div style="font-size:13px;font-weight:600;color:var(--ink);margin-bottom:12px">Answer review</div>${exam.questions.map((q,i)=>{const ans=result.answers[i];const ok=ans===q.correct;return`<div class="ra-item ${ok?'ra-correct':'ra-wrong'}"><div class="ra-num">${i+1}</div><div class="ra-content"><div class="ra-q">${esc(q.text)}</div><div class="ra-ans">${ok?'✓ '+esc(q.options[q.correct]):ans===null?'Skipped — Correct: '+esc(q.options[q.correct]):'✗ Chose: '+esc(q.options[ans])+' · Correct: '+esc(q.options[q.correct])}</div>${q.explanation?`<div class="ra-expl">${esc(q.explanation)}</div>`:''}</div><div class="ra-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${ok?'<polyline points="20,6 9,17 4,12"/>':'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'}</svg></div></div>`}).join('')}</div><div style="padding:14px 22px 18px;display:flex;gap:8px;justify-content:flex-end;background:var(--bg);border-radius:0 0 var(--r3) var(--r3)"><button class="btn btn-secondary btn-sm" onclick="renderAllResults()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>History</button><button class="btn btn-primary btn-sm" onclick="startExam(${exam.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>Retake</button></div></div>`}
+function renderResults(){if(!APP.results.length){const el=document.getElementById('results-container');if(el)el.innerHTML=`<div class="empty"><div class="empty-ico">📊</div><h3>No results yet</h3><p>Complete an exam to see your performance here.</p></div>`;return}renderAllResults()}
 function renderAllResults(){
-  const sorted=[...APP.results].sort((a,b)=>b.date-a.date);
-  const sc=s=>subjectClasses(s);
-  document.getElementById('results-container').innerHTML=`
-    <div class="result-card">
-      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-        <span style="font-weight:600;font-size:14px">All sessions (${sorted.length})</span>
-        <span style="font-size:12.5px;color:var(--ink3)">Avg: ${sorted.length?Math.round(sorted.reduce((a,r)=>a+r.score,0)/sorted.length):0}%</span>
-      </div>
-      ${sorted.map(r=>`
-        <div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--t)" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''">
-          <span class="badge ${sc(r.subject)[2]}" style="min-width:72px;text-align:center">${r.subject||'General'}</span>
-          <span style="flex:1;font-size:13px;color:var(--ink2)">${r.examName}</span>
-          <span style="font-weight:600;font-size:13.5px;color:${r.score>=75?'var(--teal)':r.score>=60?'var(--gold)':'var(--orange)'}">${r.score}%</span>
-          <span style="font-size:11px;color:var(--ink4)">${new Date(r.date).toLocaleDateString()}</span>
-        </div>`).join('')}
-    </div>`;
-}
-
-/* ── EDIT EXAM ── */
+  const sorted=[...APP.results].sort((a,b)=>b.date-a.date);const el=document.getElementById('results-container');if(!el)return;
+  el.innerHTML=`<div class="result-card"><div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600;font-size:14px">All sessions (${sorted.length})</span><span style="font-size:12.5px;color:var(--ink3)">Avg: ${sorted.length?Math.round(sorted.reduce((a,r)=>a+r.score,0)/sorted.length):0}%</span></div>${sorted.map(r=>{const s=sc(r.subject);return`<div style="display:flex;align-items:center;gap:12px;padding:12px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background var(--t)" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''"><span class="badge ${s[1]}" style="min-width:70px;text-align:center">${r.subject||'General'}</span><span style="flex:1;font-size:13px;color:var(--ink2)">${esc(r.examName)}</span><span style="font-weight:600;font-size:13.5px;color:${r.score>=75?'var(--teal)':r.score>=60?'var(--gold)':'var(--orange)'}">${r.score}%</span><span style="font-size:11px;color:var(--ink4)">${new Date(r.date).toLocaleDateString()}</span></div>`}).join('')}</div>`}
 function editExam(id){
-  const exam=APP.exams.find(e=>e.id===id);
-  if(!exam) return;
-  // pre-fill wizard
-  wizQ=[...exam.questions];
-  wizStep=1;
-  nav('create');
-  setTimeout(()=>{
-    document.getElementById('wiz-name').value=exam.name;
-    document.getElementById('wiz-subject').value=exam.subject||'Physics';
-    document.getElementById('wiz-level').value=exam.level||'University';
-    document.getElementById('wiz-time').value=exam.timeLimit||'';
-    document.getElementById('wiz-diff').value=exam.difficulty||'Medium';
-    document.getElementById('wiz-desc').value=exam.description||'';
-    wizUpdate();
-    renderQBuilder();
-    // mark for update
-    window._editExamId=id;
-  },50);
-}
-
-/* ── PROFESSOR ── */
+  const exam=APP.exams.find(e=>e.id===id);if(!exam)return;
+  wizQ=JSON.parse(JSON.stringify(exam.questions||[]));window._editExamId=id;wizStep=1;nav('create');
+  setTimeout(()=>{['wiz-name','wiz-subject','wiz-level','wiz-time','wiz-diff','wiz-desc'].forEach(fid=>{const el=document.getElementById(fid);if(!el)return;if(fid==='wiz-name')el.value=exam.name||'';else if(fid==='wiz-subject')el.value=exam.subject||'Physics';else if(fid==='wiz-level')el.value=exam.level||'University';else if(fid==='wiz-time')el.value=exam.timeLimit||'';else if(fid==='wiz-diff')el.value=exam.difficulty||'Medium';else if(fid==='wiz-desc')el.value=exam.description||''});wizUpdate();renderQBuilder()},80)}
 function openProfessor(){openModal('prof-modal');buildPrompt()}
-function updateDiff(val){
-  val=parseInt(val);
-  const e=val,h=val,m=Math.max(100-e-h,0);
-  document.getElementById('d-easy').textContent=e;
-  document.getElementById('d-med').textContent=m;
-  document.getElementById('d-hard').textContent=h;
-  document.getElementById('dc-easy').textContent=e;
-  document.getElementById('dc-med').textContent=m;
-  document.getElementById('dc-hard').textContent=h;
-}
+function updateDiff(v){v=parseInt(v);const e=v,h=v,m=Math.max(100-e-h,0);['d-easy','dc-easy'].forEach(id=>setText(id,e));['d-med','dc-med'].forEach(id=>setText(id,m));['d-hard','dc-hard'].forEach(id=>setText(id,h))}
 function buildPrompt(){
-  const subj=document.getElementById('p-subject').value||'[Subject]';
-  const num=document.getElementById('p-num').value||'20';
-  const topics=document.getElementById('p-topics').value;
-  const struct=document.querySelector('input[name="p-struct"]:checked')?.value||'Multiple Choice';
-  const expl=document.querySelector('input[name="p-expl"]:checked')?.value||'step-by-step';
-  const type=document.querySelector('input[name="p-type"]:checked')?.value||'Calculation';
-  const mem=document.querySelector('input[name="p-mem"]:checked')?.value||'none';
-  const edu=document.getElementById('p-edu').value;
-  const depth=document.getElementById('p-depth').value;
-  const extra=document.getElementById('p-extra').value;
-  const easy=document.getElementById('d-easy').textContent;
-  const med=document.getElementById('d-med').textContent;
-  const hard=document.getElementById('d-hard').textContent;
-  const explMap={step:'detailed step-by-step solutions',conceptual:'conceptual explanations',brief:'brief one-sentence explanations',none:'no explanations'};
-  const prompt=`Generate ${num} ${struct} questions for the subject: "${subj}".
-${topics?`Focus on these topics: ${topics}\n`:''}
-Requirements:
-- Education level: ${edu} (${depth} depth)
-- Subject type: ${type}
-- Difficulty distribution: ${easy}% Easy, ${med}% Medium, ${hard}% Hard
-- Include ${explMap[expl]||'step-by-step solutions'}
-- Memory tricks: ${mem==='none'?'none required':mem==='few'?'add a few mnemonic tricks':'add many mnemonic memory tricks'}
-${extra?`- Additional: ${extra}`:''}
-
-Output format — return ONLY a valid JSON array, no markdown, no extra text:
-[
-  {
-    "text": "question text here",
-    "options": ["Option A", "Option B", "Option C", "Option D"],
-    "correct": 0,
-    "explanation": "explanation here"
-  }
-]`;
-  document.getElementById('p-output').textContent=prompt;
-  document.getElementById('p-tokens').textContent=`~${Math.round(prompt.length/4)} tokens`;
-  // highlight radio groups
-  document.querySelectorAll('.radio-list').forEach(group=>{
-    group.querySelectorAll('.rl-item').forEach(item=>{
-      item.classList.toggle('selected',item.querySelector('input')?.checked);
-    });
-  });
-}
-function copyPrompt(){
-  const text=document.getElementById('p-output').textContent;
-  navigator.clipboard.writeText(text).then(()=>{
-    showNotif('Prompt copied! Paste into Claude, ChatGPT, or Groq.','Copied','success');
-    closeModal('prof-modal');
-  }).catch(()=>{showNotif('Copy failed — select and copy manually.','Error','error')});
-}
-
-/* ── JSON PASTE ── */
+  const subj=document.getElementById('p-subject')?.value||'[Subject]';const num=document.getElementById('p-num')?.value||'20';
+  const topics=document.getElementById('p-topics')?.value;const struct=document.querySelector('input[name="p-struct"]:checked')?.value||'Multiple Choice';
+  const expl=document.querySelector('input[name="p-expl"]:checked')?.value||'step-by-step';const type=document.querySelector('input[name="p-type"]:checked')?.value||'Calculation';
+  const mem=document.querySelector('input[name="p-mem"]:checked')?.value||'none';const edu=document.getElementById('p-edu')?.value;const depth=document.getElementById('p-depth')?.value;
+  const extra=document.getElementById('p-extra')?.value;const easy=document.getElementById('d-easy')?.textContent;const med=document.getElementById('d-med')?.textContent;const hard=document.getElementById('d-hard')?.textContent;
+  const explMap={'step-by-step':'detailed step-by-step solutions','conceptual':'conceptual explanations','brief':'brief one-sentence explanations','none':'no explanations'};
+  const prompt=`Generate ${num} ${struct} questions for: "${subj}".
+${topics?`Focus on: ${topics}\n`:''}Requirements:
+- Education: ${edu}, ${depth} depth, Subject type: ${type}
+- Difficulty: ${easy}% Easy, ${med}% Medium, ${hard}% Hard
+- Explanations: ${explMap[expl]||'step-by-step'}
+- Memory tricks: ${mem==='none'?'none':mem==='few'?'add a few mnemonics':'add many mnemonic tricks'}
+${extra?`- Extra: ${extra}\n`:''}
+Return ONLY a valid JSON array, no markdown, no extra text:
+[{"text":"...","options":["A","B","C","D"],"correct":0,"explanation":"..."}]`;
+  const el=document.getElementById('p-output');if(el)el.textContent=prompt;
+  setText('p-tokens',`~${Math.round(prompt.length/4)} tokens`);
+  document.querySelectorAll('.radio-list .rl-item').forEach(item=>item.classList.toggle('selected',item.querySelector('input')?.checked))}
+function copyPrompt(){const t=document.getElementById('p-output')?.textContent;navigator.clipboard.writeText(t||'').then(()=>{showNotif('Prompt copied! Paste into Claude, ChatGPT or Groq.','Copied','success');closeModal('prof-modal')}).catch(()=>showNotif('Copy failed — select manually.','Error','error'))}
 function openJsonPaste(){
   openModal('json-modal');
-  // populate file select
   const sel=document.getElementById('json-target-file');
-  sel.innerHTML='<option value="new">+ New file</option>'+APP.files.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
-}
-let jsonParsed=[];
+  if(sel)sel.innerHTML='<option value="new">+ New file</option>'+APP.files.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}
 function lintJSON(){
-  const raw=document.getElementById('json-ta').value;
-  const stats=document.getElementById('json-stats');
-  const status=document.getElementById('json-status');
-  const btn=document.getElementById('json-import-btn');
-  const preview=document.getElementById('json-preview');
-  stats.textContent=`${raw.split('\n').length} lines · ${raw.length} chars · `;
-  if(!raw.trim()){
-    stats.textContent='0 lines · 0 chars · 0 Qs';
-    status.className='json-status js-wait';
-    status.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Waiting for input…';
-    btn.disabled=true;preview.innerHTML='';jsonParsed=[];return;
-  }
-  try{
-    const parsed=JSON.parse(raw);
-    const arr=Array.isArray(parsed)?parsed:[parsed];
-    const valid=arr.filter(q=>q.text&&Array.isArray(q.options)&&q.options.length===4&&typeof q.correct==='number');
-    jsonParsed=valid;
-    stats.textContent+=`${valid.length} Qs`;
-    status.className='json-status js-ok';
-    status.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>${valid.length} valid question${valid.length!==1?'s':''} ready to import`;
-    btn.disabled=valid.length===0;
-    preview.innerHTML=valid.slice(0,3).map(q=>`<div class="json-prev-item"><strong>${q.text}</strong>${q.options.map((o,i)=>`<span style="font-size:11px;color:var(--ink4);margin-right:8px">${'ABCD'[i]}: ${o}</span>`).join('')}</div>`).join('')+(valid.length>3?`<div style="font-size:11px;color:var(--ink4);padding:6px 12px">+${valid.length-3} more…</div>`:'');
-  }catch(e){
-    stats.textContent+='0 Qs';
-    status.className='json-status js-err';
-    status.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>${e.message}`;
-    btn.disabled=true;preview.innerHTML='';jsonParsed=[];
-  }
-}
-async function pasteFromClipboard(){
-  try{const t=await navigator.clipboard.readText();document.getElementById('json-ta').value=t;lintJSON()}
-  catch(e){showNotif('Clipboard access denied.','Error','error')}
-}
-function formatJSON(){
-  try{const ta=document.getElementById('json-ta');ta.value=JSON.stringify(JSON.parse(ta.value),null,2);lintJSON()}
-  catch(e){showNotif('Invalid JSON.','Format error','error')}
-}
-function clearJSON(){document.getElementById('json-ta').value='';lintJSON()}
+  const raw=document.getElementById('json-ta')?.value||'';const stats=document.getElementById('json-stats');const status=document.getElementById('json-status');const btn=document.getElementById('json-import-btn');const preview=document.getElementById('json-preview');
+  if(stats)stats.textContent=`${raw.split('\n').length} lines · ${raw.length} chars · `;
+  if(!raw.trim()){if(stats)stats.textContent='0 lines · 0 chars · 0 Qs';if(status){status.className='json-status js-wait';status.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Waiting for input…'}if(btn)btn.disabled=true;if(preview)preview.innerHTML='';jsonParsed=[];return}
+  try{const arr=JSON.parse(raw);const list=Array.isArray(arr)?arr:[arr];const valid=list.filter(q=>q.text&&Array.isArray(q.options)&&q.options.length===4&&typeof q.correct==='number');jsonParsed=valid;if(stats)stats.textContent+=`${valid.length} Qs`;if(status){status.className='json-status js-ok';status.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"/></svg>${valid.length} valid question${valid.length!==1?'s':''} — ready to import`}if(btn)btn.disabled=valid.length===0;if(preview)preview.innerHTML=valid.slice(0,3).map(q=>`<div class="json-prev-item"><strong>${esc(q.text)}</strong>${q.options.map((o,i)=>`<span style="font-size:11px;color:var(--ink4);margin-right:8px">${'ABCD'[i]}: ${esc(o)}</span>`).join('')}</div>`).join('')+(valid.length>3?`<div style="font-size:11px;color:var(--ink4);padding:4px 8px">+${valid.length-3} more…</div>`:'')}
+  catch(e){if(stats)stats.textContent+='0 Qs';if(status){status.className='json-status js-err';status.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>${e.message}`}if(btn)btn.disabled=true;if(preview)preview.innerHTML='';jsonParsed=[]}}
+async function pasteFromClipboard(){try{const t=await navigator.clipboard.readText();const ta=document.getElementById('json-ta');if(ta){ta.value=t;lintJSON()}}catch{showNotif('Clipboard access denied.','Error','error')}}
+function formatJSON(){try{const ta=document.getElementById('json-ta');ta.value=JSON.stringify(JSON.parse(ta.value),null,2);lintJSON()}catch{showNotif('Invalid JSON.','Error','error')}}
+function clearJSON(){const ta=document.getElementById('json-ta');if(ta)ta.value='';lintJSON()}
 async function importJSON(){
-  if(!jsonParsed.length) return;
-  const sel=document.getElementById('json-target-file');
-  const targetId=sel.value;
-  if(targetId==='new'){
-    if(!APP.premium&&APP.files.length>=2){showNotif('Upgrade to add more files.','Limit','warn');return;}
-    const name=prompt('New file name:','imported.json');
-    if(!name) return;
-    const f={name:name.endsWith('.json')?name:name+'.json',questions:jsonParsed,modified:Date.now()};
-    const id=await dbAdd('files',f);f.id=id;APP.files.push(f);
-  } else {
-    const f=APP.files.find(f=>f.id===parseInt(targetId));
-    if(!f) return;
-    const maxQ=APP.premium?99999:5;
-    const space=maxQ-(f.questions||[]).length;
-    if(space<=0){showNotif('File is full. Upgrade for more questions.','Limit','warn');return;}
-    f.questions=[...(f.questions||[]),...jsonParsed.slice(0,space)];
-    f.modified=Date.now();
-    await dbPut('files',f);
-  }
-  closeModal('json-modal');
-  renderFileList();updateFileLimitUI();refreshStats();
-  showNotif(`${jsonParsed.length} questions imported.`,'Imported','success');
-}
-
-/* ── GROQ ── */
+  if(!jsonParsed.length)return;const sel=document.getElementById('json-target-file');const tgt=sel?.value;
+  if(tgt==='new'){if(!APP.premium&&APP.files.length>=2){showNotif('Upgrade for more files.','Limit','warn');return}const name=prompt('New file name:','imported.json');if(!name)return;const f={name:name.endsWith('.json')?name:name+'.json',questions:jsonParsed,modified:Date.now()};const id=await dbAdd('files',f);f.id=id;APP.files.push(f)}
+  else{const f=APP.files.find(f=>f.id===parseInt(tgt));if(!f)return;const max=APP.premium?99999:5;const space=max-(f.questions||[]).length;if(space<=0){showNotif('File full. Upgrade for unlimited questions.','Limit','warn');return}f.questions=[...(f.questions||[]),...jsonParsed.slice(0,space)];f.modified=Date.now();await dbPut('files',f)}
+  closeModal('json-modal');renderFileList();updateFileLimitUI();refreshStats();showNotif(`${jsonParsed.length} questions imported.`,'Imported','success')}
 function openGroq(){openModal('groq-modal')}
-function saveGroqKey(){
-  APP.groqKey=document.getElementById('groq-key').value;
-  dbPut('settings',{key:'groqKey',value:APP.groqKey});
-}
-async function testGroq(){
-  const key=document.getElementById('groq-key').value.trim();
-  if(!key){showNotif('Enter your Groq API key first.','No key','warn');return;}
-  showNotif('Testing key…','Groq','success');
-}
+function saveGroqKey(){APP.groqKey=document.getElementById('groq-key')?.value||'';dbPut('settings',{key:'groqKey',value:APP.groqKey})}
+function testGroq(){const k=document.getElementById('groq-key')?.value.trim();if(!k){showNotif('Enter your Groq API key first.','No key','warn');return}showNotif('Key saved! Click Generate to test with a real subject.','Key saved','success')}
 async function runGroq(){
-  const key=document.getElementById('groq-key').value.trim();
-  if(!key){showNotif('Enter your Groq API key first.','No key','warn');return;}
-  const subj=document.getElementById('groq-subject').value.trim();
-  if(!subj){showNotif('Enter a subject.','Missing','warn');return;}
-  const num=document.getElementById('groq-num').value||10;
-  const diff=document.getElementById('groq-diff').value;
-  const expl=document.getElementById('groq-expl-tog').classList.contains('on');
-  const out=document.getElementById('groq-output');
-  out.style.display='block';
-  out.innerHTML='<span class="spin"></span> Generating…';
-  const prompt=`Generate ${num} multiple choice questions on "${subj}" at ${diff} difficulty. ${expl?'Include step-by-step explanations.':''} Return ONLY a JSON array: [{"text":"...","options":["A","B","C","D"],"correct":0,"explanation":"..."}]`;
-  try{
-    const resp=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-      body:JSON.stringify({model:'mixtral-8x7b-32768',messages:[{role:'user',content:prompt}],temperature:.6,max_tokens:4000})
-    });
-    const data=await resp.json();
-    if(data.error){out.innerHTML=`<span style="color:var(--red)">${data.error.message}</span>`;return;}
-    const text=data.choices[0].message.content;
-    const clean=text.replace(/```json|```/g,'').trim();
-    const qs=JSON.parse(clean);
-    const valid=qs.filter(q=>q.text&&Array.isArray(q.options)&&q.options.length===4&&typeof q.correct==='number');
-    out.innerHTML=`<span style="color:var(--teal)">✓ ${valid.length} questions generated!</span>`;
-    if(valid.length){
-      document.getElementById('json-ta').value=JSON.stringify(valid,null,2);
-      closeModal('groq-modal');
-      openJsonPaste();
-      lintJSON();
-      showNotif(`${valid.length} questions ready to import.`,'Groq success','success');
-    }
-  }catch(e){out.innerHTML=`<span style="color:var(--red)">Error: ${e.message}</span>`}
-}
-
-/* ── TRIVIA ── */
+  const key=document.getElementById('groq-key')?.value.trim();if(!key){showNotif('Enter your Groq API key.','No key','warn');return}
+  const subj=document.getElementById('groq-subject')?.value.trim();if(!subj){showNotif('Enter a subject.','Missing','warn');return}
+  const num=document.getElementById('groq-num')?.value||10;const diff=document.getElementById('groq-diff')?.value||'Medium';
+  const expl=document.getElementById('groq-expl-tog')?.classList.contains('on');
+  const out=document.getElementById('groq-output');if(out){out.style.display='block';out.innerHTML='<span class="spin"></span> Generating…'}
+  const prompt=`Generate ${num} multiple choice questions on "${subj}" at ${diff} difficulty.${expl?' Include step-by-step explanations.':''} Return ONLY a JSON array: [{"text":"...","options":["A","B","C","D"],"correct":0,"explanation":"..."}]`;
+  try{const resp=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'mixtral-8x7b-32768',messages:[{role:'user',content:prompt}],temperature:.6,max_tokens:4000})});const data=await resp.json();if(data.error){if(out)out.innerHTML=`<span style="color:var(--red)">${data.error.message}</span>`;return}const text=data.choices[0].message.content;const clean=text.replace(/```json|```/g,'').trim();const qs=JSON.parse(clean);const valid=qs.filter(q=>q.text&&Array.isArray(q.options)&&q.options.length===4&&typeof q.correct==='number');if(out)out.innerHTML=`<span style="color:var(--teal)">✓ ${valid.length} questions generated!</span>`;if(valid.length){const ta=document.getElementById('json-ta');if(ta)ta.value=JSON.stringify(valid,null,2);closeModal('groq-modal');openJsonPaste();lintJSON();showNotif(`${valid.length} questions ready to import.`,'Generated','success')}}catch(e){if(out)out.innerHTML=`<span style="color:var(--red)">Error: ${e.message}</span>`}}
 function openTrivia(){openModal('trivia-modal')}
-let triviaFetched=[];
 async function fetchTrivia(){
-  const num=document.getElementById('trivia-num').value||10;
-  const diff=document.getElementById('trivia-diff').value;
-  const cat=document.getElementById('trivia-cat').value;
-  const status=document.getElementById('trivia-status');
-  const preview=document.getElementById('trivia-preview');
-  const addBtn=document.getElementById('trivia-add-btn');
-  const fetchBtn=document.getElementById('trivia-fetch-btn');
-  status.innerHTML='<span class="spin"></span> Fetching from OpenTriviaDB…';
-  fetchBtn.disabled=true;
-  try{
-    const resp=await fetch(`https://opentdb.com/api.php?amount=${num}&category=${cat}&difficulty=${diff}&type=multiple`);
-    const data=await resp.json();
-    if(data.response_code!==0){status.textContent='API error: '+data.response_code;return;}
-    triviaFetched=data.results.map(q=>{
-      const opts=[...q.incorrect_answers,q.correct_answer].sort(()=>Math.random()-.5);
-      const correct=opts.indexOf(q.correct_answer);
-      return{text:decodeHTML(q.question),options:opts.map(decodeHTML),correct,explanation:`Correct: ${decodeHTML(q.correct_answer)}`};
-    });
-    status.innerHTML=`<span style="color:var(--teal)">✓ Fetched ${triviaFetched.length} questions from ${data.results[0]?.category||'OpenTriviaDB'}</span>`;
-    preview.innerHTML=triviaFetched.slice(0,3).map(q=>`<div class="json-prev-item"><strong>${q.text}</strong></div>`).join('')+(triviaFetched.length>3?`<div style="font-size:11px;color:var(--ink4);padding:4px 8px">+${triviaFetched.length-3} more…</div>`:'');
-    addBtn.style.display='inline-flex';
-  }catch(e){status.textContent='Network error: '+e.message}
-  fetchBtn.disabled=false;
-}
-function decodeHTML(s){const t=document.createElement('textarea');t.innerHTML=s;return t.value}
-async function addTriviaToFile(){
-  document.getElementById('json-ta').value=JSON.stringify(triviaFetched,null,2);
-  closeModal('trivia-modal');
-  openJsonPaste();
-  lintJSON();
-}
-
-/* ── ENCRYPTED EXAM ── */
+  const num=document.getElementById('trivia-num')?.value||10;const diff=document.getElementById('trivia-diff')?.value||'medium';const cat=document.getElementById('trivia-cat')?.value||9;
+  const status=document.getElementById('trivia-status');const preview=document.getElementById('trivia-preview');const addBtn=document.getElementById('trivia-add-btn');const fetchBtn=document.getElementById('trivia-fetch-btn');
+  if(status)status.innerHTML='<span class="spin"></span> Fetching from OpenTriviaDB…';if(fetchBtn)fetchBtn.disabled=true;
+  try{const resp=await fetch(`https://opentdb.com/api.php?amount=${num}&category=${cat}&difficulty=${diff}&type=multiple`);const data=await resp.json();
+  if(data.response_code!==0){if(status)status.textContent='API error code: '+data.response_code;if(fetchBtn)fetchBtn.disabled=false;return}
+  triviaFetched=data.results.map(q=>{const opts=[...q.incorrect_answers,q.correct_answer].sort(()=>Math.random()-.5);return{text:dh(q.question),options:opts.map(dh),correct:opts.indexOf(q.correct_answer),explanation:`Correct: ${dh(q.correct_answer)}`}});
+  if(status)status.innerHTML=`<span style="color:var(--teal)">✓ Fetched ${triviaFetched.length} questions!</span>`;if(preview)preview.innerHTML=triviaFetched.slice(0,3).map(q=>`<div class="json-prev-item"><strong>${esc(q.text)}</strong></div>`).join('')+(triviaFetched.length>3?`<div style="font-size:11px;color:var(--ink4);padding:4px 8px">+${triviaFetched.length-3} more…</div>`:'');if(addBtn)addBtn.style.display='inline-flex'}catch(e){if(status)status.textContent='Network error: '+e.message}if(fetchBtn)fetchBtn.disabled=false}
+function dh(s){const t=document.createElement('textarea');t.innerHTML=s;return t.value}
+function addTriviaToFile(){const ta=document.getElementById('json-ta');if(ta)ta.value=JSON.stringify(triviaFetched,null,2);closeModal('trivia-modal');openJsonPaste();lintJSON()}
 function openEncrypted(){openModal('enc-modal')}
-function xorCipher(data,key){const k=key||'exam';return data.split('').map((c,i)=>String.fromCharCode(c.charCodeAt(0)^k.charCodeAt(i%k.length))).join('')}
+function xor(data,key){return data.split('').map((c,i)=>String.fromCharCode(c.charCodeAt(0)^key.charCodeAt(i%key.length))).join('')}
 async function decryptExam(){
-  const fileInp=document.getElementById('enc-file-inp');
-  const code=document.getElementById('enc-code').value;
-  if(!fileInp.files[0]){showNotif('Select a file first.','No file','warn');return;}
-  if(!code){showNotif('Enter the pass-code.','No code','warn');return;}
-  try{
-    const txt=await fileInp.files[0].text();
-    const decrypted=xorCipher(atob(txt),code);
-    const qs=JSON.parse(decrypted);
-    const name='decrypted_'+fileInp.files[0].name.replace('.enc','');
-    document.getElementById('json-ta').value=JSON.stringify(qs,null,2);
-    closeModal('enc-modal');openJsonPaste();lintJSON();
-    showNotif('File decrypted. Review & import below.','Decrypted','success');
-  }catch(e){showNotif('Wrong code or corrupted file.','Decrypt failed','error')}
-}
-
-/* ── UPGRADE ── */
+  const fi=document.getElementById('enc-file-inp');const code=document.getElementById('enc-code')?.value;
+  if(!fi?.files[0]){showNotif('Select a file first.','No file','warn');return}if(!code){showNotif('Enter the pass-code.','No code','warn');return}
+  try{const txt=await fi.files[0].text();const dec=xor(atob(txt),code);const qs=JSON.parse(dec);const ta=document.getElementById('json-ta');if(ta)ta.value=JSON.stringify(qs,null,2);closeModal('enc-modal');openJsonPaste();lintJSON();showNotif('File decrypted. Review & import below.','Decrypted','success')}catch{showNotif('Wrong code or corrupted file.','Decrypt failed','error')}}
 function openUpgrade(){openModal('upgrade-modal')}
 async function activatePremium(){
-  const code=document.getElementById('prem-code').value.trim();
-  // basic activation (in real app, validate via SMS service)
-  if(code==='EXAMPRO2026'||code.length>=8){
-    APP.premium=true;
-    await dbPut('settings',{key:'premium',value:true});
-    closeModal('upgrade-modal');
-    updateFileLimitUI();refreshStats();
-    showNotif('Premium activated! Unlimited exams & files unlocked.','Premium active 🎉','success');
-  } else {
-    showNotif('Invalid code. Contact support for your activation code.','Invalid code','error');
-  }
-}
-
-/* ── MODALS ── */
-function openModal(id){document.getElementById(id).classList.add('open')}
-function closeModal(id){document.getElementById(id).classList.remove('open')}
-document.querySelectorAll('.overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')})});
-
-/* ── NOTIFICATIONS ── */
-function showNotif(msg,title,type='success'){
-  const area=document.getElementById('notifArea');
-  const icons={success:'<polyline points="20,6 9,17 4,12"/>',warn:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',error:'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'};
-  const n=document.createElement('div');
-  const cls=type==='success'?'n-success':type==='warn'?'n-warn':'n-error';
-  n.className=`notif ${cls}`;
-  n.innerHTML=`<div class="notif-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icons[type]||icons.success}</svg></div><div class="notif-body"><div class="notif-title">${title}</div><div class="notif-msg">${msg}</div></div><button class="notif-x" onclick="this.closest('.notif').remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
-  area.appendChild(n);
-  setTimeout(()=>{if(n.parentElement)n.remove()},4000);
-}
-
-/* ── TRIVIA TAB FILTER ── */
-document.querySelectorAll('[data-filter]').forEach(btn=>{
-  btn.addEventListener('click',function(){
-    document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));
-    this.classList.add('active');
-    const filter=this.dataset.filter;
-    let filtered=APP.exams;
-    if(filter==='pending') filtered=APP.exams.filter(e=>!e.bestScore);
-    if(filter==='done') filtered=APP.exams.filter(e=>e.bestScore!==undefined);
-    renderExamGrid('exams-grid',filtered);
-  });
-});
-
-/* ── START ── */
+  const code=document.getElementById('prem-code')?.value.trim();
+  if(code==='EXAMPRO2026'||code.length>=8){APP.premium=true;await dbPut('settings',{key:'premium',value:true});closeModal('upgrade-modal');updateTierUI();updateFileLimitUI();refreshStats();showNotif('Premium activated! Unlimited files, questions & exams unlocked. 🎉','Premium active','success')}
+  else showNotif('Invalid code. Use EXAMPRO2026 to demo.','Invalid code','error')}
+function openModal(id){document.getElementById(id)?.classList.add('open')}
+function closeModal(id){document.getElementById(id)?.classList.remove('open')}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
+document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',function(){document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));this.classList.add('active');const f=this.dataset.filter;let ex=APP.exams;if(f==='pending')ex=APP.exams.filter(e=>e.bestScore===undefined);if(f==='done')ex=APP.exams.filter(e=>e.bestScore!==undefined);renderExamGrid('exams-grid',ex)}));
+function showNotif(msg,title,type='success'){const area=document.getElementById('notifArea');if(!area)return;const icons={success:'<polyline points="20,6 9,17 4,12"/>',warn:'<path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',error:'<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>'};const cls=type==='success'?'n-success':type==='warn'?'n-warn':'n-error';const n=document.createElement('div');n.className=`notif ${cls}`;n.innerHTML=`<div class="notif-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${icons[type]||icons.success}</svg></div><div class="notif-body"><div class="notif-title">${title}</div><div class="notif-msg">${msg}</div></div><button class="notif-x" onclick="this.closest('.notif').remove()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;area.appendChild(n);setTimeout(()=>{if(n.parentElement)n.remove()},4000)}
 init();
 </script>
 </body>
