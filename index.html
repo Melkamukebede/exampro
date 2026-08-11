@@ -535,11 +535,14 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
   </div>
   <div class="mfooter">
     <div style="margin-right:auto;display:flex;align-items:center;gap:8px">
-      <label style="font-size:12px;white-space:nowrap;color:var(--ink2)">Save to:</label>
-      <select id="json-target-file" style="padding:5px 9px;font-size:12px;min-width:160px"><option value="new">+ New file</option></select>
+      <label style="font-size:12px;white-space:nowrap;color:var(--ink2)">Action:</label>
+      <select id="json-target-file" style="padding:5px 9px;font-size:12px;min-width:190px" onchange="updateImportBtn()">
+        <option value="exam">⭐ Create new exam</option>
+        <option value="new">📄 Save to new file</option>
+      </select>
     </div>
     <button class="btn btn-secondary" onclick="closeModal('json-modal')">Cancel</button>
-    <button class="btn btn-primary" id="json-import-btn" disabled onclick="importJSON()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Parse & Add</button>
+    <button class="btn btn-primary" id="json-import-btn" disabled onclick="importJSON()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span id="import-btn-label">Create exam</span></button>
   </div>
 </div>
 </div>
@@ -579,7 +582,8 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
   <div class="mfooter">
     <button class="btn btn-secondary" onclick="closeModal('trivia-modal')">Cancel</button>
     <button class="btn btn-primary" onclick="fetchTrivia()" id="trivia-fetch-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>Fetch</button>
-    <button class="btn btn-teal" id="trivia-add-btn" style="display:none" onclick="addTriviaToFile()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/></svg>Save to file</button>
+    <button class="btn btn-secondary" id="trivia-file-btn" style="display:none" onclick="addTriviaToFile()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>Save to file</button>
+    <button class="btn btn-teal" id="trivia-add-btn" style="display:none" onclick="triviaCreateExam()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5,3 19,12 5,21"/></svg>Create exam</button>
   </div>
 </div>
 </div>
@@ -807,7 +811,18 @@ function copyPrompt(){const t=document.getElementById('p-output')?.textContent;n
 function openJsonPaste(){
   openModal('json-modal');
   const sel=document.getElementById('json-target-file');
-  if(sel)sel.innerHTML='<option value="new">+ New file</option>'+APP.files.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}
+  if(sel){
+    sel.innerHTML='<option value="exam">⭐ Create new exam</option><option value="new">📄 Save to new file</option>'
+      +APP.files.map(f=>`<option value="${f.id}">📄 Add to: ${esc(f.name)}</option>`).join('');
+  }
+  updateImportBtn();
+}
+function updateImportBtn(){
+  const sel=document.getElementById('json-target-file');
+  const lbl=document.getElementById('import-btn-label');
+  if(!sel||!lbl)return;
+  lbl.textContent=sel.value==='exam'?'Create exam':'Save to file';
+}
 function lintJSON(){
   const raw=document.getElementById('json-ta')?.value||'';const stats=document.getElementById('json-stats');const status=document.getElementById('json-status');const btn=document.getElementById('json-import-btn');const preview=document.getElementById('json-preview');
   if(stats)stats.textContent=`${raw.split('\n').length} lines · ${raw.length} chars · `;
@@ -818,10 +833,42 @@ async function pasteFromClipboard(){try{const t=await navigator.clipboard.readTe
 function formatJSON(){try{const ta=document.getElementById('json-ta');ta.value=JSON.stringify(JSON.parse(ta.value),null,2);lintJSON()}catch{showNotif('Invalid JSON.','Error','error')}}
 function clearJSON(){const ta=document.getElementById('json-ta');if(ta)ta.value='';lintJSON()}
 async function importJSON(){
-  if(!jsonParsed.length)return;const sel=document.getElementById('json-target-file');const tgt=sel?.value;
-  if(tgt==='new'){if(!APP.premium&&APP.files.length>=2){showNotif('Upgrade for more files.','Limit','warn');return}const name=prompt('New file name:','imported.json');if(!name)return;const f={name:name.endsWith('.json')?name:name+'.json',questions:jsonParsed,modified:Date.now()};const id=await dbAdd('files',f);f.id=id;APP.files.push(f)}
-  else{const f=APP.files.find(f=>f.id===parseInt(tgt));if(!f)return;const max=APP.premium?99999:5;const space=max-(f.questions||[]).length;if(space<=0){showNotif('File full. Upgrade for unlimited questions.','Limit','warn');return}f.questions=[...(f.questions||[]),...jsonParsed.slice(0,space)];f.modified=Date.now();await dbPut('files',f)}
-  closeModal('json-modal');renderFileList();updateFileLimitUI();refreshStats();showNotif(`${jsonParsed.length} questions imported.`,'Imported','success')}
+  if(!jsonParsed.length)return;
+  const sel=document.getElementById('json-target-file');
+  const tgt=sel?.value;
+
+  // ── CREATE EXAM DIRECTLY ──
+  if(tgt==='exam'){
+    const name=prompt('Exam name:','My Imported Exam');
+    if(!name)return;
+    const subject=prompt('Subject (e.g. Physics, Math, Biology):','General');
+    const max=APP.premium?9999:5;
+    const qs=jsonParsed.slice(0,max);
+    if(qs.length<jsonParsed.length)showNotif(`Free plan: only first ${max} questions added. Upgrade for unlimited.`,'Limit','warn');
+    const exam={name,subject:subject||'General',level:'University',difficulty:'Mixed',description:`Imported — ${qs.length} questions`,questions:qs,created:Date.now()};
+    const id=await dbAdd('exams',exam);exam.id=id;APP.exams.push(exam);
+    closeModal('json-modal');
+    refreshStats();renderExamGrid('home-exam-grid',APP.exams.slice(-3));renderExamGrid('exams-grid',APP.exams);
+    showNotif(`"${name}" created with ${qs.length} questions. Start it now!`,'Exam created ✓','success');
+    nav('exams');
+    return;
+  }
+
+  // ── SAVE TO FILE ──
+  if(tgt==='new'){
+    if(!APP.premium&&APP.files.length>=2){showNotif('Upgrade for more files.','Limit','warn');return}
+    const name=prompt('New file name:','imported.json');if(!name)return;
+    const f={name:name.endsWith('.json')?name:name+'.json',questions:jsonParsed,modified:Date.now()};
+    const id=await dbAdd('files',f);f.id=id;APP.files.push(f);
+  } else {
+    const f=APP.files.find(f=>f.id===parseInt(tgt));if(!f)return;
+    const max=APP.premium?99999:5;const space=max-(f.questions||[]).length;
+    if(space<=0){showNotif('File full. Upgrade for unlimited questions.','Limit','warn');return}
+    f.questions=[...(f.questions||[]),...jsonParsed.slice(0,space)];f.modified=Date.now();await dbPut('files',f);
+  }
+  closeModal('json-modal');renderFileList();updateFileLimitUI();refreshStats();
+  showNotif(`${jsonParsed.length} questions saved to file.`,'Saved','success');
+}
 function openGroq(){openModal('groq-modal')}
 function saveGroqKey(){APP.groqKey=document.getElementById('groq-key')?.value||'';dbPut('settings',{key:'groqKey',value:APP.groqKey})}
 function testGroq(){const k=document.getElementById('groq-key')?.value.trim();if(!k){showNotif('Enter your Groq API key first.','No key','warn');return}showNotif('Key saved! Click Generate to test with a real subject.','Key saved','success')}
@@ -832,7 +879,7 @@ async function runGroq(){
   const expl=document.getElementById('groq-expl-tog')?.classList.contains('on');
   const out=document.getElementById('groq-output');if(out){out.style.display='block';out.innerHTML='<span class="spin"></span> Generating…'}
   const prompt=`Generate ${num} multiple choice questions on "${subj}" at ${diff} difficulty.${expl?' Include step-by-step explanations.':''} Return ONLY a JSON array: [{"text":"...","options":["A","B","C","D"],"correct":0,"explanation":"..."}]`;
-  try{const resp=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'mixtral-8x7b-32768',messages:[{role:'user',content:prompt}],temperature:.6,max_tokens:4000})});const data=await resp.json();if(data.error){if(out)out.innerHTML=`<span style="color:var(--red)">${data.error.message}</span>`;return}const text=data.choices[0].message.content;const clean=text.replace(/```json|```/g,'').trim();const qs=JSON.parse(clean);const valid=qs.filter(q=>q.text&&Array.isArray(q.options)&&q.options.length===4&&typeof q.correct==='number');if(out)out.innerHTML=`<span style="color:var(--teal)">✓ ${valid.length} questions generated!</span>`;if(valid.length){const ta=document.getElementById('json-ta');if(ta)ta.value=JSON.stringify(valid,null,2);closeModal('groq-modal');openJsonPaste();lintJSON();showNotif(`${valid.length} questions ready to import.`,'Generated','success')}}catch(e){if(out)out.innerHTML=`<span style="color:var(--red)">Error: ${e.message}</span>`}}
+  try{const resp=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model:'mixtral-8x7b-32768',messages:[{role:'user',content:prompt}],temperature:.6,max_tokens:4000})});const data=await resp.json();if(data.error){if(out)out.innerHTML=`<span style="color:var(--red)">${data.error.message}</span>`;return}const text=data.choices[0].message.content;const clean=text.replace(/```json|```/g,'').trim();const qs=JSON.parse(clean);const valid=qs.filter(q=>q.text&&Array.isArray(q.options)&&q.options.length===4&&typeof q.correct==='number');if(out)out.innerHTML=`<span style="color:var(--teal)">✓ ${valid.length} questions generated!</span>`;if(valid.length){const ta=document.getElementById('json-ta');if(ta)ta.value=JSON.stringify(valid,null,2);closeModal('groq-modal');openJsonPaste();lintJSON();const sel=document.getElementById('json-target-file');if(sel)sel.value='exam';updateImportBtn();showNotif(`${valid.length} questions ready — click "Create exam"!`,'Generated ✓','success')}}catch(e){if(out)out.innerHTML=`<span style="color:var(--red)">Error: ${e.message}</span>`}}
 function openTrivia(){openModal('trivia-modal')}
 async function fetchTrivia(){
   const num=document.getElementById('trivia-num')?.value||10;const diff=document.getElementById('trivia-diff')?.value||'medium';const cat=document.getElementById('trivia-cat')?.value||9;
@@ -841,9 +888,26 @@ async function fetchTrivia(){
   try{const resp=await fetch(`https://opentdb.com/api.php?amount=${num}&category=${cat}&difficulty=${diff}&type=multiple`);const data=await resp.json();
   if(data.response_code!==0){if(status)status.textContent='API error code: '+data.response_code;if(fetchBtn)fetchBtn.disabled=false;return}
   triviaFetched=data.results.map(q=>{const opts=[...q.incorrect_answers,q.correct_answer].sort(()=>Math.random()-.5);return{text:dh(q.question),options:opts.map(dh),correct:opts.indexOf(q.correct_answer),explanation:`Correct: ${dh(q.correct_answer)}`}});
-  if(status)status.innerHTML=`<span style="color:var(--teal)">✓ Fetched ${triviaFetched.length} questions!</span>`;if(preview)preview.innerHTML=triviaFetched.slice(0,3).map(q=>`<div class="json-prev-item"><strong>${esc(q.text)}</strong></div>`).join('')+(triviaFetched.length>3?`<div style="font-size:11px;color:var(--ink4);padding:4px 8px">+${triviaFetched.length-3} more…</div>`:'');if(addBtn)addBtn.style.display='inline-flex'}catch(e){if(status)status.textContent='Network error: '+e.message}if(fetchBtn)fetchBtn.disabled=false}
+  if(status)status.innerHTML=`<span style="color:var(--teal)">✓ Fetched ${triviaFetched.length} questions!</span>`;
+  if(preview)preview.innerHTML=triviaFetched.slice(0,3).map(q=>`<div class="json-prev-item"><strong>${esc(q.text)}</strong></div>`).join('')+(triviaFetched.length>3?`<div style="font-size:11px;color:var(--ink4);padding:4px 8px">+${triviaFetched.length-3} more…</div>`:'');
+  if(addBtn)addBtn.style.display='inline-flex';
+  const fileBtn=document.getElementById('trivia-file-btn');if(fileBtn)fileBtn.style.display='inline-flex';
+  }catch(e){if(status)status.textContent='Network error: '+e.message}if(fetchBtn)fetchBtn.disabled=false}
+async function triviaCreateExam(){
+  if(!triviaFetched.length)return;
+  const cat=document.getElementById('trivia-cat');const catName=cat?.options[cat.selectedIndex]?.text||'Trivia';
+  const diff=document.getElementById('trivia-diff')?.value||'medium';
+  const name=prompt('Exam name:',`${catName} — ${diff.charAt(0).toUpperCase()+diff.slice(1)}`);
+  if(!name)return;
+  const max=APP.premium?9999:5;const qs=triviaFetched.slice(0,max);
+  if(qs.length<triviaFetched.length)showNotif(`Free plan: only first ${max} questions added.`,'Limit','warn');
+  const exam={name,subject:catName,level:'High School',difficulty:diff.charAt(0).toUpperCase()+diff.slice(1),description:`From OpenTriviaDB — ${qs.length} questions`,questions:qs,created:Date.now()};
+  const id=await dbAdd('exams',exam);exam.id=id;APP.exams.push(exam);
+  closeModal('trivia-modal');refreshStats();renderExamGrid('home-exam-grid',APP.exams.slice(-3));renderExamGrid('exams-grid',APP.exams);
+  showNotif(`"${name}" created with ${qs.length} questions!`,'Exam created ✓','success');nav('exams');
+}
 function dh(s){const t=document.createElement('textarea');t.innerHTML=s;return t.value}
-function addTriviaToFile(){const ta=document.getElementById('json-ta');if(ta)ta.value=JSON.stringify(triviaFetched,null,2);closeModal('trivia-modal');openJsonPaste();lintJSON()}
+function addTriviaToFile(){const ta=document.getElementById('json-ta');if(ta)ta.value=JSON.stringify(triviaFetched,null,2);closeModal('trivia-modal');openJsonPaste();lintJSON();const sel=document.getElementById('json-target-file');if(sel)sel.value='new';updateImportBtn();}
 function openEncrypted(){openModal('enc-modal')}
 function xor(data,key){return data.split('').map((c,i)=>String.fromCharCode(c.charCodeAt(0)^key.charCodeAt(i%key.length))).join('')}
 async function decryptExam(){
