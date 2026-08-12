@@ -1,3 +1,8 @@
+// Initialize Supabase Client
+const SUPABASE_URL = 'https://your-project-ref.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_nj5dfvOtcS8tvFL1VeTKaA_njBAl_6X';
+
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 // utils.js - Helper functions
 const Utils = {
     generateId: () => Date.now() + '-' + Math.random().toString(36).substr(2, 9),
@@ -18,7 +23,37 @@ const Utils = {
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     }
 };
+// Sign Up User
+async function signUp(email, password) {
+  const { data, error } = await supabase.auth.signUp({
+    email: email,
+    password: password,
+  });
+  if (error) alert(error.message);
+  else alert('Check your email for confirmation!');
+}
 
+// Sign In User
+async function signIn(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password,
+  });
+  if (error) alert(error.message);
+  else location.reload(); // Refresh to update UI
+}
+
+// Sign Out
+async function signOut() {
+  await supabase.auth.signOut();
+  location.reload();
+}
+
+// Get Current Logged-In User
+async function getCurrentUser() {
+  const { data: { user } } = await supabase.auth.getUser();
+  return user;
+}
 // app.js - Main Application
 class ExamMasterApp {
     constructor() {
@@ -180,7 +215,7 @@ class StorageManager {
     getPremiumStatus() { return JSON.parse(localStorage.getItem('premium')); }
     setPremiumStatus(status) { localStorage.setItem('premium', JSON.stringify(status)); }
 
-    // ... results, stats, etc.
+
 }
 
 // Initialize app when DOM ready
