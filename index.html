@@ -1132,7 +1132,7 @@ document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{
 document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',function(){document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active'));this.classList.add('active');const f=this.dataset.filter;let ex=APP.exams;if(f==='pending')ex=APP.exams.filter(e=>e.bestScore===undefined);if(f==='done')ex=APP.exams.filter(e=>e.bestScore!==undefined);renderExamGrid('exams-grid',ex)}));
 ///gemi
 // ─── SUPABASE CONFIGURATION ───
-const SUPABASE_URL = 'https://iwrrqeuyioxdvbtmsvhp.supabase.co/rest/v1/'; // 
+const SUPABASE_URL = 'https://iwrrqeuyioxdvbtmsvhp.supabase.co'; // 
 const SUPABASE_ANON_KEY = 'sb_publishable_nj5dfvOtcS8tvFL1VeTKaA_njBAl_6X';               
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
