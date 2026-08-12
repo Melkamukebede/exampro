@@ -818,6 +818,23 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2)}
   </div>
 </div>
 </div>
+  <!-- AUTHENTICATION MODAL -->
+<div class="overlay" id="auth-modal">
+<div class="modal" style="max-width:400px">
+  <div class="mhdr">
+    <div><h2 id="auth-title">Sign In to ExamPro</h2><p>Sync your exams across all devices</p></div>
+    <button class="mclose" onclick="closeModal('auth-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="mbody">
+    <div class="fg"><label>Email address</label><input type="text" id="auth-email" placeholder="student@example.com"></div>
+    <div class="fg"><label>Password</label><input type="password" id="auth-password" placeholder="••••••••"></div>
+  </div>
+  <div class="mfooter">
+    <button class="btn btn-secondary" onclick="toggleAuthMode()" id="auth-switch-btn">Need an account? Sign Up</button>
+    <button class="btn btn-primary" onclick="handleAuthSubmit()" id="auth-submit-btn">Sign In</button>
+  </div>
+</div>
+</div>
 <script>
 const DB_NAME='ExamMasterPro2',DB_VER=1;let db;
 function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB_NAME,DB_VER);r.onupgradeneeded=e=>{const d=e.target.result;['files','exams','results','settings'].forEach(s=>{if(!d.objectStoreNames.contains(s)){const opts=s==='settings'?{keyPath:'key'}:{keyPath:'id',autoIncrement:true};d.createObjectStore(s,opts)}})};r.onsuccess=e=>{db=e.target.result;res(db)};r.onerror=e=>rej(e)})}
