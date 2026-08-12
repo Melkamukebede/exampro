@@ -839,7 +839,24 @@ function extractQuestionsArray(text) {
     if (depth !== 0) return null;
     return text.substring(bracketIndex, i);
 }
+// Fetch all exams from Supabase
+async function loadExamsFromDatabase() {
+  const { data: exams, error } = await supabase
+    .from('exams')
+    .select('*')
+    .order('created_at', { ascending: false });
 
+  if (error) {
+    console.error('Error fetching exams:', error);
+    return;
+  }
+
+  // Render cards dynamically on the dashboard
+  renderExamCards(exams); 
+}
+
+// Example usage
+document.addEventListener('DOMContentLoaded', loadExamsFromDatabase);
 // Main API call
 async function callGroqAPI() {
     let apiKey = document.getElementById('groqApiKey').value.trim().replace(/[^\x00-\x7F]/g, '');
